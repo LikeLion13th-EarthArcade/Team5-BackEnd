@@ -1,4 +1,4 @@
-package com.project.team5backend.global.embedded;
+package com.project.team5backend.global.entity.embedded;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

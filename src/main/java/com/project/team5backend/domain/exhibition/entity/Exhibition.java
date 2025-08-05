@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.exhibition.entity;
 
-import com.project.team5backend.global.embedded.Address;
+import com.project.team5backend.global.entity.Facility;
+import com.project.team5backend.global.entity.embedded.Address;
 import com.project.team5backend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class Exhibition extends BaseTimeEntity {
 
     private String thumbnail;
 
+    private Integer price;
+
     private String startDate;
 
     private String endDate;
@@ -31,6 +34,18 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "homepage_url")
     private String homepageUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
+    private Category category;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Facility facility;
     @Embedded
     private Address address;
 
@@ -46,5 +61,4 @@ public class Exhibition extends BaseTimeEntity {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
-    private Status status;
 }
