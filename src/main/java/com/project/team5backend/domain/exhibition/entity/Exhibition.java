@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -45,7 +47,7 @@ public class Exhibition extends BaseTimeEntity {
     private Status status;
 
     @Enumerated(EnumType.STRING)
-    private Facility facility;
+    private List<Facility> facility;
     @Embedded
     private Address address;
 
