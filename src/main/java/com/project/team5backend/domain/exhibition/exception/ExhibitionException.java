@@ -1,7 +1,9 @@
 package com.project.team5backend.domain.exhibition.exception;
 
-public class ExhibitionException extends RuntimeException {
-  public ExhibitionException(String message) {
-    super(message);
+import com.project.team5backend.global.apiPayload.exception.CustomException;
+
+public class ExhibitionException extends CustomException {
+  public ExhibitionException(ExhibitionErrorCode errorCode) {
+    super(errorCode);
   }
 }

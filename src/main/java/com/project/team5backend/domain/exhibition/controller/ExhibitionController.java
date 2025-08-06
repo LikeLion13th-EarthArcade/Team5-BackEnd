@@ -22,4 +22,9 @@ public class ExhibitionController {
         return CustomResponse.onSuccess("전시글 등록이 완료되었습니다. 관리자 승인 대기열에 추가합니다.");
     }
 
+    @DeleteMapping("/{exhibitionId}")
+    public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
+        exhibitionCommandService.deleteExhibition(exhibitionId);
+        return CustomResponse.onSuccess("해당 전시가 삭제되었습니다.");
+    }
 }
