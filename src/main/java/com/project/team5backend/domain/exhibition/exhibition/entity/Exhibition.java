@@ -1,8 +1,8 @@
-package com.project.team5backend.domain.exhibition.entity;
+package com.project.team5backend.domain.exhibition.exhibition.entity;
 
-import com.project.team5backend.domain.exhibition.entity.enums.Category;
-import com.project.team5backend.domain.exhibition.entity.enums.Status;
-import com.project.team5backend.domain.exhibition.entity.enums.Type;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.converter.FacilityConverter;
 import com.project.team5backend.global.entity.Facility;

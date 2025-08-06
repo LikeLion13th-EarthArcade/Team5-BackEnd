@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.exhibition.entity.enums;
+package com.project.team5backend.domain.exhibition.exhibition.entity.enums;
 
 public enum Status {
     APPROVED, // 승인

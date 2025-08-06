@@ -1,9 +1,9 @@
-package com.project.team5backend.domain.exhibition.dto.request;
+package com.project.team5backend.domain.exhibition.exhibition.dto.request;
 
 
 
-import com.project.team5backend.domain.exhibition.entity.enums.Category;
-import com.project.team5backend.domain.exhibition.entity.enums.Type;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.global.entity.Facility;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

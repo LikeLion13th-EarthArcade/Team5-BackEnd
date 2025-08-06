@@ -1,7 +1,7 @@
-package com.project.team5backend.domain.exhibition.dto.response;
+package com.project.team5backend.domain.exhibition.exhibition.dto.response;
 
-import com.project.team5backend.domain.exhibition.entity.enums.Category;
-import com.project.team5backend.domain.exhibition.entity.enums.Type;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.global.entity.Facility;
 import com.project.team5backend.global.entity.embedded.Address;
 

@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.exhibition.exception;
+package com.project.team5backend.domain.exhibition.exhibition.exception;
 
 import com.project.team5backend.global.apiPayload.code.BaseErrorCode;
 import lombok.AllArgsConstructor;

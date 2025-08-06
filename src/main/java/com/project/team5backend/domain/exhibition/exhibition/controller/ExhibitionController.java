@@ -1,7 +1,7 @@
-package com.project.team5backend.domain.exhibition.controller;
+package com.project.team5backend.domain.exhibition.exhibition.controller;
 
-import com.project.team5backend.domain.exhibition.dto.request.ExhibitionReqDTO;
-import com.project.team5backend.domain.exhibition.service.command.ExhibitionCommandService;
+import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
+import com.project.team5backend.domain.exhibition.exhibition.service.command.ExhibitionCommandService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

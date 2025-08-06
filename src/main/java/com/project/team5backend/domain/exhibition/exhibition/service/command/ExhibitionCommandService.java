@@ -1,6 +1,6 @@
-package com.project.team5backend.domain.exhibition.service.command;
+package com.project.team5backend.domain.exhibition.exhibition.service.command;
 
-import com.project.team5backend.domain.exhibition.dto.request.ExhibitionReqDTO;
+import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
 
 public interface ExhibitionCommandService {
 

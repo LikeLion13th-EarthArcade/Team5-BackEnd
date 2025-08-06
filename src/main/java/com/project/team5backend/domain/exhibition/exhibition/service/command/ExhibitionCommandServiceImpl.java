@@ -1,11 +1,11 @@
-package com.project.team5backend.domain.exhibition.service.command;
+package com.project.team5backend.domain.exhibition.exhibition.service.command;
 
-import com.project.team5backend.domain.exhibition.converter.ExhibitionConverter;
-import com.project.team5backend.domain.exhibition.dto.request.ExhibitionReqDTO;
-import com.project.team5backend.domain.exhibition.entity.Exhibition;
-import com.project.team5backend.domain.exhibition.exception.ExhibitionErrorCode;
-import com.project.team5backend.domain.exhibition.exception.ExhibitionException;
-import com.project.team5backend.domain.exhibition.repository.ExhibitionRepository;
+import com.project.team5backend.domain.exhibition.exhibition.converter.ExhibitionConverter;
+import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
+import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
+import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
