@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.exhibition.exhibition.entity;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.domain.user.entity.User;
@@ -51,6 +52,9 @@ public class Exhibition extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Enumerated(EnumType.STRING)
+    private Mood mood;
 
     @Enumerated(EnumType.STRING)
     private Status status;

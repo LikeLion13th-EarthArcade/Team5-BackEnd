@@ -2,6 +2,7 @@ package com.project.team5backend.domain.exhibition.exhibition.service.command;
 
 import com.project.team5backend.domain.exhibition.exhibition.converter.ExhibitionConverter;
 import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
+import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
@@ -30,6 +31,11 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO);
 
         exhibitionRepository.save(ex);
+    }
+
+    @Override
+    public ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
+        return ExhibitionConverter.toPreviewExhibitionResDTO(createExhibitionReqDTO);
     }
 
     @Override
