@@ -1,17 +1,23 @@
 package com.project.team5backend.domain.exhibition.entity;
 
+import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.global.converter.FacilityConverter;
 import com.project.team5backend.global.entity.Facility;
 import com.project.team5backend.global.entity.embedded.Address;
 import com.project.team5backend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Exhibition extends BaseTimeEntity {
@@ -26,9 +32,9 @@ public class Exhibition extends BaseTimeEntity {
 
     private Integer price;
 
-    private String startDate;
+    private LocalDate startDate;
 
-    private String endDate;
+    private LocalDate endDate;
 
     @Column(name = "opening_time")
     private String openingTime;
@@ -46,8 +52,6 @@ public class Exhibition extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Enumerated(EnumType.STRING)
-    private List<Facility> facility;
     @Embedded
     private Address address;
 
@@ -62,5 +66,18 @@ public class Exhibition extends BaseTimeEntity {
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
+
+    // 시설 정보를 JSON 배열로 저장
+    @Convert(converter = FacilityConverter.class)
+    @Column(name = "facilities", columnDefinition = "TEXT")
+    private List<Facility> facilities = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public void delete() {
+        isDeleted = true;
+    }
 
 }
