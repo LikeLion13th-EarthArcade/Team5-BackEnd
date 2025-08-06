@@ -28,4 +28,32 @@ public class ExhibitionResDTO {
             List<Facility> facility
     ) {}
 
+    @Builder
+    public record DetailExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            String description,
+            LocalDate startDate,
+            LocalDate endDate,
+            String openingTime,
+            List<String> imageUrls,
+            String homepageUrl,
+            String address,
+            Category category,
+            Type type,
+            Mood mood,
+            Integer price,
+            List<Facility> facility,
+            List<ExhibitionReviewPreviewResDTO> reviews
+    ) {}
+
+    @Builder
+    public record ExhibitionReviewPreviewResDTO(
+            Long reviewId,
+            String name,
+            String content,
+            List<String> imageUrls,
+            LocalDate createdAt
+    ) {}
+
 }

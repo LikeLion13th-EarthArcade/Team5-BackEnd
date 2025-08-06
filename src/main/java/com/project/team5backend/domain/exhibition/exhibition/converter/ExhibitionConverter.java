@@ -4,6 +4,7 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.request.Exhibit
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
+import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
 
 public class ExhibitionConverter {
@@ -40,7 +41,6 @@ public class ExhibitionConverter {
                 .endDate(createReqDTO.endDate())
                 .openingTime(createReqDTO.openingHour())
                 .imageUrls(null)
-                .price(createReqDTO.price())
                 .homepageUrl(createReqDTO.homepageUrl())
                 .price(createReqDTO.price())
                 .address(createReqDTO.address())
@@ -49,5 +49,40 @@ public class ExhibitionConverter {
                 .mood(createReqDTO.mood())
                 .facility(createReqDTO.facility())
                 .build();
+    }
+
+    public static ExhibitionResDTO.DetailExhibitionResDTO toDetailExhibitionResDTO(Exhibition exhibition) {
+        return ExhibitionResDTO.DetailExhibitionResDTO.builder()
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .description(exhibition.getDescription())
+                .startDate(exhibition.getStartDate())
+                .endDate(exhibition.getEndDate())
+                .openingTime(exhibition.getOpeningTime())
+                .imageUrls(null)
+                .homepageUrl(exhibition.getHomepageUrl())
+                .address(
+                        exhibition.getAddress() != null ? exhibition.getAddress().toString() : null
+                )
+                .category(exhibition.getCategory())
+                .type(exhibition.getType())
+                .mood(exhibition.getMood())
+                .price(exhibition.getPrice())
+                .facility(exhibition.getFacilities())
+                .reviews(exhibition.getReviews().stream()
+                        .map(ExhibitionConverter::toReviewPreview)
+                        .toList())
+                .build();
+    }
+
+    private static ExhibitionResDTO.ExhibitionReviewPreviewResDTO toReviewPreview(ExhibitionReview review) {
+        return ExhibitionResDTO.ExhibitionReviewPreviewResDTO.builder()
+                .reviewId(review.getId())
+                .name(review.getUser().getName())
+                .content(review.getContent())
+                .imageUrls(null)
+                .createdAt(review.getCreateAt().toLocalDate())
+                .build();
+
     }
 }
