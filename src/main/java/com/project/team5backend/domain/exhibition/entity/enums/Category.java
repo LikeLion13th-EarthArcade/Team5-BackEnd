@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.exhibition.entity;
+package com.project.team5backend.domain.exhibition.entity.enums;
 
 public enum Category {
     PAINTING, // 회화

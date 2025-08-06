@@ -2,7 +2,7 @@ package com.project.team5backend.domain.exhibition.converter;
 
 import com.project.team5backend.domain.exhibition.dto.request.ExhibitionReqDTO;
 import com.project.team5backend.domain.exhibition.entity.Exhibition;
-import com.project.team5backend.domain.exhibition.entity.Status;
+import com.project.team5backend.domain.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.user.entity.User;
 
 public class ExhibitionConverter {
