@@ -47,10 +47,11 @@ public class ImageConverter {
                 .build();
     }
 
-    public static ImageResDTO.SaveImageResDTO toSaveImageResDTO(String imageUrl) {
-        return ImageResDTO.SaveImageResDTO.builder()
-                .profileImageUrl(imageUrl)
-                .message("이미지 업로드 완료되었습니다.")
+    public static ImageResDTO.DeleteImageResDTO toImageDeleteResDTO(String fileKey) {
+        return ImageResDTO.DeleteImageResDTO.builder()
+                .fileKey(fileKey)
+                .isDeleted(true)
+                .deletedAt(LocalDateTime.now())
                 .build();
     }
 

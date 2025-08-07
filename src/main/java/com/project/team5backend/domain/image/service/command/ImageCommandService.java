@@ -10,5 +10,5 @@ public interface ImageCommandService {
 
     String commit(String email, String fileKey);
 
-    void delete(String email, String fileKey);
+    ImageResDTO.DeleteImageResDTO delete(String email, String fileKey);
 }

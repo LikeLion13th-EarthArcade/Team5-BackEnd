@@ -132,7 +132,7 @@ public class ImageCommandServiceImpl implements ImageCommandService {
      * @param fileKey 파일 키
      */
     @Override
-    public void delete(String email, String fileKey) {
+    public ImageResDTO.DeleteImageResDTO delete(String email, String fileKey) {
         if (fileKey == null || fileKey.trim().isEmpty()) {
             throw new ImageException(ImageErrorCode.IMAGE_KEY_MISSING);
         }
@@ -151,6 +151,7 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         } catch (Exception e) {
             throw new ImageException(ImageErrorCode.IMAGE_DELETE_FAIL);
         }
+        return ImageConverter.toImageDeleteResDTO(fileKey);
     }
 
     /**
