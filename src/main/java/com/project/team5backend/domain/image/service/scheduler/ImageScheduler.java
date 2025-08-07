@@ -23,13 +23,12 @@ public class ImageScheduler {
     /**
      * 매 시간마다 미사용 이미지 정리
      */
-    @Scheduled(cron = "0 0 * * * *") // 매 시간 0분에 실행
+    @Scheduled(cron = "0 */30 * * * *") // 매 시간 30분에 실행
     public void run() {
         log.info("이미지 fileKey 스케줄러 작동");
 
         try {
-            // 1시간 전 이전에 생성된 추적 정보 조회
-            LocalDateTime expiredBefore = LocalDateTime.now().minusHours(1);
+            LocalDateTime expiredBefore = LocalDateTime.now().minusMinutes(30);
             Set<ImageInternelDTO.ImageTrackingResDTO> expiredImages = redisImageTracker.getExpiredImageEntries(expiredBefore);
 
             if (expiredImages.isEmpty()) {
@@ -44,7 +43,7 @@ public class ImageScheduler {
 
             for (ImageInternelDTO.ImageTrackingResDTO dto : expiredImages) {
                 try {
-                    imageCommandService.delete(dto.email(), dto.fileKey());
+                    imageCommandService.delete("likelion@naver.com", dto.fileKey());
                     deletedCount++;
                 } catch (Exception e) {
                     log.error("만료 FileKey 삭제 실패: {}", dto.fileKey(), e);

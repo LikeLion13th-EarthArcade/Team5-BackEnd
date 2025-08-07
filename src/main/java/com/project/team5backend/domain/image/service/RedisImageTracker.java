@@ -32,7 +32,7 @@ public class RedisImageTracker {
     }
 
     private static final String REDIS_KEY_PREFIX = "images:";
-    private static final long TRACKING_DURATION_HOURS = 24; // 24시간 추적
+    private static final long TRACKING_DURATION_MINUTES = 30;
 
     /**
      * Redis에 이미지 추적 정보 저장
@@ -43,7 +43,7 @@ public class RedisImageTracker {
 
             ImageInternelDTO.ImageTrackingResDTO imageTrackingResDTO = ImageConverter.toImageTrackingResDTO(email, fileKey);
             String json = objectMapper.writeValueAsString(imageTrackingResDTO);
-            imageRedisTemplate.opsForValue().set(redisKey, json, TRACKING_DURATION_HOURS, TimeUnit.HOURS);
+            imageRedisTemplate.opsForValue().set(redisKey, json, TRACKING_DURATION_MINUTES, TimeUnit.HOURS);
 
         } catch (Exception e) {
             throw new ImageException(ImageErrorCode.REDIS_SAVE_FAIL);
@@ -86,8 +86,8 @@ public class RedisImageTracker {
 
         for (String redisKey : redisKeys) {
             try {
-                Object raw = imageRedisTemplate.opsForValue().get(redisKey);
-                ImageInternelDTO.ImageTrackingResDTO dto = objectMapper.convertValue(raw, ImageInternelDTO.ImageTrackingResDTO.class);
+                String json = imageRedisTemplate.opsForValue().get(redisKey);
+                ImageInternelDTO.ImageTrackingResDTO dto = objectMapper.readValue(json, ImageInternelDTO.ImageTrackingResDTO.class);
 
                 if (dto.createAt().isBefore(expiredBefore)) {
                     expiredEntries.add(dto);
