@@ -56,4 +56,9 @@ public class ExhibitionResDTO {
             LocalDate createdAt
     ) {}
 
+    @Builder
+    public record LikeExhibitionResDTO (
+            Long exhibitionId,
+            String message
+    ){}
 }

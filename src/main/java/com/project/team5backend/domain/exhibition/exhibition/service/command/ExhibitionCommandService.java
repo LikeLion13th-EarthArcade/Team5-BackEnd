@@ -7,6 +7,8 @@ public interface ExhibitionCommandService {
 
     void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
 
+    ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId);
+
     ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
 
     void deleteExhibition(Long id);

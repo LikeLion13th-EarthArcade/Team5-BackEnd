@@ -33,6 +33,11 @@ public class ExhibitionController {
             @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
         return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition(createExhibitionReqDTO));
     }
+    @PostMapping("/{exhibitionId}/like")
+    @Operation(summary = "전시 좋아요", description = "좋아요 없으면 등록, 있으면 취소")
+    public CustomResponse<ExhibitionResDTO.LikeExhibitionResDTO> likeExhibition(@PathVariable Long exhibitionId) {
+        return CustomResponse.onSuccess(exhibitionCommandService.likeExhibition(exhibitionId));
+    }
 
     @GetMapping("/{exhibitionId}")
     @Operation(summary = "전시 상세 보기", description = "전시 상세 보기 api")
