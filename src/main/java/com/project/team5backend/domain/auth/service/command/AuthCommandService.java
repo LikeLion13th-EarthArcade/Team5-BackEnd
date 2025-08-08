@@ -9,8 +9,6 @@ public interface AuthCommandService {
     void signUp(UserRequest.SignUp request);
     UserResponse.LoginResult login(UserRequest.Login request, HttpServletResponse response);
 
-    UserResponse.LoginResult kakaoLogin(String code, HttpServletResponse response);
-
     // 이메일 인증
     void sendVerificationCode(String email);
     boolean verifyCode(String email, String code);

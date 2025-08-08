@@ -16,7 +16,7 @@ public class UserQueryServiceImpl implements UserQueryService {
     public UserResponse.MyInfo getMyInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        return new UserResponse.MyInfo(user.getEmail(), user.getName());
+        return new UserResponse.MyInfo(user.getId(),user.getName(),user.getEmail(),user.getCreatedAt(),user.getUpdatedAt());
     }
 }
 

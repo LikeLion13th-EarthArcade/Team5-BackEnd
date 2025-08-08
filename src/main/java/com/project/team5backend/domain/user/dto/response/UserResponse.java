@@ -2,6 +2,8 @@ package com.project.team5backend.domain.user.dto.response;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 public class UserResponse {
 
     @Getter @Setter
@@ -16,8 +18,11 @@ public class UserResponse {
     @Getter
     @AllArgsConstructor
     public static class MyInfo {
-        private String email;
+        private Long userId;
         private String name;
+        private String email;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
     @Getter
     @AllArgsConstructor
