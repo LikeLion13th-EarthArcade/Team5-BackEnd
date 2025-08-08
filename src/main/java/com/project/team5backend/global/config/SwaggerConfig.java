@@ -1,4 +1,4 @@
-package com.project.team5backend.global;
+package com.project.team5backend.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
