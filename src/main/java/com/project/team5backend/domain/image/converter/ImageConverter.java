@@ -1,7 +1,9 @@
 package com.project.team5backend.domain.image.converter;
 
+import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.image.dto.internel.ImageInternelDTO;
 import com.project.team5backend.domain.image.dto.response.ImageResDTO;
+import com.project.team5backend.domain.image.entity.ExhibitionImage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -10,10 +12,22 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageConverter {
+    public static ExhibitionImage toEntityExhibitionImage(Exhibition exhibition, String fileKey) {
+        return ExhibitionImage.builder()
+                .fileKey(fileKey)
+                .isDeleted(false)
+                .exhibition(exhibition)
+                .build();
+    }
+    public static List<String> toFileKeyList(List<ExhibitionImage> exhibitionImages) {
+        return exhibitionImages.stream().map(ExhibitionImage::getFileKey).collect(Collectors.toList());
+    }
+
     public static ImageResDTO.PresignedUrlResDTO toPresignedUrlResDTO(String presignedUrl, String fileKey) {
         return ImageResDTO.PresignedUrlResDTO.builder()
                 .presignedUrl(presignedUrl)

@@ -4,5 +4,5 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.response.Exhibi
 
 public interface ExhibitionQueryService {
 
-    ExhibitionResDTO.DetailExhibitionResDTO detailExhibition(Long id);
+    ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long id);
 }

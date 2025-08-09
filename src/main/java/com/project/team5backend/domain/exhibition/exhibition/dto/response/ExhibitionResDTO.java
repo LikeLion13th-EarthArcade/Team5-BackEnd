@@ -36,7 +36,7 @@ public class ExhibitionResDTO {
             LocalDate startDate,
             LocalDate endDate,
             String openingTime,
-            List<String> imageUrls,
+            List<String> imageFileKeys,
             String homepageUrl,
             String address,
             Category category,
@@ -56,4 +56,9 @@ public class ExhibitionResDTO {
             LocalDate createdAt
     ) {}
 
+    @Builder
+    public record LikeExhibitionResDTO (
+            Long exhibitionId,
+            String message
+    ){}
 }

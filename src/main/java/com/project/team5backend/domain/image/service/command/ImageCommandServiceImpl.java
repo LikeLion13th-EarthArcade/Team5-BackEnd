@@ -18,9 +18,11 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -49,26 +51,10 @@ public class ImageCommandServiceImpl implements ImageCommandService {
      */
     @Override
     public ImageResDTO.PresignedUrlResDTO generatePresignedUrl(String email, ImageReqDTO.PresignedUrlReqDTO presignedUrlReqDTO) {
-        return generateSinglePresignedUrl(email, presignedUrlReqDTO);
-    }
-
-    /**
-     * Presigned URL 발급 , 게시글 이미지 전용
-     * @param "fileExtension" 파일 확장자 (예: jpg, png)
-     * @param "contentType" MIME 타입 (예: image/jpeg)
-     * @return Presigned URL과 파일 키
-     */
-    @Override
-    public ImageResDTO.PresignedUrlListResDTO generatePresignedUrlList(String email, ImageReqDTO.PresignedUrlListReqDTO presignedUrlListReqDTO) {
-        if (presignedUrlListReqDTO.images().size() > 5) {
+        if (redisImageTracker.getImageCountByEmail("likelion@naver.com") >= 5) {
             throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
         }
-
-        List<ImageResDTO.PresignedUrlResDTO> resDTOList = presignedUrlListReqDTO.images().stream()
-                .map(presignedUrlReqDTO -> generateSinglePresignedUrl(email, presignedUrlReqDTO))
-                .collect(Collectors.toList());
-
-        return ImageConverter.toPresignedUrlListResDTO(resDTOList);
+        return generateSinglePresignedUrl(email, presignedUrlReqDTO);
     }
 
     /**
@@ -101,35 +87,8 @@ public class ImageCommandServiceImpl implements ImageCommandService {
     }
 
     /**
-     * 이미지 사용 확정 (commit)
-     */
-    @Override
-    public String commit(String email, String fileKey) {
-
-        if (fileKey == null || fileKey.trim().isEmpty()) {
-            throw new ImageException(ImageErrorCode.IMAGE_KEY_MISSING);
-        }
-
-        try {
-            // S3에 파일이 실제로 업로드되었는지 확인
-            if (!isFileExists(fileKey)) {
-                log.warn("fileKey를 찾을 수 없습니다: {}", fileKey);
-                throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-            }
-
-            // Redis에서 추적 정보 제거 (더 이상 정리 대상이 아님)
-            redisImageTracker.remove(email, fileKey);
-
-            log.info("이미지가 성공적으로 저장되었습니다: {}", fileKey);
-        } catch (Exception e) {
-            throw new ImageException(ImageErrorCode.IMAGE_COMMIT_FAIL);
-        }
-        return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileKey;
-    }
-
-    /**
-     * 이미지 실제 삭제
-     * @param fileKey 파일 키
+     * 이미지 삭제
+     * @param fileKey 파일 키만 삭제
      */
     @Override
     public ImageResDTO.DeleteImageResDTO delete(String email, String fileKey) {
@@ -152,6 +111,67 @@ public class ImageCommandServiceImpl implements ImageCommandService {
             throw new ImageException(ImageErrorCode.IMAGE_DELETE_FAIL);
         }
         return ImageConverter.toImageDeleteResDTO(fileKey);
+    }
+    @Override
+    public void moveToTrashPrefix(List<String> fileKeys) {
+        if (fileKeys == null || fileKeys.isEmpty()) {
+            log.info("이동할 파일이 없습니다.");
+            return;
+        }
+
+        List<String> failedKeys = new ArrayList<>();
+
+        for (String src : fileKeys) {
+            try {
+                String dst = "trash/" + src; // 원래 경로 보존
+                // 1. 복사
+                CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                        .sourceBucket(bucketName)
+                        .sourceKey(src)
+                        .destinationBucket(bucketName)
+                        .destinationKey(dst)
+                        .build();
+                s3Client.copyObject(copyReq);
+
+                // 2. 원본 삭제
+                DeleteObjectRequest deleteReq = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(src)
+                        .build();
+                s3Client.deleteObject(deleteReq);
+
+                log.info("파일 휴지통 이동 완료: {} -> {}", src, dst);
+
+            } catch (Exception e) {
+                log.error("파일 휴지통 이동 실패: {}", src, e);
+                failedKeys.add(src);
+            }
+        }
+        if (!failedKeys.isEmpty()) {
+            log.warn("휴지통 이동 실패한 파일들: {}", failedKeys);
+            // 필요시 재시도 로직이나 알림 추가
+        }
+    }
+    @Override
+    public void clearTrackingByEmail(String email) {
+        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(email);
+
+        try {
+            // S3에서 파일들 삭제
+            for (String fileKey : fileKeys) {
+                DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileKey)
+                        .build();
+                s3Client.deleteObject(deleteRequest);
+            }
+
+            // Redis에서 사용자 이미지 모두 삭제 (한 번에)
+            redisImageTracker.clearUserImages(email);
+
+        } catch (Exception e) {
+            throw new ImageException(ImageErrorCode.IMAGE_DELETE_FAIL);
+        }
     }
 
     /**

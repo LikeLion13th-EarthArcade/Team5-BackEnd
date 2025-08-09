@@ -21,11 +21,10 @@ public class ImageResDTO {
     ){}
 
     @Builder
-    public record SaveImageResDTO (
-            String profileImageUrl,
-            String message
-    ){
-    }
+    public record FileKeyListResDTO (
+            List<String> fileKeys
+    ){}
+
     @Builder
     public record DeleteImageResDTO(
             String fileKey,

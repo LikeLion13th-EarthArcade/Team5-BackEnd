@@ -2,6 +2,9 @@ package com.project.team5backend.domain.image.controller;
 
 import com.project.team5backend.domain.image.dto.request.ImageReqDTO;
 import com.project.team5backend.domain.image.dto.response.ImageResDTO;
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
+import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class ImageController {
 
     private final ImageCommandService imageCommandService;
+    private final RedisImageTracker redisImageTracker;
 
     @Operation(method = "POST", summary = "이미지 업로드", description = "presigned url과 fileKey 발급용, 업로드 하는건 아님")
     @PostMapping("/presigned")
@@ -32,6 +36,17 @@ public class ImageController {
             @RequestParam("fileKey") String fileKey
     ) {
         String email = "likelion@naver.com";
+
+        if (!redisImageTracker.isOwnedByUser(email, fileKey)) {
+            throw new ImageException(ImageErrorCode.IMAGE_UNAUTHORIZED);
+        }
         return CustomResponse.onSuccess(imageCommandService.delete(email, fileKey));
+    }
+
+    @Operation(method = "DELETE", summary = "이미지 업로드 전 쓰레기 이미지 정리", description = "항상 XX(전시,리뷰,공간) 등록 화면에 들어갈 때 실행해야함.")
+    @DeleteMapping("/trash/clear")
+    public CustomResponse<String> clearTrashImages() {
+        imageCommandService.clearTrackingByEmail("likelion@naver.com");
+        return CustomResponse.onSuccess("쓰레기 키파일 정리 완료");
     }
 }
