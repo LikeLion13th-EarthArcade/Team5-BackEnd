@@ -9,7 +9,7 @@ public interface ExhibitionCommandService {
 
     ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId);
 
-    ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
+    ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(String email, ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
 
     void deleteExhibition(Long id);
 }

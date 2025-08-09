@@ -6,7 +6,6 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
-import com.project.team5backend.domain.image.converter.ImageConverter;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

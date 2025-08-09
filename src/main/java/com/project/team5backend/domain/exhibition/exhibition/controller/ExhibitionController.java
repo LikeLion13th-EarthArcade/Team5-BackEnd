@@ -31,7 +31,7 @@ public class ExhibitionController {
     @Operation(summary = "전시 생성 중 미리보기", description = "작성중 미리보기 api")
     public CustomResponse<ExhibitionResDTO.PreviewExhibitionResDTO> previewExhibition(
             @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
-        return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition(createExhibitionReqDTO));
+        return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition("likelion@naver.com",createExhibitionReqDTO));
     }
     @PostMapping("/{exhibitionId}/like")
     @Operation(summary = "전시 좋아요", description = "좋아요 없으면 등록, 있으면 취소")

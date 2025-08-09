@@ -85,8 +85,9 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
 
 
     @Override
-    public ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
-        return ExhibitionConverter.toPreviewExhibitionResDTO(createExhibitionReqDTO);
+    public ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(String email, ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
+        List<String> images = redisImageTracker.getOrderedFileKeysByEmail(email);
+        return ExhibitionConverter.toPreviewExhibitionResDTO(createExhibitionReqDTO, images);
     }
 
     @Override

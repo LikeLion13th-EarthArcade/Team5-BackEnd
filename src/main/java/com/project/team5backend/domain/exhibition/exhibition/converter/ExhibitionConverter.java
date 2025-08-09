@@ -38,14 +38,14 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    public static ExhibitionResDTO.PreviewExhibitionResDTO toPreviewExhibitionResDTO (ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO) {
+    public static ExhibitionResDTO.PreviewExhibitionResDTO toPreviewExhibitionResDTO (ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, List<String> images) {
         return ExhibitionResDTO.PreviewExhibitionResDTO.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
                 .startDate(createReqDTO.startDate())
                 .endDate(createReqDTO.endDate())
                 .openingTime(createReqDTO.openingHour())
-                .imageUrls(null)
+                .imageUrls(images)
                 .homepageUrl(createReqDTO.homepageUrl())
                 .price(createReqDTO.price())
                 .address(createReqDTO.address())
