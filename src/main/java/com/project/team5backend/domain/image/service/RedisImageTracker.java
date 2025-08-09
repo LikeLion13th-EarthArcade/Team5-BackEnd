@@ -153,19 +153,6 @@ public class RedisImageTracker {
     }
 
     /**
-     * 첫 번째 이미지 조회 (썸네일용)
-     */
-    public String getFirstImageByEmail(String email) {
-        try {
-            String zsetKey = REDIS_ZSET_KEY_PREFIX + email;
-            Set<String> firstImage = imageRedisTemplate.opsForZSet().range(zsetKey, 0, 0);
-            return firstImage.isEmpty() ? null : firstImage.iterator().next();
-        } catch (Exception e) {
-            throw new ImageException(ImageErrorCode.REDIS_KEY_FETCH_FAIL);
-        }
-    }
-
-    /**
      * 이미지 개수 조회
      */
     public long getImageCountByEmail(String email) {

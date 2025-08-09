@@ -49,6 +49,9 @@ public class ImageCommandServiceImpl implements ImageCommandService {
      */
     @Override
     public ImageResDTO.PresignedUrlResDTO generatePresignedUrl(String email, ImageReqDTO.PresignedUrlReqDTO presignedUrlReqDTO) {
+        if (redisImageTracker.getImageCountByEmail("likelion@naver.com") >= 5) {
+            throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
+        }
         return generateSinglePresignedUrl(email, presignedUrlReqDTO);
     }
 
