@@ -2,6 +2,8 @@ package com.project.team5backend.domain.image.controller;
 
 import com.project.team5backend.domain.image.dto.request.ImageReqDTO;
 import com.project.team5backend.domain.image.dto.response.ImageResDTO;
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
@@ -34,6 +36,9 @@ public class ImageController {
             @RequestParam("fileKey") String fileKey
     ) {
         String email = "likelion@naver.com";
+        if (!redisImageTracker.isOwnedByUser(email, fileKey)) {
+            throw new ImageException(ImageErrorCode.IMAGE_UNAUTHORIZED);
+        }
         return CustomResponse.onSuccess(imageCommandService.delete(email, fileKey));
     }
 
