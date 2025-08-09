@@ -36,6 +36,7 @@ public class ImageController {
             @RequestParam("fileKey") String fileKey
     ) {
         String email = "likelion@naver.com";
+
         if (!redisImageTracker.isOwnedByUser(email, fileKey)) {
             throw new ImageException(ImageErrorCode.IMAGE_UNAUTHORIZED);
         }
@@ -45,7 +46,7 @@ public class ImageController {
     @Operation(method = "DELETE", summary = "이미지 업로드 전 쓰레기 이미지 정리", description = "항상 XX(전시,리뷰,공간) 등록 화면에 들어갈 때 실행해야함.")
     @DeleteMapping("/trash/clear")
     public CustomResponse<String> clearTrashImages() {
-        redisImageTracker.clearUserImages("likelion@naver.com");
+        imageCommandService.clearTrackingByEmail("likelion@naver.com");
         return CustomResponse.onSuccess("쓰레기 키파일 정리 완료");
     }
 }

@@ -21,7 +21,8 @@ public enum ImageErrorCode implements BaseErrorCode {
     REDIS_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_4", "Redis에 이미지 추적 정보를 저장하는 데 실패했습니다."),
     REDIS_REMOVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_5", "Redis에서 이미지 추적 정보를 제거하는 데 실패했습니다."),
     REDIS_KEY_FETCH_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_6", "Redis에서 이미지 추적 키 목록을 조회하는 데 실패했습니다."),
-    REDIS_EXPIRED_FETCH_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_7", "Redis에서 만료된 이미지 키를 조회하는 데 실패했습니다.")
+    REDIS_EXPIRED_FETCH_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_7", "Redis에서 만료된 이미지 키를 조회하는 데 실패했습니다."),
+    S3_MOVE_TRASH_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_500_8", "S3 파일 휴지통 이동 실패했습니다.")
     ;
 
 

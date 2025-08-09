@@ -11,4 +11,6 @@ public interface ExhibitionImageRepository extends JpaRepository<ExhibitionImage
 
     @Query("select ei.fileKey from ExhibitionImage ei where ei.exhibition.id =:exhibitionId")
     List<String> findFileKeysByExhibitionId(@Param("exhibitionId") Long exhibitionId);
+
+    List<ExhibitionImage> findByExhibitionId(long exhibitionId);
 }

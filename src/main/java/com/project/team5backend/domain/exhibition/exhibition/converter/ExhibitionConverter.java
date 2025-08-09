@@ -74,9 +74,7 @@ public class ExhibitionConverter {
                 .mood(exhibition.getMood())
                 .price(exhibition.getPrice())
                 .facility(exhibition.getFacilities())
-                .reviews(exhibition.getReviews().stream()
-                        .map(ExhibitionConverter::toReviewPreview)
-                        .toList())
+                .reviews(null)
                 .build();
     }
 

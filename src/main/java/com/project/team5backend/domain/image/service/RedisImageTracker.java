@@ -5,10 +5,12 @@ import com.project.team5backend.domain.image.converter.ImageConverter;
 import com.project.team5backend.domain.image.dto.internel.ImageInternelDTO;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Qualifier;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -20,6 +22,9 @@ public class RedisImageTracker {
 
     private final RedisTemplate<String, String> imageRedisTemplate;
     private final ObjectMapper objectMapper;
+
+    @Value("${aws.s3.bucket-name}")
+    private String bucketName;
 
     public RedisImageTracker(
             @Qualifier("imageRedisTemplate") RedisTemplate<String, String> imageRedisTemplate,
@@ -95,27 +100,6 @@ public class RedisImageTracker {
     }
 
     /**
-     * 해당 유저의 모든 임시 이미지 삭제 (쓰레기 데이터 정리용)
-     */
-    public void clearUserImages(String email) {
-        try {
-            // 1. ZSet 삭제
-            String zsetKey = REDIS_ZSET_KEY_PREFIX + email;
-            imageRedisTemplate.delete(zsetKey);
-
-            // 2. 상세 정보들도 삭제
-            Set<String> detailKeys = imageRedisTemplate.keys(REDIS_DETAIL_KEY_PREFIX + email + ":*");
-            if (detailKeys != null && !detailKeys.isEmpty()) {
-                imageRedisTemplate.delete(detailKeys);
-            }
-
-            log.info("사용자 {}의 임시 이미지 모두 삭제 완료", email);
-        } catch (Exception e) {
-            throw new ImageException(ImageErrorCode.REDIS_REMOVE_FAIL);
-        }
-    }
-
-    /**
      * 특정 시간 이전의 추적 정보 조회 (기존 방식 유지)
      */
     public Set<ImageInternelDTO.ImageTrackingResDTO> getExpiredImageEntries(LocalDateTime expiredBefore) {
@@ -164,25 +148,24 @@ public class RedisImageTracker {
             throw new ImageException(ImageErrorCode.REDIS_KEY_FETCH_FAIL);
         }
     }
-
     /**
-     * 디버깅용: ZSet 내용을 score와 함께 조회
+     * 해당 유저의 모든 임시 이미지 삭제 (쓰레기 데이터 정리용)
      */
-    public Map<String, Double> getImagesWithScores(String email) {
+    public void clearUserImages(String email) {
         try {
+            // 1. ZSet 삭제
             String zsetKey = REDIS_ZSET_KEY_PREFIX + email;
-            Set<org.springframework.data.redis.core.ZSetOperations.TypedTuple<String>> tuples =
-                    imageRedisTemplate.opsForZSet().rangeWithScores(zsetKey, 0, -1);
+            imageRedisTemplate.delete(zsetKey);
 
-            Map<String, Double> result = new LinkedHashMap<>();
-            if (tuples != null) {
-                for (org.springframework.data.redis.core.ZSetOperations.TypedTuple<String> tuple : tuples) {
-                    result.put(tuple.getValue(), tuple.getScore());
-                }
+            // 2. 상세 정보들도 삭제
+            Set<String> detailKeys = imageRedisTemplate.keys(REDIS_DETAIL_KEY_PREFIX + email + ":*");
+            if (detailKeys != null && !detailKeys.isEmpty()) {
+                imageRedisTemplate.delete(detailKeys);
             }
-            return result;
+
+            log.info("사용자 {}의 임시 이미지 모두 삭제 완료", email);
         } catch (Exception e) {
-            throw new ImageException(ImageErrorCode.REDIS_KEY_FETCH_FAIL);
+            throw new ImageException(ImageErrorCode.REDIS_REMOVE_FAIL);
         }
     }
 }

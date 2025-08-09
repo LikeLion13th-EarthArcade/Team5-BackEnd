@@ -84,9 +84,6 @@ public class Exhibition extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "exhibition", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExhibitionReview> reviews = new ArrayList<>();
-
     public void delete() {
         isDeleted = true;
     }
@@ -97,5 +94,10 @@ public class Exhibition extends BaseTimeEntity {
 
     public void decreaseLikeCount() {
         this.likeCount = Math.max(0, this.likeCount - 1);
+    }
+
+    public void resetCount() {
+        this.likeCount = 0;
+        this.reviewCount = 0;
     }
 }

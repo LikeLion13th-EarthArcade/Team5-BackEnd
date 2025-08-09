@@ -13,4 +13,8 @@ public interface ExhibitionLikeRepository extends JpaRepository<ExhibitionLike, 
     @Modifying
     @Query("delete from ExhibitionLike el where el.user.id =:userId and el.exhibition.id =:exhibitionId")
     void deleteByUserIdAndExhibitionId(@Param("userId") Long userId,@Param("exhibitionId") Long exhibitionId);
+
+    @Modifying
+    @Query("delete from ExhibitionLike ei where ei.exhibition.id =:exhibitionId")
+    void deleteByExhibitionId(@Param("exhibitionId") Long exhibitionId);
 }

@@ -48,7 +48,8 @@ public class ExhibitionController {
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
     public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
-        exhibitionCommandService.deleteExhibition(exhibitionId);
+        //유저 검증 로직 필요
+        exhibitionCommandService.deleteExhibition(4L);
         return CustomResponse.onSuccess("해당 전시가 삭제되었습니다.");
     }
 }

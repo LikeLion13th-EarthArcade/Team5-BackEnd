@@ -34,4 +34,8 @@ public class ExhibitionImage extends BaseOnlyCreateTimeEntity {
     @JoinColumn(name = "exhibition_id")
     private Exhibition exhibition;
 
+    public void deleteImage() {
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+    }
 }
