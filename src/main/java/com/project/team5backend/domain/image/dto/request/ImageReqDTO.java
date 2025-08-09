@@ -16,10 +16,4 @@ public class ImageReqDTO {
     public record PresignedUrlListReqDTO(
             List<PresignedUrlReqDTO> images // 각 이미지마다 contentType, fileExtension
     ){}
-
-    @Builder
-    public record SaveImageReqDTO(
-            String fileKey
-    ){
-    }
 }

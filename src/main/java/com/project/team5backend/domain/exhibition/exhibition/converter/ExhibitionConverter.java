@@ -6,10 +6,15 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExhibitionConverter {
 
-    public static Exhibition toEntity (User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO) {
+    public static Exhibition toEntity (User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey) {
         return Exhibition.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
@@ -27,7 +32,7 @@ public class ExhibitionConverter {
                 .ratingAvg(0)
                 .likeCount(0)
                 .reviewCount(0)
-                .thumbnail(null)
+                .thumbnail(fileKey)
                 .address(null)
                 .user(user)
                 .build();
@@ -51,7 +56,7 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    public static ExhibitionResDTO.DetailExhibitionResDTO toDetailExhibitionResDTO(Exhibition exhibition) {
+    public static ExhibitionResDTO.DetailExhibitionResDTO toDetailExhibitionResDTO(Exhibition exhibition, List<String> imageFileKeys) {
         return ExhibitionResDTO.DetailExhibitionResDTO.builder()
                 .exhibitionId(exhibition.getId())
                 .title(exhibition.getTitle())
@@ -59,7 +64,7 @@ public class ExhibitionConverter {
                 .startDate(exhibition.getStartDate())
                 .endDate(exhibition.getEndDate())
                 .openingTime(exhibition.getOpeningTime())
-                .imageUrls(null)
+                .imageFileKeys(imageFileKeys)
                 .homepageUrl(exhibition.getHomepageUrl())
                 .address(
                         exhibition.getAddress() != null ? exhibition.getAddress().toString() : null

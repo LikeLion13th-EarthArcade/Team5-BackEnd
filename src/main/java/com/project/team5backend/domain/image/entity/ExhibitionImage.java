@@ -1,7 +1,7 @@
 package com.project.team5backend.domain.image.entity;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
-import com.project.team5backend.global.entity.BaseTimeEntity;
+import com.project.team5backend.global.entity.BaseOnlyCreateTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExhibitionImage extends BaseTimeEntity {
+public class ExhibitionImage extends BaseOnlyCreateTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "exhibition_image_id")
     private Long id;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String fileKey;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;

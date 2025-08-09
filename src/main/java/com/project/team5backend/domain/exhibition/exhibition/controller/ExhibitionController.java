@@ -42,7 +42,7 @@ public class ExhibitionController {
     @GetMapping("/{exhibitionId}")
     @Operation(summary = "전시 상세 보기", description = "전시 상세 보기 api")
     public CustomResponse<ExhibitionResDTO.DetailExhibitionResDTO> detailExhibition(@PathVariable Long exhibitionId) {
-        return CustomResponse.onSuccess(exhibitionQueryService.detailExhibition(exhibitionId));
+        return CustomResponse.onSuccess(exhibitionQueryService.getDetailExhibition(exhibitionId));
     }
 
     @DeleteMapping("/{exhibitionId}")

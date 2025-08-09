@@ -9,6 +9,11 @@ import com.project.team5backend.domain.exhibition.exhibition.exception.Exhibitio
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionLikeRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
+import com.project.team5backend.domain.image.converter.ImageConverter;
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
+import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
+import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
@@ -18,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +34,27 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
     private final ExhibitionLikeRepository exhibitionLikeRepository;
+    private final RedisImageTracker redisImageTracker;
+    private final ExhibitionImageRepository exhibitionImageRepository;
 
     @Override
     public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
-        User user = new User();
-        userRepository.save(user);
-        Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO);
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
-        exhibitionRepository.save(ex);
+        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
+
+        // 빈 리스트 체크
+        if (fileKeys.isEmpty()) {
+            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        }
+        Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0));
+        exhibitionRepository.save(ex); //전시 등록
+
+        for (String fileKey : fileKeys) {
+            exhibitionImageRepository.save(ImageConverter.toEntityExhibitionImage(ex, fileKey));
+            redisImageTracker.remove("likelion@naver.com", fileKey);
+        }
     }
 
     @Override

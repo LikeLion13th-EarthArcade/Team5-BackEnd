@@ -4,7 +4,10 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.response.Exhibi
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.ExhibitionLike;
 import com.project.team5backend.domain.user.entity.User;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExhibitionLikeConverter {
 
     public static ExhibitionLike toEntity (User user, Exhibition exhibition) {
