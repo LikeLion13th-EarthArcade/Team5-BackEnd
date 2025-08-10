@@ -4,6 +4,7 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.request.Exhibit
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
+import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
 import lombok.AccessLevel;
@@ -78,8 +79,8 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    private static ExhibitionResDTO.ExhibitionReviewPreviewResDTO toReviewPreview(ExhibitionReview review) {
-        return ExhibitionResDTO.ExhibitionReviewPreviewResDTO.builder()
+    private static ExhibitionReviewResDTO.exReviewPreviewResDTO toReviewPreview(ExhibitionReview review) {
+        return ExhibitionReviewResDTO.exReviewPreviewResDTO.builder()
                 .reviewId(review.getId())
                 .name(review.getUser().getName())
                 .content(review.getContent())

@@ -1,9 +1,11 @@
 package com.project.team5backend.domain.image.converter;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.image.dto.internel.ImageInternelDTO;
 import com.project.team5backend.domain.image.dto.response.ImageResDTO;
 import com.project.team5backend.domain.image.entity.ExhibitionImage;
+import com.project.team5backend.domain.image.entity.ExhibitionReviewImage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -11,12 +13,10 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageConverter {
+    //전시이미지 생성
     public static ExhibitionImage toEntityExhibitionImage(Exhibition exhibition, String fileKey) {
         return ExhibitionImage.builder()
                 .fileKey(fileKey)
@@ -24,8 +24,13 @@ public class ImageConverter {
                 .exhibition(exhibition)
                 .build();
     }
-    public static List<String> toFileKeyList(List<ExhibitionImage> exhibitionImages) {
-        return exhibitionImages.stream().map(ExhibitionImage::getFileKey).collect(Collectors.toList());
+    //전시리뷰이미지 생성
+    public static ExhibitionReviewImage toEntityExhibitionReviewImage(ExhibitionReview review, String fileKey) {
+        return ExhibitionReviewImage.builder()
+                .fileKey(fileKey)
+                .isDeleted(false)
+                .exhibitionReview(review)
+                .build();
     }
 
     public static ImageResDTO.PresignedUrlResDTO toPresignedUrlResDTO(String presignedUrl, String fileKey) {
@@ -33,9 +38,6 @@ public class ImageConverter {
                 .presignedUrl(presignedUrl)
                 .fileKey(fileKey)
                 .build();
-    }
-    public static ImageResDTO.PresignedUrlListResDTO toPresignedUrlListResDTO(List<ImageResDTO.PresignedUrlResDTO> urls) {
-        return new ImageResDTO.PresignedUrlListResDTO(urls);
     }
 
     public static ImageInternelDTO.ImageTrackingResDTO toImageTrackingResDTO(String email, String fileKey) {

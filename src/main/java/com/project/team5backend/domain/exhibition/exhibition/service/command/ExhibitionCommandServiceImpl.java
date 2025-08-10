@@ -49,10 +49,6 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
 
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
 
-        // 빈 리스트 체크
-        if (fileKeys.isEmpty()) {
-            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-        }
         Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0));
         exhibitionRepository.save(ex); //전시 등록
 

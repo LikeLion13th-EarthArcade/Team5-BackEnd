@@ -3,6 +3,7 @@ package com.project.team5backend.domain.exhibition.exhibition.dto.response;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
+import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.global.entity.Facility;
 import lombok.Builder;
 
@@ -44,16 +45,7 @@ public class ExhibitionResDTO {
             Mood mood,
             Integer price,
             List<Facility> facility,
-            List<ExhibitionReviewPreviewResDTO> reviews
-    ) {}
-
-    @Builder
-    public record ExhibitionReviewPreviewResDTO(
-            Long reviewId,
-            String name,
-            String content,
-            List<String> imageUrls,
-            LocalDate createdAt
+            List<ExhibitionReviewResDTO.exReviewPreviewResDTO> reviews
     ) {}
 
     @Builder

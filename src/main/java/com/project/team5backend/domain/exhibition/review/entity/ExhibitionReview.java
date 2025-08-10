@@ -22,11 +22,7 @@ public class ExhibitionReview extends BaseTimeEntity {
 
     private String content;
 
-    private String thumbnail;
-
     private Double rating;
-
-    private Integer imageCount;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
@@ -39,7 +35,7 @@ public class ExhibitionReview extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void deleteReview() {
+    public void delete() {
         isDeleted = true;
     }
 }

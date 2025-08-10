@@ -22,7 +22,7 @@ public class ExhibitionReviewImage extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String fileKey;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
@@ -34,4 +34,8 @@ public class ExhibitionReviewImage extends BaseTimeEntity {
     @JoinColumn(name = "exhibition_review_id")
     private ExhibitionReview exhibitionReview;
 
+    public void deleteImage() {
+        isDeleted = true;
+        deletedAt = LocalDateTime.now();
+    }
 }
