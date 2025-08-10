@@ -96,6 +96,10 @@ public class Exhibition extends BaseTimeEntity {
         this.likeCount = Math.max(0, this.likeCount - 1);
     }
 
+    public void decreaseReviewCount() {
+        this.reviewCount = Math.max(0, this.reviewCount - 1);
+    }
+
     public void resetCount() {
         this.likeCount = 0;
         this.reviewCount = 0;
