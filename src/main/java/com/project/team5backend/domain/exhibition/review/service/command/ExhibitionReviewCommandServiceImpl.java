@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,6 +51,10 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
             Long exhibitionId,String email, ExhibitionReviewReqDTO.createExReviewReqDTO createExhibitionReviewReqDTO) {
         Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
                 .orElseThrow(()-> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+        // 전시 시작일이 현재보다 이후면 리뷰 작성 불가
+        if (exhibition.getStartDate().isAfter(LocalDate.now())) {
+            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_STARTED);
+        }
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 

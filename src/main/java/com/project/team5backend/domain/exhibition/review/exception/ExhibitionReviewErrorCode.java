@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ExhibitionReviewErrorCode implements BaseErrorCode {
-    EXHIBITION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "전시리뷰를 찾을 수 없습니다.")
+    EXHIBITION_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "EX_REVIEW404_1", "전시리뷰를 찾을 수 없습니다.")
     ;
 
     private final HttpStatus httpStatus;
