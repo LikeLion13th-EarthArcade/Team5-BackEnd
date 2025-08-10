@@ -45,7 +45,7 @@ public class ExhibitionResDTO {
             Mood mood,
             Integer price,
             List<Facility> facility,
-            List<ExhibitionReviewResDTO.exReviewPreviewResDTO> reviews
+            List<ExhibitionReviewResDTO.exReviewDetailResDTO> reviews
     ) {}
 
     @Builder

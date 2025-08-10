@@ -90,19 +90,15 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     public void deleteExhibition(Long exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
+
+        if (exhibition.isDeleted()) return;
+
         exhibition.delete();
 
         // 전시이미지 소프트 삭제
         List<ExhibitionImage> images = exhibitionImageRepository.findByExhibitionId(exhibitionId);
         images.forEach(ExhibitionImage::deleteImage);
         List<String> keys = images.stream().map(ExhibitionImage::getFileKey).toList();
-
-        // s3 보존 휴지통 prefix로 이동시키기
-        try{
-            imageCommandService.moveToTrashPrefix(keys);
-        } catch (ImageException e) {
-            throw new ImageException(ImageErrorCode.S3_MOVE_TRASH_FAIL);
-        }
         // 3) 좋아요 하드 삭제 (벌크)
         exhibitionLikeRepository.deleteByExhibitionId(exhibitionId);
 
@@ -111,5 +107,12 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
 
         // 집계 초기화
         exhibition.resetCount();
+
+        // s3 보존 휴지통 prefix로 이동시키기
+        try{
+            imageCommandService.moveToTrashPrefix(keys);
+        } catch (ImageException e) {
+            throw new ImageException(ImageErrorCode.S3_MOVE_TRASH_FAIL);
+        }
     }
 }

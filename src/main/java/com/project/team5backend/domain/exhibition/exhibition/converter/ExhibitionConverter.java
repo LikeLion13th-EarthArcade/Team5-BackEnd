@@ -78,15 +78,4 @@ public class ExhibitionConverter {
                 .reviews(null)
                 .build();
     }
-
-    private static ExhibitionReviewResDTO.exReviewPreviewResDTO toReviewPreview(ExhibitionReview review) {
-        return ExhibitionReviewResDTO.exReviewPreviewResDTO.builder()
-                .reviewId(review.getId())
-                .name(review.getUser().getName())
-                .content(review.getContent())
-                .imageUrls(null)
-                .createdAt(review.getCreateAt().toLocalDate())
-                .build();
-
-    }
 }

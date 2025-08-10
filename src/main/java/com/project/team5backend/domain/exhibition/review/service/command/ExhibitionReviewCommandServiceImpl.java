@@ -67,6 +67,9 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
     public void deleteExhibitionReview(Long exhibitionReviewId) {
         ExhibitionReview exhibitionReview = exhibitionReviewRepository.findById(exhibitionReviewId)
                 .orElseThrow(() -> new ExhibitionReviewException(ExhibitionReviewErrorCode.EXHIBITION_REVIEW_NOT_FOUND));
+
+        if (exhibitionReview.isDeleted()) return;
+
         exhibitionReview.delete();
 
         // 전시이미지 소프트 삭제
@@ -74,14 +77,15 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
         images.forEach(ExhibitionReviewImage::deleteImage);
         List<String> keys = images.stream().map(ExhibitionReviewImage::getFileKey).toList();
 
+        // 리뷰가 속햇던 전시의 reviewCount--
+        exhibitionReview.getExhibition().decreaseReviewCount();
+
         // s3 보존 휴지통 prefix로 이동시키기
         try{
             imageCommandService.moveToTrashPrefix(keys);
         } catch (ImageException e) {
             throw new ImageException(ImageErrorCode.S3_MOVE_TRASH_FAIL);
         }
-        // 리뷰가 속햇던 전시의 reviewCount--
-        exhibitionReview.getExhibition().decreaseLikeCount();
     }
 
 }

@@ -16,16 +16,6 @@ public class ImageResDTO {
     }
 
     @Builder
-    public record PresignedUrlListResDTO (
-            List<PresignedUrlResDTO> presignedUrls
-    ){}
-
-    @Builder
-    public record FileKeyListResDTO (
-            List<String> fileKeys
-    ){}
-
-    @Builder
     public record DeleteImageResDTO(
             String fileKey,
             boolean isDeleted,
