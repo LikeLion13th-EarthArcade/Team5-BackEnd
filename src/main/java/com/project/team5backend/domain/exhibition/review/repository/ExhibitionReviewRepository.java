@@ -1,6 +1,8 @@
 package com.project.team5backend.domain.exhibition.review.repository;
 
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,5 +16,11 @@ public interface ExhibitionReviewRepository extends JpaRepository<ExhibitionRevi
     void softDeleteByExhibitionId(@Param("exhibitionId") Long exhibitionId);
 
     @Query("select er from ExhibitionReview er where er.id=:exhibitionReviewId and er.isDeleted is false")
-    Optional<ExhibitionReview> findByIdAndDeletedFalse(@Param("exhibitionReviewId") Long exhibitionReviewId);
+    Optional<ExhibitionReview> findByIdAndIsDeletedFalse(@Param("exhibitionReviewId") Long exhibitionReviewId);
+
+    @Query("SELECT DISTINCT er FROM ExhibitionReview er " +
+            "LEFT JOIN FETCH er.exhibitionReviewImages " +
+            "WHERE er.exhibition.id = :exhibitionId AND er.isDeleted = false " +
+            "ORDER BY er.createAt DESC")
+    Page<ExhibitionReview> findByExhibitionIdWithImagesAndIsDeletedFalse(@Param("exhibitionId") Long exhibitionId, Pageable pageable);
 }

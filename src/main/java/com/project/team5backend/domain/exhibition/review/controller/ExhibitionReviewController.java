@@ -9,6 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,6 +32,17 @@ public class ExhibitionReviewController {
         String email = "likelion@naver.com";
         exReviewCommandService.createExhibitionReview(2L, email, createExReviewReqDTO);
         return CustomResponse.onSuccess("해당 전시 리뷰가 생성되었습니다.");
+    }
+
+    @Operation(summary = "리뷰 목록 조회", description = "리뷰 목록 조회 api")
+    @GetMapping("{exhibitionId}/reviews")
+    public CustomResponse<Page<ExhibitionReviewResDTO.exReviewDetailResDTO>> getExhibitionReviews(
+            @PathVariable Long exhibitionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
+        Page<ExhibitionReviewResDTO.exReviewDetailResDTO> reviewPage = exReviewQueryService.getExhibitionReviewList(exhibitionId, pageable);
+        return CustomResponse.onSuccess(reviewPage);
     }
 
     @Operation(summary = "리뷰 상세 조회", description = "리뷰 상세 조회 api")

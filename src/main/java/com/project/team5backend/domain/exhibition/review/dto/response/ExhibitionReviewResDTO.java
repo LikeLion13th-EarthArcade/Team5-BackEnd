@@ -16,8 +16,4 @@ public class ExhibitionReviewResDTO {
             String userName
     ) {}
 
-    @Builder
-    public record exReviewListResDTO(
-       List<exReviewDetailResDTO> exReviewDetailResDTOList
-    ){}
 }
