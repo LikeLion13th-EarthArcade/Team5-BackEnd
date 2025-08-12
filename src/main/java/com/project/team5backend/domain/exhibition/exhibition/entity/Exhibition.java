@@ -4,17 +4,13 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Catego
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
-import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.converter.FacilityConverter;
 import com.project.team5backend.global.entity.Facility;
 import com.project.team5backend.global.entity.embedded.Address;
 import com.project.team5backend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +19,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Exhibition extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
