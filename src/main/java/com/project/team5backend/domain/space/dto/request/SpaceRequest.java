@@ -1,9 +1,9 @@
-package com.project.team5backend.domain.Space.dto.request;
+package com.project.team5backend.domain.space.dto.request;
 
 
-import com.project.team5backend.domain.Space.entity.SpaceMood;
-import com.project.team5backend.domain.Space.entity.SpacePurpose;
-import com.project.team5backend.domain.Space.entity.SpaceType;
+import com.project.team5backend.domain.space.entity.SpaceMood;
+import com.project.team5backend.domain.space.entity.SpacePurpose;
+import com.project.team5backend.domain.space.entity.SpaceType;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;

@@ -24,6 +24,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",           // 기존 인증 허용 경로
                                 "/api/users/**",
+                                "/api/v1/spaces/**",
                                 "/swagger-ui/**",         // ✅ Swagger UI
                                 "/v3/api-docs/**",        // ✅ Swagger Docs
                                 "/swagger-resources/**",  // ✅ Swagger Resources
