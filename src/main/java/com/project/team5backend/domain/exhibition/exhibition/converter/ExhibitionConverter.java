@@ -4,9 +4,8 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.request.Exhibit
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
-import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
-import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.global.entity.embedded.Address;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExhibitionConverter {
 
-    public static Exhibition toEntity (User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey) {
+    public static Exhibition toEntity (User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey, Address address) {
         return Exhibition.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
@@ -34,7 +33,7 @@ public class ExhibitionConverter {
                 .likeCount(0)
                 .reviewCount(0)
                 .thumbnail(fileKey)
-                .address(null)
+                .address(address)
                 .user(user)
                 .build();
     }
@@ -49,7 +48,7 @@ public class ExhibitionConverter {
                 .imageUrls(images)
                 .homepageUrl(createReqDTO.homepageUrl())
                 .price(createReqDTO.price())
-                .address(createReqDTO.address())
+                .address(createReqDTO.address().roadAddress() + createReqDTO.address().detail())
                 .category(createReqDTO.category())
                 .type(createReqDTO.type())
                 .mood(createReqDTO.mood())
