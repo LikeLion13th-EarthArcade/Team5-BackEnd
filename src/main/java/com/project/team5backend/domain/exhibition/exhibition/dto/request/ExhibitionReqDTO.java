@@ -30,5 +30,10 @@ public class ExhibitionReqDTO {
             @NotNull @Valid AddressReqDTO.AddressCreateReqDTO address
     ) {}
 
-
+    public record SearchExhibitionReqDTO (
+            Category category,
+            String distinct,
+            Mood mood,
+            LocalDate localDate
+    ){}
 }

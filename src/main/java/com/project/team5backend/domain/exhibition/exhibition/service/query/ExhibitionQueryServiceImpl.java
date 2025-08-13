@@ -3,15 +3,23 @@ package com.project.team5backend.domain.exhibition.exhibition.service.query;
 import com.project.team5backend.domain.exhibition.exhibition.converter.ExhibitionConverter;
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -19,6 +27,10 @@ import java.util.List;
 @Slf4j
 @Transactional
 public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
+
+    private static final int PAGE_SIZE = 4;
+    private static final double SEOUL_CENTER_LAT = 37.5665;
+    private static final double SEOUL_CENTER_LNG = 126.9780;
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionImageRepository exhibitionImageRepository;
@@ -33,4 +45,27 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         return ExhibitionConverter.toDetailExhibitionResDTO(exhibition, imageFileKeys);
     }
 
+    @Override
+    public ExhibitionResDTO.SearchExhibitionPageResDTO searchExhibition(
+            Category category, String district, Mood mood, LocalDate localDate, ExhibitionSort sort, int page) {
+
+        log.info("전시 검색 - category: {}, district: {}, mood: {}, localDate: {}, sort: {}, page: {}",
+                category, district, mood, localDate, sort, page);
+
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // 동적 쿼리로 전시 검색
+        Page<Exhibition> exhibitionPage = exhibitionRepository.findExhibitionsWithFilters(
+                category, district, mood, localDate, sort, pageable);
+
+        // 검색 결과를 DTO로 변환 - Converter 사용
+        List<ExhibitionResDTO.SearchExhibitionResDTO> items = exhibitionPage.getContent().stream()
+                .map(ExhibitionConverter::toSearchExhibitionResDTO)
+                .toList();
+
+        // PageInfo와 MapInfo 생성 - Converter 사용
+        return ExhibitionConverter.toSearchExhibitionPageResDTO(
+                items, exhibitionPage, SEOUL_CENTER_LAT, SEOUL_CENTER_LNG);
+    }
 }

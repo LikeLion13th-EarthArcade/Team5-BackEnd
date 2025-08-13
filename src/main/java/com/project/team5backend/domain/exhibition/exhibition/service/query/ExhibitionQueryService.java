@@ -1,8 +1,16 @@
 package com.project.team5backend.domain.exhibition.exhibition.service.query;
 
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
+
+import java.time.LocalDate;
 
 public interface ExhibitionQueryService {
 
     ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long id);
+
+    //전시 검색
+    ExhibitionResDTO.SearchExhibitionPageResDTO searchExhibition(Category category, String district, Mood mood, LocalDate date, ExhibitionSort sort, int page);
 }

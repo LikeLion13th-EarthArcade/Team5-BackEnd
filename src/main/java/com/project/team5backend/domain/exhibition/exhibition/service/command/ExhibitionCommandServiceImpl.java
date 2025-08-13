@@ -45,17 +45,28 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ImageCommandService imageCommandService;
-    private final AddressService addressService;
 
     @Override
     public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
+        if (redisImageTracker.getImageCountByEmail("likelion@naver.com") == 0) {
+            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        }
         //이미지 가져오기
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
         //주소 가져오기
-        AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
+        //AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
+        AddressResDTO.AddressCreateResDTO addressResDTO = new AddressResDTO.AddressCreateResDTO(
+                "서울",
+                "도봉구",
+                "우이천로394",
+                "서울 도봉구 우이천로394",
+                "다산관 427호",
+                "01377",
+                37.036363,
+                127.065239);
         Address address = AddressConverter.toAddress(addressResDTO);
 
         Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0), address);

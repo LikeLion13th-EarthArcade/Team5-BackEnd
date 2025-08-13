@@ -21,6 +21,6 @@ public interface ExhibitionReviewRepository extends JpaRepository<ExhibitionRevi
     @Query("SELECT DISTINCT er FROM ExhibitionReview er " +
             "LEFT JOIN FETCH er.exhibitionReviewImages " +
             "WHERE er.exhibition.id = :exhibitionId AND er.isDeleted = false " +
-            "ORDER BY er.createAt DESC")
-    Page<ExhibitionReview> findByExhibitionIdWithImagesAndIsDeletedFalse(@Param("exhibitionId") Long exhibitionId, Pageable pageable);
+            "ORDER BY er.createdAt DESC")
+    Page<ExhibitionReview> findByExhibitionIdAndIsDeletedFalse(@Param("exhibitionId") Long exhibitionId, Pageable pageable);
 }

@@ -2,13 +2,19 @@ package com.project.team5backend.domain.exhibition.exhibition.controller;
 
 import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.exhibition.exhibition.service.command.ExhibitionCommandService;
 import com.project.team5backend.domain.exhibition.exhibition.service.query.ExhibitionQueryService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +49,19 @@ public class ExhibitionController {
     @Operation(summary = "전시 상세 보기", description = "전시 상세 보기 api")
     public CustomResponse<ExhibitionResDTO.DetailExhibitionResDTO> detailExhibition(@PathVariable Long exhibitionId) {
         return CustomResponse.onSuccess(exhibitionQueryService.getDetailExhibition(exhibitionId));
+    }
+
+    @Operation(summary = "전시 검색", description = "전시 검색하면 한페이지에 4개의 전시와 서울 시청 중심의 위도 경도 반환")
+    @GetMapping("/search")
+    public CustomResponse<ExhibitionResDTO.SearchExhibitionPageResDTO> searchExhibitions(
+            @RequestParam(name = "category", required = false) Category category,
+            @RequestParam(name = "distinct", required = false) String district,
+            @RequestParam(name = "mood", required = false) Mood mood,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
+            @RequestParam(defaultValue = "new") ExhibitionSort sort,   // new | old | popular
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        return CustomResponse.onSuccess(exhibitionQueryService.searchExhibition(category, district, mood, localDate, sort, page));
     }
 
     @DeleteMapping("/{exhibitionId}")

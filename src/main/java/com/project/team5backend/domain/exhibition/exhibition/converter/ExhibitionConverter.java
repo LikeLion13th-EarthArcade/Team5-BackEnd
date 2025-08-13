@@ -8,6 +8,7 @@ import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.entity.embedded.Address;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -76,5 +77,44 @@ public class ExhibitionConverter {
                 .facility(exhibition.getFacilities())
                 .reviews(null)
                 .build();
+    }
+
+    public static ExhibitionResDTO.SearchExhibitionResDTO toSearchExhibitionResDTO(Exhibition exhibition) {
+        return ExhibitionResDTO.SearchExhibitionResDTO.builder()
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .thumbnail(exhibition.getThumbnail())
+                .startDate(exhibition.getStartDate())
+                .endDate(exhibition.getEndDate())
+                .address(exhibition.getAddress().getRoadAddress() + exhibition.getAddress().getDetail())
+                .latitude(Double.valueOf(exhibition.getAddress().getLatitude()))
+                .longitude(Double.valueOf(exhibition.getAddress().getLongitude()))
+                .build();
+    }
+    public static ExhibitionResDTO.SearchExhibitionPageResDTO toSearchExhibitionPageResDTO(
+            List<ExhibitionResDTO.SearchExhibitionResDTO> items,
+            Page<?> page,
+            Double defaultCenterLat,
+            Double defaultCenterLng) {
+
+        // PageInfo 생성
+        ExhibitionResDTO.SearchExhibitionPageResDTO.PageInfo pageInfo =
+                new ExhibitionResDTO.SearchExhibitionPageResDTO.PageInfo(
+                        page.getNumber(),
+                        page.getSize(),
+                        page.getTotalElements(),
+                        page.getTotalPages(),
+                        page.isFirst(),
+                        page.isLast()
+                );
+
+        // MapInfo 생성
+        ExhibitionResDTO.SearchExhibitionPageResDTO.MapInfo mapInfo =
+                new ExhibitionResDTO.SearchExhibitionPageResDTO.MapInfo(
+                        defaultCenterLat,
+                        defaultCenterLng
+                );
+
+        return new ExhibitionResDTO.SearchExhibitionPageResDTO(items, pageInfo, mapInfo);
     }
 }
