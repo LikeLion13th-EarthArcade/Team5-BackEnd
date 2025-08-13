@@ -12,6 +12,7 @@ import com.project.team5backend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,14 +60,17 @@ public class Exhibition extends BaseTimeEntity {
     @Embedded
     private Address address;
 
-    @Column(name = "rating_avg")
-    private double ratingAvg;
+    @Column(name = "rating_avg", columnDefinition = "DECIMAL(4,2) NOT NULL DEFAULT 0")
+    private BigDecimal ratingAvg;
 
     @Column(name = "rating_count")
     private Integer reviewCount;
 
     @Column(name = "like_count")
     private Integer likeCount;
+
+    @Column(name = "total_review_score")
+    private Integer totalReviewScore;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
@@ -90,10 +94,6 @@ public class Exhibition extends BaseTimeEntity {
 
     public void decreaseLikeCount() {
         this.likeCount = Math.max(0, this.likeCount - 1);
-    }
-
-    public void decreaseReviewCount() {
-        this.reviewCount = Math.max(0, this.reviewCount - 1);
     }
 
     public void resetCount() {

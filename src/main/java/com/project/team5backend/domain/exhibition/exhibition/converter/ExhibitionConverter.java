@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,7 +31,7 @@ public class ExhibitionConverter {
                 .mood(createReqDTO.mood())
                 .facilities(createReqDTO.facility())
                 .isDeleted(false)
-                .ratingAvg(0)
+                .ratingAvg(BigDecimal.ZERO)
                 .likeCount(0)
                 .reviewCount(0)
                 .thumbnail(fileKey)
@@ -116,5 +117,13 @@ public class ExhibitionConverter {
                 );
 
         return new ExhibitionResDTO.SearchExhibitionPageResDTO(items, pageInfo, mapInfo);
+    }
+
+    public static ExhibitionResDTO.HotNowExhibitionResDTO toHotNowExhibitionResDTO(Long exhibitionId, String title, List<String> fileKeys) {
+        return ExhibitionResDTO.HotNowExhibitionResDTO.builder()
+                .exhibitionId(exhibitionId)
+                .title(title)
+                .images(fileKeys)
+                .build();
     }
 }

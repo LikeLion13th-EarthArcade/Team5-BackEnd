@@ -11,6 +11,9 @@ public interface ExhibitionQueryService {
 
     ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long id);
 
-    //전시 검색
+    // 전시 검색
     ExhibitionResDTO.SearchExhibitionPageResDTO searchExhibition(Category category, String district, Mood mood, LocalDate date, ExhibitionSort sort, int page);
+
+    // 지금뜨는 전시회
+    ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition();
 }

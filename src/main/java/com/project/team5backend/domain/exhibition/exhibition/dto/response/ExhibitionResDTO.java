@@ -85,4 +85,12 @@ public class ExhibitionResDTO {
                 boolean last
         ) {}
     }
+
+    @Builder
+    public record HotNowExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            List<String> images
+    ){}
+
 }

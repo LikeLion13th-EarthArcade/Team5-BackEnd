@@ -68,4 +68,20 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         return ExhibitionConverter.toSearchExhibitionPageResDTO(
                 items, exhibitionPage, SEOUL_CENTER_LAT, SEOUL_CENTER_LNG);
     }
+
+    @Override
+    public ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition() {
+        LocalDate currentDate = LocalDate.now();
+        Pageable topOne = PageRequest.of(0, 1);
+
+        List<Exhibition> exhibitions = exhibitionRepository.findHotNowExhibition(currentDate, topOne);
+        if (exhibitions.isEmpty()) {
+            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
+        }
+        Exhibition hotNowEx = exhibitions.get(0);
+
+        List<String> fileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(hotNowEx.getId());
+        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx.getId(), hotNowEx.getTitle(), fileKeys);
+    }
+
 }

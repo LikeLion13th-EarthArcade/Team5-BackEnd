@@ -60,8 +60,11 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
 
         for (String fileKey : fileKeys) {
             exhibitionReviewImageRepository.save(ImageConverter.toEntityExhibitionReviewImage(exhibitionReview, fileKey));
-            redisImageTracker.remove("likelion@naver.com", fileKey);
+            redisImageTracker.remove(email, fileKey);
         }
+        // 리뷰 평균/카운트 갱신
+        double rating = exhibitionReview.getRating();
+        exhibitionRepository.applyReviewCreated(exhibitionId, rating);
     }
     @Override
     public void deleteExhibitionReview(Long exhibitionReviewId) {
@@ -77,8 +80,10 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
         images.forEach(ExhibitionReviewImage::deleteImage);
         List<String> keys = images.stream().map(ExhibitionReviewImage::getFileKey).toList();
 
-        // 리뷰가 속햇던 전시의 reviewCount--
-        exhibitionReview.getExhibition().decreaseReviewCount();
+        Exhibition exhibition = exhibitionReview.getExhibition();
+        // 리뷰 평균/카운트 갱신
+        double rating = exhibitionReview.getRating();
+        exhibitionRepository.applyReviewDeleted(exhibition.getId(), rating);
 
         // s3 보존 휴지통 prefix로 이동시키기
         try{

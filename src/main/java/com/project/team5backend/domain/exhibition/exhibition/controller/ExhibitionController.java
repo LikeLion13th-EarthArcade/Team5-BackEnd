@@ -64,6 +64,12 @@ public class ExhibitionController {
         return CustomResponse.onSuccess(exhibitionQueryService.searchExhibition(category, district, mood, localDate, sort, page));
     }
 
+    @Operation(summary = "지금 뜨는 전시회", description = "현재 진행중인 전시중에서 reviewCount가 가장 높은 전시 반환")
+    @GetMapping("/hot-now")
+    public CustomResponse<ExhibitionResDTO.HotNowExhibitionResDTO> hotNowExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition());
+    }
+
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
     public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
