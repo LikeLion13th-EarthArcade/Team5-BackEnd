@@ -4,32 +4,24 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+
+@Getter @Setter
+@AllArgsConstructor
 public class UserResponse {
 
-    @Getter @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class LoginResult {
-        private Long userId;
-        private String name;
-        private String email;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class MyInfo {
-        private Long userId;
-        private String name;
-        private String email;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-    }
-    @Getter
-    @AllArgsConstructor
-    public static class CommonResponse {
-        private String status;
-        private String message;
-        private Object data;
-    }
+    public record LoginResult (
+            Long userId,
+            String name,
+            String email
+        ){}
+    public record MyInfo (
+            Long userId,
+            String name,
+            String email,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ){}
 }
+
+
 

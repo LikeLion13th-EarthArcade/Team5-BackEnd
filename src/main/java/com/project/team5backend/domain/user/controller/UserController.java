@@ -2,9 +2,12 @@ package com.project.team5backend.domain.user.controller;
 
 
 import com.project.team5backend.domain.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.dto.response.UserResponse.MyInfo;
+
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.service.command.UserCommandService;
 import com.project.team5backend.domain.user.service.query.UserQueryService;
+import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -35,7 +38,6 @@ public class UserController {
             System.out.println("[쿠키 로그] 요청에 쿠키가 없습니다.");
             throw new IllegalArgumentException("인증 쿠키가 없습니다.");
         }
-
         //쿠키를 순회하며 "SESSION" 쿠키를 찾는 로그
         for (Cookie cookie : cookies) {
             System.out.println("[쿠키 로그] 찾은 쿠키: " + cookie.getName() + " = " + cookie.getValue());
@@ -61,37 +63,35 @@ public class UserController {
 
     @Operation(summary = "회원정보 조회", description = "마이페이지에서 정보 조회")
     @GetMapping("/me")
-    public ResponseEntity<UserResponse.CommonResponse> getMyInfo(HttpServletRequest request) {
+    public CustomResponse<UserResponse.MyInfo> getMyInfo(HttpServletRequest request) {
         Long userId = getUserIdFromCookie(request);
         UserResponse.MyInfo result = queryService.getMyInfo(userId);
-        return ResponseEntity.ok(new UserResponse.CommonResponse("success", "회원 정보 조회 성공", result));
+        return CustomResponse.onSuccess(result);
     }
 
     @Operation(summary = "회원정보 수정", description = "회원 이름 수정")
     @PatchMapping("/name")
-    public ResponseEntity<UserResponse.CommonResponse> updateName(HttpServletRequest request, @RequestParam String name) {
+    public CustomResponse<String> updateName(HttpServletRequest request, @RequestParam String name) {
         Long userId = getUserIdFromCookie(request);
         commandService.updateName(userId, name);
-        return ResponseEntity.ok(new UserResponse.CommonResponse("success", "회원 이름 수정 완료", null));
+        return CustomResponse.onSuccess("회원 이름 수정 완료");
     }
 
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경")
     @PatchMapping("/password")
-    public ResponseEntity<UserResponse.CommonResponse> updatePassword(HttpServletRequest request,
-                                                                      @RequestParam String currentPassword,
-                                                                      @RequestParam String newPassword) {
+    public CustomResponse<String> updatePassword(HttpServletRequest request,
+                                                 @RequestParam String currentPassword, @RequestParam String newPassword) {
         Long userId = getUserIdFromCookie(request);
         commandService.changePassword(userId, currentPassword, newPassword);
-        return ResponseEntity.ok(new UserResponse.CommonResponse("success", "비밀번호 변경 완료", null));
+        return CustomResponse.onSuccess("비밀번호 변경 완료");
     }
 
     @Operation(summary = "회원 탈퇴", description = "계정 탈퇴")
     @DeleteMapping("/delete")
-    public ResponseEntity<UserResponse.CommonResponse> deleteUser(HttpServletRequest request,
+    public ResponseEntity<CustomResponse<String>> deleteUser(HttpServletRequest request,
                                                                   HttpServletResponse response) {
         Long userId = getUserIdFromCookie(request);
-        commandService.deleteUser(userId); // 실제 사용자 삭제
-
+        commandService.deleteUser(userId); // 사용자 삭제
         // 쿠키 삭제
         ResponseCookie deleteCookie = ResponseCookie.from("USER_ID", null)
                 .path("/")
@@ -99,7 +99,7 @@ public class UserController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
 
-        return ResponseEntity.ok(new UserResponse.CommonResponse("success", "회원 탈퇴 완료", null));
-    }
+        CustomResponse<String> customResponse = CustomResponse.onSuccess("회원 탈퇴 완료");
+        return ResponseEntity.ok(customResponse);    }
 
 }

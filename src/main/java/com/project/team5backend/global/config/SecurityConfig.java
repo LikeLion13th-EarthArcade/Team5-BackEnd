@@ -22,8 +22,8 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",           // 기존 인증 허용 경로
-                                "/api/users/**",
+                                "/api/v1/auth/**",           // 기존 인증 허용 경로
+                                "/api/v1/users/**",
                                 "/swagger-ui/**",         // ✅ Swagger UI
                                 "/v3/api-docs/**",        // ✅ Swagger Docs
                                 "/swagger-resources/**",  // ✅ Swagger Resources

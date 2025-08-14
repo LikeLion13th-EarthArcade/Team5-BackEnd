@@ -28,8 +28,11 @@ public class User extends BaseEntity {
     private boolean isDeleted = false;
 
     @Column(name = "is_email_verified")
-    @Setter
     private boolean isEmailVerified = false;
+
+    public void verifyEmail() {
+        this.isEmailVerified = true;
+    }
 
     public void changeName(String name) {
         this.name = name;

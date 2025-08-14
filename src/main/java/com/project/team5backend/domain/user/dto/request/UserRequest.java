@@ -3,21 +3,18 @@ package com.project.team5backend.domain.user.dto.request;
 
 import lombok.*;
 
+@Getter @Setter
+@NoArgsConstructor
 public class UserRequest {
 
-    @Getter @Setter
-    @NoArgsConstructor
-    public static class SignUp {
-        private String email;
-        private String password;
-        private String name;
-    }
-
-    @Getter @Setter
-    @NoArgsConstructor
-    public static class Login {
-        private String email;
-        private String password;
-    }
+    public record Login(
+            String email,
+            String password
+    ) {}
+    public record SignUp(
+            String email,
+            String password,
+            String name
+    ) {}
 }
 
