@@ -2,79 +2,59 @@ package com.project.team5backend.domain.space.dto.response;
 
 import lombok.*;
 
+@Getter
+@Setter
 public class SpaceResponse {
 
-    // 공통 응답
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CommonResponse<T> {
-        private String status;
-        private String message;
-        private T data;
-    }
-
     // 검색 결과 DTO
-    @Getter
-    @Setter
-    public static class SpaceSearchResponse {
-        private Long id;
-        private String name;
-        private String address;
-        private String startDate;
-        private String endDate;
-    }
+    public record SpaceSearchResponse (
+            Long id,
+            String name,
+            String address,
+            String startDate,
+            String endDate
+    ){}
 
     // 상세 조회 DTO
-    @Getter
-    @Setter
-    public static class SpaceDetailResponse {
-        private SpaceOverviewDto spaceOverview;
-        private FacilitiesAndOptionsDto facilitiesAndOptions;
-        private ContactDto contact;
+    public record SpaceDetailResponse (
+            SpaceOverviewDto spaceOverview,
+            FacilitiesAndOptionsDto facilitiesAndOptions,
+            ContactDto contact
+    ){
+        public record SpaceOverviewDto (
+                String usagePeriod,
+                String location,
+                String operatingHours,
+                String spaceSpecs,
+                String purpose,
+                String concept
+        ){}
 
-        @Getter @Setter
-        public static class SpaceOverviewDto {
-            private String usagePeriod;
-            private String location;
-            private String operatingHours;
-            private String spaceSpecs;
-            private String purpose;
-            private String concept;
-        }
+        public record FacilitiesAndOptionsDto (
+                String applicationMethod,
+                OtherFacilitiesDto others
+        ){}
 
-        @Getter @Setter
-        public static class FacilitiesAndOptionsDto {
-            private String applicationMethod;
-            private OtherFacilitiesDto others;
-        }
+        public record OtherFacilitiesDto (
+                boolean wifi,
+                boolean restroom
+        ){}
 
-        @Getter @Setter
-        public static class OtherFacilitiesDto {
-            private boolean wifi;
-            private boolean restroom;
-        }
+        public record ContactDto (
+                String phone,
+                String email,
+                String website,
+                SnsDto sns
+        ){}
 
-        @Getter @Setter
-        public static class ContactDto {
-            private String phone;
-            private String email;
-            private String website;
-            private SnsDto sns;
-        }
-
-        @Getter @Setter
-        public static class SnsDto {
-            private String instagram;
-            private String facebook;
-        }
+        public record SnsDto (
+                String instagram,
+                String facebook
+        ){}
     }
 
     // 등록 응답 DTO
-    @Getter
-    @Setter
-    public static class SpaceRegistrationResponse {
-        private Long spaceId;
-    }
+    public record SpaceRegistrationResponse (
+            Long spaceId
+    ){}
 }

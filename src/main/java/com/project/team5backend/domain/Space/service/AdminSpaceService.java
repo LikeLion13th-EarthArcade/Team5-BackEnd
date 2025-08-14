@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AdminSpaceService {
     List<AdminSpaceResponse.PendingSpaceListResponse> getPendingSpaces();
-    AdminSpaceResponse.AdminActionResponse processSpaceApproval(Long spaceId, AdminSpaceRequest request);
+    AdminSpaceResponse.AdminActionResponse processSpaceApproval(Long spaceId, AdminSpaceRequest.AdminSpaceReq request);
 }

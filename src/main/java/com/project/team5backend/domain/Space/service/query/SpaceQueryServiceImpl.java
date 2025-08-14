@@ -2,6 +2,7 @@ package com.project.team5backend.domain.Space.service.query;
 
 
 
+import com.project.team5backend.domain.space.converter.SpaceConverter;
 import com.project.team5backend.domain.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.entity.Space;
@@ -14,6 +15,9 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -25,15 +29,16 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
 
     private final SpaceRepository spaceRepository;
     private final EntityManager entityManager;
+    private final SpaceConverter spaceConverter;
 
+    // 모든 전시 공간 목록 조회
     @Override
     public List<SpaceResponse.SpaceSearchResponse> getApprovedSpaces() {
         List<Space> approvedSpaces = spaceRepository.findByStatus(Space.Status.APPROVED);
-        return approvedSpaces.stream()
-                .map(this::toSpaceSearchResponse)
-                .collect(Collectors.toList());
+        return spaceConverter.toSpaceSearchResponseList(approvedSpaces);
     }
 
+    //검색 조건에 맞는 전시 공간 목록 조회
     @Override
     public List<SpaceResponse.SpaceSearchResponse> searchSpaces(SpaceRequest.Search request) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -41,64 +46,42 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
         Root<Space> space = query.from(Space.class);
 
         List<Predicate> predicates = new ArrayList<>();
-
-        // 상태가 'APPROVED'인 공간만 조회
         predicates.add(cb.equal(space.get("status"), Space.Status.APPROVED));
 
-        // 검색 조건
-        if (request.getRegion() != null && !request.getRegion().isEmpty()) {
-            predicates.add(cb.like(space.get("location"), "%" + request.getRegion() + "%"));
+        if (request.region() != null && !request.region().isEmpty()) {
+            predicates.add(cb.like(space.get("location"), "%" + request.region() + "%"));
         }
-        if (request.getSize() != null && !request.getSize().isEmpty()) {
-            predicates.add(cb.like(space.get("spec"), "%" + request.getSize() + "%"));
+        if (request.size() != null && !request.size().isEmpty()) {
+            predicates.add(cb.like(space.get("spec"), "%" + request.size() + "%"));
         }
-        if (request.getType() != null) {
-            predicates.add(cb.equal(space.get("type"), request.getType()));
+        if (request.type() != null) {
+            predicates.add(cb.equal(space.get("type"), request.type()));
         }
-        if (request.getMood() != null) {
-            predicates.add(cb.equal(space.get("mood"), request.getMood()));
+        if (request.mood() != null) {
+            predicates.add(cb.equal(space.get("mood"), request.mood()));
         }
-        // TODO: startDate, endDate 검색 로직 추가
+
+        if (request.startDate() != null && !request.startDate().isEmpty()) {
+            LocalDate startDate = LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+            predicates.add(cb.greaterThanOrEqualTo(space.get("endDate"), startDate));
+        }
+        if (request.endDate() != null && !request.endDate().isEmpty()) {
+            LocalDate endDate = LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE);
+            predicates.add(cb.lessThanOrEqualTo(space.get("startDate"), endDate));
+        }
 
         query.where(predicates.toArray(new Predicate[0]));
-
         List<Space> resultSpaces = entityManager.createQuery(query).getResultList();
 
-        return resultSpaces.stream()
-                .map(this::toSpaceSearchResponse)
-                .collect(Collectors.toList());
+        return spaceConverter.toSpaceSearchResponseList(resultSpaces);
     }
 
+    //전시 공간의 상세 정보 조회
     @Override
     public SpaceResponse.SpaceDetailResponse getSpaceDetails(Long spaceId) {
         Space space = spaceRepository.findById(spaceId)
                 .filter(s -> s.getStatus() == Space.Status.APPROVED)
                 .orElseThrow(() -> new IllegalArgumentException("Approved space not found"));
-        return toSpaceDetailResponse(space);
-    }
-
-    private SpaceResponse.SpaceSearchResponse toSpaceSearchResponse(Space space) {
-        SpaceResponse.SpaceSearchResponse response = new SpaceResponse.SpaceSearchResponse();
-        response.setId(space.getId());
-        response.setName(space.getName());
-        response.setAddress(space.getLocation());
-        // TODO: startDate, endDate 필드 매핑 로직 추가
-        return response;
-    }
-
-    private SpaceResponse.SpaceDetailResponse toSpaceDetailResponse(Space space) {
-        SpaceResponse.SpaceDetailResponse response = new SpaceResponse.SpaceDetailResponse();
-
-        // Space 엔티티 데이터를 SpaceDetailResponse DTO에 매핑
-        SpaceResponse.SpaceDetailResponse.SpaceOverviewDto overview = new SpaceResponse.SpaceDetailResponse.SpaceOverviewDto();
-        overview.setUsagePeriod("TODO: 기간 설정");
-        overview.setLocation(space.getLocation());
-        overview.setPurpose(space.getPurpose().toString()); // Enum을 String으로 변환
-        overview.setConcept(space.getMood().toString()); // Enum을 String으로 변환
-        response.setSpaceOverview(overview);
-
-        // TODO: FacilitiesAndOptionsDto, ContactDto 등 나머지 필드 매핑 로직 추가
-
-        return response;
+        return spaceConverter.toSpaceDetailResponse(space);
     }
 }

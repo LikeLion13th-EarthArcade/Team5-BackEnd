@@ -4,34 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 public class AdminSpaceResponse {
 
-    @Getter
-    @Setter
-    public static class CommonResponse<T> {
-        private String status;
-        private String message;
-        private T data;
-        public CommonResponse(String status, String message, T data) {
-            this.status = status;
-            this.message = message;
-            this.data = data;
-        }
-    }
+    public record PendingSpaceListResponse (
+            Long spaceId,
+            String spaceName,
+            String submittedBy,
+            LocalDateTime submittedAt
+    ){}
 
-    @Getter
-    @Setter
-    public static class PendingSpaceListResponse {
-        private Long spaceId;
-        private String spaceName;
-        private String submittedBy;
-        private LocalDateTime submittedAt;
-    }
-
-    @Getter
-    @Setter
-    public static class AdminActionResponse {
-        private Long id;
-        private String status; // APPROVED 또는 REJECTED
-    }
+    public record AdminActionResponse (
+            Long id,
+            String status // APPROVED 또는 REJECTED
+    ){}
 }
