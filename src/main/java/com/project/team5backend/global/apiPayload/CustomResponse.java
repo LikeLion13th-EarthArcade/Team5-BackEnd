@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+import org.springframework.http.HttpStatus;@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class CustomResponse<T> {
 
@@ -42,3 +40,4 @@ public class CustomResponse<T> {
         return new CustomResponse<>(false, code, message, null);
     }
 }
+

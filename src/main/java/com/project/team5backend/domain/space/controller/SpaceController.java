@@ -1,9 +1,9 @@
-package com.project.team5backend.domain.space.controller;
+package com.project.team5backend.domain.Space.controller;
 
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.space.service.command.SpaceCommandService;
-import com.project.team5backend.domain.space.service.query.SpaceQueryService;
+import com.project.team5backend.domain.Space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.Space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.Space.service.command.SpaceCommandService;
+import com.project.team5backend.domain.Space.service.query.SpaceQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,6 @@ public class SpaceController {
         SpaceResponse.SpaceDetailResponse spaceDetail = spaceQueryService.getSpaceDetails(spaceId);
         return ResponseEntity.ok(new SpaceResponse.CommonResponse<>("200", "전시 공간 상세 조회를 성공했습니다.", spaceDetail));
     }
-    @Operation(summary = "전시 공간 좋아요")
     @PostMapping("/{spaceId}/like")
     public ResponseEntity<SpaceResponse.CommonResponse<Map<String, Boolean>>> toggleLike(@PathVariable Long spaceId) {
         boolean liked = spaceCommandService.toggleLike(spaceId, 1L);
