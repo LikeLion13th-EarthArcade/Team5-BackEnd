@@ -1,23 +1,19 @@
 package com.project.team5backend.domain.exhibition.review.service.command;
 
-import com.project.team5backend.domain.exhibition.exhibition.converter.ExhibitionConverter;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
 import com.project.team5backend.domain.exhibition.review.converter.ExhibitionReviewConverter;
 import com.project.team5backend.domain.exhibition.review.dto.request.ExhibitionReviewReqDTO;
-import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.exhibition.review.exception.ExhibitionReviewErrorCode;
 import com.project.team5backend.domain.exhibition.review.exception.ExhibitionReviewException;
 import com.project.team5backend.domain.exhibition.review.repository.ExhibitionReviewRepository;
 import com.project.team5backend.domain.image.converter.ImageConverter;
-import com.project.team5backend.domain.image.entity.ExhibitionImage;
 import com.project.team5backend.domain.image.entity.ExhibitionReviewImage;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
-import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
 import com.project.team5backend.domain.image.repository.ExhibitionReviewImageRepository;
 import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
@@ -25,7 +21,6 @@ import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -65,8 +60,11 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
 
         for (String fileKey : fileKeys) {
             exhibitionReviewImageRepository.save(ImageConverter.toEntityExhibitionReviewImage(exhibitionReview, fileKey));
-            redisImageTracker.remove("likelion@naver.com", fileKey);
+            redisImageTracker.remove(email, fileKey);
         }
+        // 리뷰 평균/카운트 갱신
+        double rating = exhibitionReview.getRating();
+        exhibitionRepository.applyReviewCreated(exhibitionId, rating);
     }
     @Override
     public void deleteExhibitionReview(Long exhibitionReviewId) {
@@ -82,8 +80,10 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
         images.forEach(ExhibitionReviewImage::deleteImage);
         List<String> keys = images.stream().map(ExhibitionReviewImage::getFileKey).toList();
 
-        // 리뷰가 속햇던 전시의 reviewCount--
-        exhibitionReview.getExhibition().decreaseReviewCount();
+        Exhibition exhibition = exhibitionReview.getExhibition();
+        // 리뷰 평균/카운트 갱신
+        double rating = exhibitionReview.getRating();
+        exhibitionRepository.applyReviewDeleted(exhibition.getId(), rating);
 
         // s3 보존 휴지통 prefix로 이동시키기
         try{

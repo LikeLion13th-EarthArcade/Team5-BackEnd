@@ -3,15 +3,12 @@ package com.project.team5backend.domain.exhibition.exhibition.entity;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.entity.BaseOnlyCreateTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
 public class ExhibitionLike extends BaseOnlyCreateTimeEntity {
 

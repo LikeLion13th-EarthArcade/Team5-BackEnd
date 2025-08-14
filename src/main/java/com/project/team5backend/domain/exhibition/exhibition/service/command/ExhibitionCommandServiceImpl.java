@@ -19,8 +19,12 @@ import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.global.address.converter.AddressConverter;
+import com.project.team5backend.global.address.dto.response.AddressResDTO;
+import com.project.team5backend.global.address.service.AddressService;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
+import com.project.team5backend.global.entity.embedded.Address;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,9 +51,25 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
+        if (redisImageTracker.getImageCountByEmail("likelion@naver.com") == 0) {
+            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        }
+        //이미지 가져오기
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
+        //주소 가져오기
+        //AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
+        AddressResDTO.AddressCreateResDTO addressResDTO = new AddressResDTO.AddressCreateResDTO(
+                "서울",
+                "도봉구",
+                "우이천로394",
+                "서울 도봉구 우이천로394",
+                "다산관 427호",
+                "01377",
+                37.036363,
+                127.065239);
+        Address address = AddressConverter.toAddress(addressResDTO);
 
-        Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0));
+        Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0), address);
         exhibitionRepository.save(ex); //전시 등록
 
         for (String fileKey : fileKeys) {

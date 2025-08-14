@@ -39,7 +39,7 @@ public class ExhibitionReviewQueryServiceImpl implements ExhibitionReviewQuerySe
     @Override
     public Page<ExhibitionReviewResDTO.exReviewDetailResDTO> getExhibitionReviewList(
             Long exhibitionId, Pageable pageable) {
-        Page<ExhibitionReview> reviewPage = exhibitionReviewRepository.findByExhibitionIdWithImagesAndIsDeletedFalse(exhibitionId, pageable);
+        Page<ExhibitionReview> reviewPage = exhibitionReviewRepository.findByExhibitionIdAndIsDeletedFalse(exhibitionId, pageable);
 
 
         return reviewPage.map(review -> {

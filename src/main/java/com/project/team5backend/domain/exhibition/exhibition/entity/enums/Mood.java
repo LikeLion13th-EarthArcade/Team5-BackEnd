@@ -4,5 +4,5 @@ public enum Mood {
     SOLO,
     DATE,
     TRENDY,
-    FAMILTY;
+    FAMILY
 }

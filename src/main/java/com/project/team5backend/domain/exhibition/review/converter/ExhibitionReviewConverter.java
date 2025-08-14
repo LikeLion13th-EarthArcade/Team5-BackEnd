@@ -29,7 +29,7 @@ public class ExhibitionReviewConverter {
                 .rating(review.getRating())
                 .content(review.getContent())
                 .imageUrls(fileKeys)
-                .createdAt(review.getCreateAt())
+                .createdAt(review.getCreatedAt())
                 .userName(review.getUser().getName())
                 .build();
     }

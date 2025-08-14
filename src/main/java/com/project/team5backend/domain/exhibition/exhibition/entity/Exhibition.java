@@ -4,18 +4,15 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Catego
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
-import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.converter.FacilityConverter;
 import com.project.team5backend.global.entity.Facility;
 import com.project.team5backend.global.entity.embedded.Address;
 import com.project.team5backend.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Exhibition extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,14 +60,17 @@ public class Exhibition extends BaseTimeEntity {
     @Embedded
     private Address address;
 
-    @Column(name = "rating_avg")
-    private double ratingAvg;
+    @Column(name = "rating_avg", columnDefinition = "DECIMAL(4,2) NOT NULL DEFAULT 0")
+    private BigDecimal ratingAvg;
 
     @Column(name = "rating_count")
     private Integer reviewCount;
 
     @Column(name = "like_count")
     private Integer likeCount;
+
+    @Column(name = "total_review_score")
+    private Integer totalReviewScore;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
@@ -94,10 +94,6 @@ public class Exhibition extends BaseTimeEntity {
 
     public void decreaseLikeCount() {
         this.likeCount = Math.max(0, this.likeCount - 1);
-    }
-
-    public void decreaseReviewCount() {
-        this.reviewCount = Math.max(0, this.reviewCount - 1);
     }
 
     public void resetCount() {

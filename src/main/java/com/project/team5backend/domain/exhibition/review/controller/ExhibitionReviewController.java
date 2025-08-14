@@ -30,7 +30,7 @@ public class ExhibitionReviewController {
             @PathVariable Long exhibitionId,
             @Valid @RequestBody ExhibitionReviewReqDTO.createExReviewReqDTO createExReviewReqDTO) {
         String email = "likelion@naver.com";
-        exReviewCommandService.createExhibitionReview(2L, email, createExReviewReqDTO);
+        exReviewCommandService.createExhibitionReview(exhibitionId, email, createExReviewReqDTO);
         return CustomResponse.onSuccess("해당 전시 리뷰가 생성되었습니다.");
     }
 

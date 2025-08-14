@@ -53,4 +53,62 @@ public class ExhibitionResDTO {
             Long exhibitionId,
             String message
     ){}
+
+    @Builder
+    public record SearchExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            String thumbnail,
+            LocalDate startDate,
+            LocalDate endDate,
+            String address,
+            Double latitude,
+            Double longitude
+    ){}
+    @Builder
+    public record SearchExhibitionPageResDTO (
+            List<SearchExhibitionResDTO> items,
+            PageInfo pageInfo,
+            MapInfo map // 기본값 - 서울 중심
+    ) {
+        public record MapInfo(
+                Double defaultCenterLat,
+                Double defaultCenterLng
+        ) {}
+
+        public record PageInfo(
+                int page,          // 0-based
+                int size,          // 항상 4
+                long totalElements,
+                int totalPages,
+                boolean first,
+                boolean last
+        ) {}
+    }
+
+    @Builder
+    public record HotNowExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            List<String> images
+    ){}
+
+    @Builder
+    public record UpcomingPopularityExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            List<String> images
+    ){}
+
+    @Builder
+    public record PopularRegionExhibitionResDTO(
+            Long exhibitionId,
+            String title,
+            String thumbnail
+    ){}
+
+    @Builder
+    public record PopularRegionExhibitionListResDTO(
+            List<PopularRegionExhibitionResDTO> exhibitions
+    ){}
 }
