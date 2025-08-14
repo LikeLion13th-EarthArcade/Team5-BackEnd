@@ -1,9 +1,9 @@
-package com.project.team5backend.domain.Space.controller;
+package com.project.team5backend.domain.space.controller;
 
-import com.project.team5backend.domain.Space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.Space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.Space.service.command.SpaceCommandService;
-import com.project.team5backend.domain.Space.service.query.SpaceQueryService;
+import com.project.team5backend.domain.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.service.command.SpaceCommandService;
+import com.project.team5backend.domain.space.service.query.SpaceQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

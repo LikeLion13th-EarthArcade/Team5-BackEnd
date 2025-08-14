@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.Space.entity;
+package com.project.team5backend.domain.space.entity;
 
 
 import jakarta.persistence.*;
@@ -6,10 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import com.project.team5backend.domain.space.entity.SpaceType;
+import com.project.team5backend.domain.space.entity.SpacePurpose;
+import com.project.team5backend.domain.space.entity.SpaceMood;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "Space")
 public class Space {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

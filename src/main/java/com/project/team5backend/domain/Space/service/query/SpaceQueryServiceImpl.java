@@ -1,10 +1,12 @@
 package com.project.team5backend.domain.Space.service.query;
 
 
-import com.project.team5backend.domain.Space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.Space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.Space.entity.Space;
-import com.project.team5backend.domain.Space.repository.SpaceRepository;
+
+import com.project.team5backend.domain.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.entity.Space;
+import com.project.team5backend.domain.space.repository.SpaceRepository;
+import com.project.team5backend.domain.space.service.query.SpaceQueryService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
