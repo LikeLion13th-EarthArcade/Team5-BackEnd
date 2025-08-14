@@ -93,4 +93,11 @@ public class ExhibitionResDTO {
             List<String> images
     ){}
 
+    @Builder
+    public record UpcomingPopularityExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            List<String> images
+    ){}
+
 }

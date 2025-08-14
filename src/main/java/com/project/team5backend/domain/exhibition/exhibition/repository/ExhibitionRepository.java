@@ -21,6 +21,15 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
    """)
     List<Exhibition> findHotNowExhibition(@Param("current") LocalDate current, Pageable pageable);
 
+    // 다가오는, 지금뜨는 전시회
+    @Query("""
+        select e from Exhibition e
+        where e.isDeleted = false
+        and e.startDate > :current
+        order by e.likeCount desc, e.createdAt desc
+        """)
+    List<Exhibition> findUpcomingPopularityExhibition(@Param("current") LocalDate current);
+
     // 리뷰 평균/카운트 갱신
     @Modifying
     @Query("""

@@ -70,6 +70,12 @@ public class ExhibitionController {
         return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition());
     }
 
+    @Operation(summary = "지금 뜨는, 다가오는 전시회", description = "아직 시작되지 않은 전시중에서 likeCount가 가장 높은 전시 반환")
+    @GetMapping("/upcoming-popularity")
+    public CustomResponse<ExhibitionResDTO.UpcomingPopularityExhibitionResDTO> upcomingPopularityExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getUpcomingPopularityExhibition());
+    }
+
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
     public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){

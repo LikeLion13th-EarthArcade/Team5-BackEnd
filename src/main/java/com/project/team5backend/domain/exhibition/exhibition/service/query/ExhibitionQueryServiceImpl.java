@@ -84,4 +84,18 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx.getId(), hotNowEx.getTitle(), fileKeys);
     }
 
+    @Override
+    public ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularityExhibition() {
+        LocalDate currentDate = LocalDate.now();
+
+        List<Exhibition> exhibitions = exhibitionRepository.findUpcomingPopularityExhibition(currentDate);
+        if (exhibitions.isEmpty()) {
+            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
+        }
+        Exhibition upcomingEx = exhibitions.get(0);
+
+        List<String> fileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(upcomingEx.getId());
+        return ExhibitionConverter.toUpcomingPopularityExhibitionResDTO(upcomingEx.getId(), upcomingEx.getTitle(), fileKeys);
+    }
+
 }
