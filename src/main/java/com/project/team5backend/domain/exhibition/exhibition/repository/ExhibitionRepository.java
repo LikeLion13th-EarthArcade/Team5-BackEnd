@@ -28,7 +28,27 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
         and e.startDate > :current
         order by e.likeCount desc, e.createdAt desc
         """)
-    List<Exhibition> findUpcomingPopularityExhibition(@Param("current") LocalDate current);
+    List<Exhibition> findUpcomingPopularExhibition(@Param("current") LocalDate current);
+
+    // 지금 뜨는 지역구 전시회
+    @Query(value = """
+    WITH ranked AS (
+      SELECT e.*,
+            ROW_NUMBER() OVER (
+             PARTITION BY e.district
+             ORDER BY e.rating_count DESC, e.updated_at DESC, e.id DESC
+           ) rn
+      FROM exhibition e
+     WHERE e.is_deleted = false
+       AND e.start_date <= :currentDate
+       AND e.end_date   >= :currentDate
+    )
+    SELECT * FROM ranked
+    WHERE rn = 1
+    ORDER BY rating_count DESC, updated_at DESC, id DESC
+    LIMIT 4
+    """, nativeQuery = true)
+    List<Exhibition> findTopByDistrict(@Param("currentDate") LocalDate currentDate);
 
     // 리뷰 평균/카운트 갱신
     @Modifying

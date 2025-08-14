@@ -18,5 +18,8 @@ public interface ExhibitionQueryService {
     ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition();
 
     // 다가오는 인기있는 전시회(좋아요 수)
-    ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularityExhibition();
+    ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularExhibition();
+
+    // 지금 뜨는 지역별 전시회
+    ExhibitionResDTO.PopularRegionExhibitionListResDTO getPopularRegionExhibitions();
 }

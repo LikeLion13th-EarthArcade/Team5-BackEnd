@@ -73,14 +73,20 @@ public class ExhibitionController {
     @Operation(summary = "지금 뜨는, 다가오는 전시회", description = "아직 시작되지 않은 전시중에서 likeCount가 가장 높은 전시 반환")
     @GetMapping("/upcoming-popularity")
     public CustomResponse<ExhibitionResDTO.UpcomingPopularityExhibitionResDTO> upcomingPopularityExhibition() {
-        return CustomResponse.onSuccess(exhibitionQueryService.getUpcomingPopularityExhibition());
+        return CustomResponse.onSuccess(exhibitionQueryService.getUpcomingPopularExhibition());
+    }
+
+    @Operation(summary = "지금 뜨는 지역별 전시회", description = "현재 진행중인 전시중 reviewCount가 높은, 각기 다른 지역구를 가진 전시 4개 반환")
+    @GetMapping("/trending-region")
+    public CustomResponse<ExhibitionResDTO.PopularRegionExhibitionListResDTO> trendingRegionExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getPopularRegionExhibitions());
     }
 
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
     public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
         //유저 검증 로직 필요
-        exhibitionCommandService.deleteExhibition(4L);
+        exhibitionCommandService.deleteExhibition(exhibitionId);
         return CustomResponse.onSuccess("해당 전시가 삭제되었습니다.");
     }
 }

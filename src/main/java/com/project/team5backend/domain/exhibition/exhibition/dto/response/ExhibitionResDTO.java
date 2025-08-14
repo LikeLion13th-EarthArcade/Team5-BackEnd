@@ -100,4 +100,15 @@ public class ExhibitionResDTO {
             List<String> images
     ){}
 
+    @Builder
+    public record PopularRegionExhibitionResDTO(
+            Long exhibitionId,
+            String title,
+            String thumbnail
+    ){}
+
+    @Builder
+    public record PopularRegionExhibitionListResDTO(
+            List<PopularRegionExhibitionResDTO> exhibitions
+    ){}
 }

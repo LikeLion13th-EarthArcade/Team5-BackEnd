@@ -85,10 +85,10 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     }
 
     @Override
-    public ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularityExhibition() {
+    public ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularExhibition() {
         LocalDate currentDate = LocalDate.now();
 
-        List<Exhibition> exhibitions = exhibitionRepository.findUpcomingPopularityExhibition(currentDate);
+        List<Exhibition> exhibitions = exhibitionRepository.findUpcomingPopularExhibition(currentDate);
         if (exhibitions.isEmpty()) {
             throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         }
@@ -96,6 +96,24 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
 
         List<String> fileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(upcomingEx.getId());
         return ExhibitionConverter.toUpcomingPopularityExhibitionResDTO(upcomingEx.getId(), upcomingEx.getTitle(), fileKeys);
+    }
+
+    @Override
+    public ExhibitionResDTO.PopularRegionExhibitionListResDTO getPopularRegionExhibitions() {
+        LocalDate currentDate = LocalDate.now();
+
+        List<Exhibition> exhibitions = exhibitionRepository.findTopByDistrict(currentDate);
+        if (exhibitions.isEmpty()) {
+            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
+        } else if (exhibitions.size() < 4) {
+            log.info("size : {}", exhibitions.size());
+            throw new ExhibitionException(ExhibitionErrorCode.DIFFERENT_EXHIBITION_NOT_FOUND);
+        }
+        List<ExhibitionResDTO.PopularRegionExhibitionResDTO> popularRegionExhibitionResDTOs = exhibitions.stream()
+                .map(ExhibitionConverter::toPopularRegionExhibitionResDTO)
+                .toList();
+
+        return ExhibitionConverter.toPopularRegionExhibitionListResDTO(popularRegionExhibitionResDTOs);
     }
 
 }

@@ -136,4 +136,18 @@ public class ExhibitionConverter {
                 .images(fileKeys)
                 .build();
     }
+
+    public static ExhibitionResDTO.PopularRegionExhibitionListResDTO toPopularRegionExhibitionListResDTO(List<ExhibitionResDTO.PopularRegionExhibitionResDTO> exhibitions) {
+        return ExhibitionResDTO.PopularRegionExhibitionListResDTO.builder()
+                .exhibitions(exhibitions)
+                .build();
+    }
+
+    public static ExhibitionResDTO.PopularRegionExhibitionResDTO toPopularRegionExhibitionResDTO(Exhibition exhibition) {
+        return ExhibitionResDTO.PopularRegionExhibitionResDTO.builder()
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .thumbnail(exhibition.getThumbnail())
+                .build();
+    }
 }
