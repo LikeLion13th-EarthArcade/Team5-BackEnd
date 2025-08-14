@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.auth.service.command;
 
 
+import com.project.team5backend.domain.user.converter.UserConverter;
 import com.project.team5backend.domain.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.dto.response.UserResponse;
 import com.project.team5backend.domain.user.entity.User;
@@ -35,6 +36,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final PasswordEncoder passwordEncoder;
     private final Map<String, User> sessionStore;
     private final JavaMailSender mailSender;
+    private final UserConverter userConverter;
 
 
     private final  RedisTemplate<String, String> redisTemplate;
@@ -75,9 +77,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
             // 2. Redis에 이메일 인증 완료 상태 저장
             redisTemplate.opsForValue().set(VERIFIED_EMAIL_PREFIX + email, "true", VERIFIED_EMAIL_EXPIRATION_TIME);
-
-            // 3. 사용자 이메일 인증 상태 업데이트 (선택적)
-            // user.verifyEmail();
+            //user.verifyEmail();
         }
         return isValid;
     }
@@ -92,18 +92,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
+
+        // UserConverter를 사용해 DTO를 엔티티로 변환
+        User user = userConverter.toUser(request);
+        userRepository.save(user);
+
         // 인증 완료 후 Redis에서 상태 삭제
         redisTemplate.delete(VERIFIED_EMAIL_PREFIX + request.email());
-
-        // User 엔티티 생성 및 저장
-        User user = User.builder()
-                .email(request.email())
-                .name(request.name())
-                .password(passwordEncoder.encode(request.password()))
-                .isEmailVerified(true)
-                .build();
-
-        userRepository.save(user);
     }
 
 
@@ -134,6 +129,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                         user, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return new UserResponse.LoginResult(user.getId(), user.getName(), user.getEmail());
+        return userConverter.toLoginResult(user);
     }
 }
