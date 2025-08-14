@@ -1,4 +1,51 @@
 package com.project.team5backend.domain.user.entity;
 
-public class User {
+
+import com.project.team5backend.global.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class User extends BaseEntity {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Builder.Default
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
+    @Builder.Default
+    @Column(name = "is_email_verified")
+    private boolean isEmailVerified = false;
+
+    public void verifyEmail() {
+        this.isEmailVerified = true;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
