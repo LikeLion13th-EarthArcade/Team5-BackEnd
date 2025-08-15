@@ -4,22 +4,28 @@ package com.project.team5backend.domain.auth.service.command;
 import com.project.team5backend.domain.user.converter.UserConverter;
 import com.project.team5backend.domain.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.entity.Role;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.global.apiPayload.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.*;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import java.time.Duration;
@@ -34,12 +40,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Map<String, User> sessionStore;
     private final JavaMailSender mailSender;
     private final UserConverter userConverter;
-
-
     private final  RedisTemplate<String, String> redisTemplate;
+
+    private final AuthenticationManager authenticationManager;
+
 
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
 
@@ -95,6 +101,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
         // UserConverter를 사용해 DTO를 엔티티로 변환
         User user = userConverter.toUser(request);
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         // 인증 완료 후 Redis에서 상태 삭제
@@ -110,24 +117,24 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-        String sessionId = UUID.randomUUID().toString();
-        sessionStore.put(sessionId, user);
 
-        System.out.println("[로그인 성공] SESSION ID: " + sessionId + ", USER ID: " + user.getId() + "가 세션에 저장되었습니다.");
+        CustomUserDetails userDetails = CustomUserDetails.fromUser(user);
+        System.out.println("✨ [로그인 성공] CustomUserDetails 생성: "
+                + userDetails.getUsername() + ", ID: " + userDetails.getUserId());
 
-        ResponseCookie cookie = ResponseCookie.from("SESSION", sessionId)
-                .httpOnly(true)
-                .secure(false) // 배포 시 true로 변경
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(Duration.ofDays(7))
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        // 로그인 성공 후
+        // 1. SecurityContext에 인증 객체 저장
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
-                        user, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                        userDetails, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // 2. 세션 생성 및 SecurityContext 저장
+        // HttpServletResponse만 있으므로 Spring의 RequestContextHolder 사용
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest httpRequest = attr.getRequest();
+        HttpSession session = httpRequest.getSession(true); // JSESSIONID 발급
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                SecurityContextHolder.getContext());
 
         return userConverter.toLoginResult(user);
     }

@@ -7,6 +7,7 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -45,4 +46,7 @@ public class User extends BaseEntity {
     public void delete() {
         this.isDeleted = true;
     }
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
