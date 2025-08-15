@@ -100,4 +100,12 @@ public class Exhibition extends BaseTimeEntity {
         this.likeCount = 0;
         this.reviewCount = 0;
     }
+
+    public void approveStatus() {
+        this.status = Status.APPROVED;
+    }
+
+    public void rejectStatus() {
+        this.status = Status.REJECTED;
+    }
 }

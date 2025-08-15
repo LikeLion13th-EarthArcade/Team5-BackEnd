@@ -40,7 +40,7 @@ public class ExhibitionReviewController {
             @PathVariable Long exhibitionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<ExhibitionReviewResDTO.exReviewDetailResDTO> reviewPage = exReviewQueryService.getExhibitionReviewList(exhibitionId, pageable);
         return CustomResponse.onSuccess(reviewPage);
     }

@@ -1,6 +1,8 @@
 package com.project.team5backend.domain.exhibition.exhibition.repository;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, ExhibitionRepositoryCustom {
     // 지금 뜨는 전시회
@@ -73,4 +76,15 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
         """)
     void applyReviewDeleted(@Param("exhibitionId") Long exhibitionId, @Param("rating")  double rating);
 
+    @Query("""
+        select e from Exhibition e
+        where e.status =:status and e.isDeleted = false and e.startDate > :today
+        """)
+    Page<Exhibition> findPendingExhibitions(LocalDate today, Pageable pageable,@Param("status") Status status);
+
+    @Query("""
+        select e from Exhibition e
+        where e.id =:exhibitionId and e.status =:status and e.isDeleted = false and e.startDate > :today
+        """)
+    Optional<Exhibition> findPendingExhibition(Long exhibitionId, LocalDate today, @Param("status") Status status);
 }
