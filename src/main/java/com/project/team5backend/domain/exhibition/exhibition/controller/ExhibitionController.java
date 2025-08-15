@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -80,6 +81,12 @@ public class ExhibitionController {
     @GetMapping("/trending-region")
     public CustomResponse<ExhibitionResDTO.PopularRegionExhibitionListResDTO> trendingRegionExhibition() {
         return CustomResponse.onSuccess(exhibitionQueryService.getPopularRegionExhibitions());
+    }
+
+    @Operation(summary = "artie 추천 전시회", description = "artie 추천 전시 4개 반환 - 하루 단위로 업데이트")
+    @GetMapping("/artie-recommendation")
+    public CustomResponse<List<ExhibitionResDTO.ArtieRecommendationResDTO>> artieRecommendation() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getTodayArtiePicks());
     }
 
     @DeleteMapping("/{exhibitionId}")

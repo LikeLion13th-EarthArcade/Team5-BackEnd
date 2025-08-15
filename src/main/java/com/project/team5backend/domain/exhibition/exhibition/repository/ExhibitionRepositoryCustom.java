@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ExhibitionRepositoryCustom {
     Page<Exhibition> findExhibitionsWithFilters(Category category, String district, Mood mood, LocalDate localDate, ExhibitionSort sort, Pageable pageable);
+    List<Exhibition> findUnpopularCandidates(LocalDate today, int limit);
 }

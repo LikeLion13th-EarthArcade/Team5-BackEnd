@@ -6,6 +6,7 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ExhibitionQueryService {
 
@@ -22,4 +23,7 @@ public interface ExhibitionQueryService {
 
     // 지금 뜨는 지역별 전시회
     ExhibitionResDTO.PopularRegionExhibitionListResDTO getPopularRegionExhibitions();
+
+    // artie 픽
+    List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks();
 }

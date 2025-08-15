@@ -111,4 +111,11 @@ public class ExhibitionResDTO {
     public record PopularRegionExhibitionListResDTO(
             List<PopularRegionExhibitionResDTO> exhibitions
     ){}
+
+    @Builder
+    public record ArtieRecommendationResDTO(
+            Long exhibitionId,
+            String title,
+            String thumbnail
+    ){}
 }

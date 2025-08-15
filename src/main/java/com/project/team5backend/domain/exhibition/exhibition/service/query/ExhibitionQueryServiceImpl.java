@@ -117,4 +117,21 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         return ExhibitionConverter.toPopularRegionExhibitionListResDTO(popularRegionExhibitionResDTOs);
     }
 
+    @Override
+    public List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks() {
+        LocalDate today = LocalDate.now();
+
+        List<Exhibition> candidates = exhibitionRepository.findUnpopularCandidates(today, 20); // 후보 20개
+
+        // 날짜 기반 고정 셔플(하루 동안 결과 고정)
+        long seed = today.toEpochDay(); // 필요하면 +고정 salt
+        java.util.Random r = new java.util.Random(seed);
+        java.util.Collections.shuffle(candidates, r);
+
+        return candidates.stream()
+                .limit(4)
+                .map(ExhibitionConverter::toArtieRecommendationResDTO)
+                .toList();
+    }
+
 }

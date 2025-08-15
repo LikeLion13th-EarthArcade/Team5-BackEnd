@@ -81,4 +81,32 @@ public class ExhibitionRepositoryImpl implements ExhibitionRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total != null ? total : 0L);
     }
+    @Override
+    public List<Exhibition> findUnpopularCandidates(LocalDate today, int limit) {
+        QExhibition e = QExhibition.exhibition;
+
+        var likes   = com.querydsl.core.types.dsl.Expressions
+                .numberTemplate(Integer.class, "coalesce({0},0)", e.likeCount);
+        var reviews = com.querydsl.core.types.dsl.Expressions
+                .numberTemplate(Integer.class, "coalesce({0},0)", e.reviewCount);
+
+        // 인기 점수: 좋아요 + 2*리뷰수 (원하면 가중치 바꿔도 됨)
+        var popularity = likes.add(reviews.multiply(2));
+
+        return queryFactory
+                .selectFrom(e)
+                .where(
+                        e.isDeleted.isFalse(),
+                        e.status.eq(com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status.APPROVED),
+                        e.startDate.loe(today),
+                        e.endDate.goe(today)
+                )
+                .orderBy(
+                        popularity.asc(),   // 덜 인기 순
+                        e.createdAt.desc(), // 동률이면 더 최신 우선
+                        e.id.desc()
+                )
+                .limit(limit)
+                .fetch();
+    }
 }

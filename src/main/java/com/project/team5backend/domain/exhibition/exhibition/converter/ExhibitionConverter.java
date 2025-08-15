@@ -150,4 +150,12 @@ public class ExhibitionConverter {
                 .thumbnail(exhibition.getThumbnail())
                 .build();
     }
+
+    public static ExhibitionResDTO.ArtieRecommendationResDTO toArtieRecommendationResDTO(Exhibition exhibition) {
+        return ExhibitionResDTO.ArtieRecommendationResDTO.builder()
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .thumbnail(exhibition.getThumbnail())
+                .build();
+    }
 }
