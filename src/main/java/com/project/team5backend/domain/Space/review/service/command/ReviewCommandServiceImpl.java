@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
 
     @Override
-    public void createReview(Long spaceId, Long userId, ReviewRequest.Create request) {
+    public void createReview(Long spaceId, Long userId, ReviewRequest.CreateRe request) {
         Space space = spaceRepository.findById(spaceId)
                 .orElseThrow(() -> new IllegalArgumentException("Space not found"));
         User user = userRepository.findById(userId)

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@EntityScan(basePackages = {"com.project.team5backend.domain.space.entity","com.project.team5backend.domain.user.entity"})
-@EnableJpaRepositories(basePackages = {"com.project.team5backend.domain.space.repository","com.project.team5backend.domain.user.repository"})
+@EntityScan(basePackages = {"com.project.team5backend.domain.space.space.entity","com.project.team5backend.domain.space.review.entity","com.project.team5backend.domain.user.entity"})
+@EnableJpaRepositories(basePackages = {"com.project.team5backend.domain.space.space.repository","com.project.team5backend.domain.space.review.repository","com.project.team5backend.domain.user.repository"})
 
 public class Team4BackEndApplication {
 
