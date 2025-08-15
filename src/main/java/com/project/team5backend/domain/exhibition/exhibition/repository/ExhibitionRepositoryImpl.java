@@ -1,10 +1,10 @@
 package com.project.team5backend.domain.exhibition.exhibition.repository;
 
-import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.QExhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -33,7 +33,19 @@ public class ExhibitionRepositoryImpl implements ExhibitionRepositoryCustom {
 
         // 동적 쿼리 조건 생성
         BooleanBuilder builder = new BooleanBuilder()
-                .and(exhibition.isDeleted.isFalse());
+                .and(exhibition.isDeleted.isFalse())
+                .and(exhibition.status.eq(Status.APPROVED));
+
+        // 날짜 조건
+        if (localDate != null) {
+            // 사용자가 날짜를 지정한 경우: 그 날짜에 '진행중'인 전시만
+            builder.and(exhibition.startDate.loe(localDate))
+                    .and(exhibition.endDate.goe(localDate));
+        } else {
+            // 날짜 미지정: 아직 끝나지 않은 전시(진행중 or 진행예정)
+            LocalDate today = LocalDate.now();
+            builder.and(exhibition.endDate.goe(today));
+        }
 
         // 카테고리 필터
         if (category != null) {
@@ -48,12 +60,6 @@ public class ExhibitionRepositoryImpl implements ExhibitionRepositoryCustom {
         // 분위기 필터
         if (mood != null) {
             builder.and(exhibition.mood.eq(mood));
-        }
-
-        // 날짜 필터 (해당 날짜가 전시 시작일~종료일 사이인 경우)
-        if (localDate != null) {
-            builder.and(exhibition.startDate.loe(localDate)
-                    .and(exhibition.endDate.goe(localDate)));
         }
 
         // 전체 개수 조회 (fetchCount 대신 fetch().size() 사용 - 최신 QueryDSL 버전 호환)
@@ -97,7 +103,7 @@ public class ExhibitionRepositoryImpl implements ExhibitionRepositoryCustom {
                 .selectFrom(e)
                 .where(
                         e.isDeleted.isFalse(),
-                        e.status.eq(com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status.APPROVED),
+                        e.status.eq(Status.APPROVED),
                         e.startDate.loe(today),
                         e.endDate.goe(today)
                 )

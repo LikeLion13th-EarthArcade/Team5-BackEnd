@@ -37,7 +37,7 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     private final ExhibitionImageRepository exhibitionImageRepository;
     @Override
     public ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long exhibitionId) {
-        Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
+        Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
 
         // 전시 이미지들의 fileKey만 조회
@@ -75,7 +75,7 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         LocalDate currentDate = LocalDate.now();
         Pageable topOne = PageRequest.of(0, 1);
 
-        List<Exhibition> exhibitions = exhibitionRepository.findHotNowExhibition(currentDate, topOne);
+        List<Exhibition> exhibitions = exhibitionRepository.findHotNowExhibition(currentDate, topOne, Status.APPROVED);
         if (exhibitions.isEmpty()) {
             throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         }
@@ -89,7 +89,8 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     public ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularExhibition() {
         LocalDate currentDate = LocalDate.now();
 
-        List<Exhibition> exhibitions = exhibitionRepository.findUpcomingPopularExhibition(currentDate);
+        Pageable topOne = PageRequest.of(0, 1);
+        List<Exhibition> exhibitions = exhibitionRepository.findUpcomingPopularExhibition(currentDate, topOne, Status.APPROVED);
         if (exhibitions.isEmpty()) {
             throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         }
@@ -103,7 +104,8 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     public ExhibitionResDTO.PopularRegionExhibitionListResDTO getPopularRegionExhibitions() {
         LocalDate currentDate = LocalDate.now();
 
-        List<Exhibition> exhibitions = exhibitionRepository.findTopByDistrict(currentDate);
+        Pageable topFour = PageRequest.of(0, 4);
+        List<Exhibition> exhibitions = exhibitionRepository.findTopByDistrict(currentDate, topFour, Status.APPROVED);
         if (exhibitions.isEmpty()) {
             throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         } else if (exhibitions.size() < 4) {

@@ -14,24 +14,42 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, ExhibitionRepositoryCustom {
+    //삭제되지 않았고, 승인된 전시
+    @Query("""
+        select e from Exhibition e
+        where e.isDeleted = false
+        and e.status =:status
+    """)
+    Optional<Exhibition> findByIdAndIsDeletedFalseAndStatusApprove(Long exhibitionId, @Param("status") Status status);
+    //삭제되지않았고, 승인되고, 진행중인 전시
+    @Query("""
+        select e from Exhibition e
+        where e.isDeleted = false
+        and e.status =:status
+        and e.startDate <=:current
+        and e.endDate >=:current
+    """)
+    Optional<Exhibition> findByIdAndIsDeletedFalseAndStatusApproveAndOpening(Long exhibitionId, LocalDate current, @Param("status") Status status);
     // 지금 뜨는 전시회
     @Query("""
         select e from Exhibition e
         where e.isDeleted = false
+        and e.status =:status
         and e.startDate <=:current
         and e.endDate >=:current
         order by e.reviewCount desc , e.createdAt desc
    """)
-    List<Exhibition> findHotNowExhibition(@Param("current") LocalDate current, Pageable pageable);
+    List<Exhibition> findHotNowExhibition(@Param("current") LocalDate current, Pageable pageable, @Param("status") Status status);
 
     // 다가오는, 지금뜨는 전시회
     @Query("""
         select e from Exhibition e
         where e.isDeleted = false
         and e.startDate > :current
+        and e.status =:status
         order by e.likeCount desc, e.createdAt desc
         """)
-    List<Exhibition> findUpcomingPopularExhibition(@Param("current") LocalDate current);
+    List<Exhibition> findUpcomingPopularExhibition(@Param("current") LocalDate current, Pageable pageable, @Param("status") Status status);
 
     // 지금 뜨는 지역구 전시회
     @Query(value = """
@@ -43,15 +61,16 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
            ) rn
       FROM exhibition e
      WHERE e.is_deleted = false
-       AND e.start_date <= :currentDate
-       AND e.end_date   >= :currentDate
+       AND e.start_date <= :current
+       AND e.end_date   >= :current
+       AND e.status =:status
     )
     SELECT * FROM ranked
     WHERE rn = 1
     ORDER BY rating_count DESC, updated_at DESC, id DESC
     LIMIT 4
     """, nativeQuery = true)
-    List<Exhibition> findTopByDistrict(@Param("currentDate") LocalDate currentDate);
+    List<Exhibition> findTopByDistrict(@Param("current") LocalDate current, Pageable pageable, @Param("status") Status status);
 
     // 리뷰 평균/카운트 갱신
     @Modifying

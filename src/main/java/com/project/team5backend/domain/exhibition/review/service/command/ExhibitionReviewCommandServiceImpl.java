@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.exhibition.review.service.command;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
@@ -44,12 +45,10 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
     @Override
     public void createExhibitionReview(
             Long exhibitionId,String email, ExhibitionReviewReqDTO.createExReviewReqDTO createExhibitionReviewReqDTO) {
-        Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
+        LocalDate current = LocalDate.now();
+        Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApproveAndOpening(exhibitionId, current, Status.APPROVED)
                 .orElseThrow(()-> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
-        // 전시 시작일이 현재보다 이후면 리뷰 작성 불가
-        if (exhibition.getStartDate().isAfter(LocalDate.now())) {
-            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_STARTED);
-        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
@@ -68,7 +67,7 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
     }
     @Override
     public void deleteExhibitionReview(Long exhibitionReviewId) {
-        ExhibitionReview exhibitionReview = exhibitionReviewRepository.findById(exhibitionReviewId)
+        ExhibitionReview exhibitionReview = exhibitionReviewRepository.findByIdAndIsDeletedFalse(exhibitionReviewId)
                 .orElseThrow(() -> new ExhibitionReviewException(ExhibitionReviewErrorCode.EXHIBITION_REVIEW_NOT_FOUND));
 
         if (exhibitionReview.isDeleted()) return;
