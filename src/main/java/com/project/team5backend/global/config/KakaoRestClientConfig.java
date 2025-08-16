@@ -1,5 +1,7 @@
 package com.project.team5backend.global.config;
 
+import com.project.team5backend.global.address.exception.AddressErrorCode;
+import com.project.team5backend.global.address.exception.AddressException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,19 +13,13 @@ import org.springframework.web.client.RestClient;
 public class KakaoRestClientConfig {
 
     @Value("${kakao.api.rest-key:}")
-    private String rawRestKey;
+    private String restKey;
 
     @Bean
     public RestClient kakaoRestClient(RestClient.Builder builder) {
-        String restKey = normalizeKey(rawRestKey); // 공백/따옴표 제거
-
-        if (restKey.isBlank()) {
-            throw new IllegalStateException(
-                    "Missing Kakao REST key. Set 'kakao.api.rest-key' or env KAKAO_API_REST_KEY."
-            );
+        if (restKey == null || restKey.isBlank()) {
+            throw new AddressException(AddressErrorCode.MISSING_ADDRESS);
         }
-        log.info("[KAKAO] REST key loaded: {}*** (len={})", restKey.substring(0, 4), restKey.length());
-
         var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(java.time.Duration.ofSeconds(2));
         factory.setReadTimeout(java.time.Duration.ofSeconds(3));
@@ -34,15 +30,5 @@ public class KakaoRestClientConfig {
                 .defaultHeader(org.springframework.http.HttpHeaders.ACCEPT, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
                 .requestFactory(factory)
                 .build();
-    }
-
-    private String normalizeKey(String s) {
-        if (s == null) return "";
-        // 앞뒤 공백 제거 + 양끝 따옴표 제거
-        s = s.trim();
-        if ((s.startsWith("\"") && s.endsWith("\"")) || (s.startsWith("'") && s.endsWith("'"))) {
-            s = s.substring(1, s.length() - 1);
-        }
-        return s.trim();
     }
 }
