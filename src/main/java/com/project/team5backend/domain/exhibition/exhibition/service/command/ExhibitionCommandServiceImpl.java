@@ -22,6 +22,7 @@ import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.address.converter.AddressConverter;
 import com.project.team5backend.global.address.dto.response.AddressResDTO;
+import com.project.team5backend.global.address.service.AddressService;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
 import com.project.team5backend.global.entity.embedded.Address;
@@ -45,6 +46,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ImageCommandService imageCommandService;
+    private final AddressService addressService;
 
     @Override
     public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {

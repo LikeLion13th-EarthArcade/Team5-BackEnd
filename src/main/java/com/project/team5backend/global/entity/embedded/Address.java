@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,8 +24,9 @@ public class Address {
 
     private String postalCode; // 우편번호
 
-    @Column(precision = 10, scale = 7)
-    private String latitude;  // 위도
-    @Column(precision = 10, scale = 7)
-    private String longitude; // 경도
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal latitude;   // 위도 [-90, 90]
+
+    @Column(precision = 9, scale = 6, nullable = false)
+    private BigDecimal longitude;  // 경도 [-180, 180]
 }
