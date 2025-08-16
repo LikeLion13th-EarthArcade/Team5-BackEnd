@@ -1,6 +1,7 @@
 package com.project.team5backend.global.config;
 
 import com.project.team5backend.global.apiPayload.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,25 +31,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // 개발 중 csrf 비활성화 (배포 전 조정 필요)
+                // ✅ 1. CSRF 활성화 (SPA + Cookie)
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers(
+                                "/api/v1/auth/**",
+                                "/api/v1/users/**",
+                                "/actuator/**",
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
+                        )
+                )
+
                 .formLogin(form -> form.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .httpBasic(basic -> basic.disable())
+
+                // ✅ 2. 인가 경로 최소화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",           // 기존 인증 허용 경로
+                                "/api/v1/auth/**",
                                 "/api/v1/users/**",
-                                "/swagger-ui/**",         // ✅ Swagger UI
-                                "/v3/api-docs/**",        // ✅ Swagger Docs
-                                "/swagger-resources/**",  // ✅ Swagger Resources
-                                "/webjars/**"             // ✅ Swagger Webjars
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+                                "/actuator/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                // ✨ 이 부분을 추가하여 세션 관리 정책을 명시적으로 설정
+
+                // ✅ 3. 세션 정책
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요 시 생성
                 )
-                .cors(cors -> {});;
+
+                // ✅ 4. 401 / 403 명확 처리
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                        .accessDeniedHandler((req, res, e) -> res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
+                )
+
+                // ✅ CORS 설정
+                .cors(cors -> {});
 
         return http.build();
     }

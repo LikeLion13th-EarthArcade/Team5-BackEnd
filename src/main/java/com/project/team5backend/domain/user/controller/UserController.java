@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -59,11 +60,21 @@ public class UserController {
     @Operation(summary = "회원 탈퇴", description = "계정 탈퇴")
     @DeleteMapping("/delete")
     public ResponseEntity<CustomResponse<String>> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                                  HttpServletResponse response) {
+                                                             HttpServletRequest request,
+                                                             HttpServletResponse response) {
         Long userId = userDetails.getUserId();
         commandService.deleteUser(userId); // 사용자 삭제
-        // JSESSIONID는 Spring Security가 자동으로 만료시키므로 별도의 쿠키 삭제 로직이 필요하지 않움
-
+        // ✅ 세션 무효화 + 쿠키 삭제
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+        ResponseCookie cookie = ResponseCookie.from("JSESSIONID", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .maxAge(0)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
         CustomResponse<String> customResponse = CustomResponse.onSuccess("회원 탈퇴 완료");
         return ResponseEntity.ok(customResponse);
     }

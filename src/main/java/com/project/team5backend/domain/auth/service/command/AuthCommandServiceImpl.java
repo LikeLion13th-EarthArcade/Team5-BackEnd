@@ -16,42 +16,39 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
     private final UserConverter userConverter;
     private final  RedisTemplate<String, String> redisTemplate;
 
-    private final AuthenticationManager authenticationManager;
-
+    private static final String CODE_PREFIX = "email:code:";
 
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
 
     private static final String VERIFIED_EMAIL_PREFIX = "verified:";
     // 인증 완료 상태 만료 시간
     private static final Duration VERIFIED_EMAIL_EXPIRATION_TIME = Duration.ofMinutes(10);
+    private final AuthenticationManager authenticationManager;
 
 
     private String generateCode() {
@@ -63,7 +60,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     @Override
     public void sendVerificationCode(String email) {
         String code = generateCode();
-        redisTemplate.opsForValue().set(email, code, CODE_EXPIRATION_TIME);
+        redisTemplate.opsForValue().set(CODE_PREFIX + email, code, CODE_EXPIRATION_TIME);
+
         System.out.println("[이메일 전송] " + email + " : 인증 코드 = " + code);
         //  실제 이메일 전송 로직 구현
         SimpleMailMessage message = new SimpleMailMessage();
@@ -74,12 +72,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
     @Override
     public boolean verifyCode(String email, String code) {
-        String storedCode = redisTemplate.opsForValue().get(email);
+        String storedCode = redisTemplate.opsForValue().get(CODE_PREFIX + email);
         boolean isValid = code.equals(storedCode);
 
         if (isValid) {
             // 1. 인증 성공 시, Redis에서 인증 코드 삭제
-            redisTemplate.delete(email);
+            redisTemplate.delete(CODE_PREFIX + email); // ✅
 
             // 2. Redis에 이메일 인증 완료 상태 저장
             redisTemplate.opsForValue().set(VERIFIED_EMAIL_PREFIX + email, "true", VERIFIED_EMAIL_EXPIRATION_TIME);
@@ -108,34 +106,36 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         redisTemplate.delete(VERIFIED_EMAIL_PREFIX + request.email());
     }
 
-
     @Override
-    public UserResponse.LoginResult login(UserRequest.Login request, HttpServletResponse response) {
-        User user = userRepository.findByEmailAndIsDeletedFalse(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+    public UserResponse.LoginResult login(UserRequest.Login request,
+                                          HttpServletRequest httpRequest,
+                                          HttpServletResponse httpResponse) {
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
+        // 1. AuthenticationManager로 표준 인증
+        Authentication authRequest =
+                new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        Authentication authentication = authenticationManager.authenticate(authRequest);
 
-        CustomUserDetails userDetails = CustomUserDetails.fromUser(user);
-        System.out.println("✨ [로그인 성공] CustomUserDetails 생성: "
-                + userDetails.getUsername() + ", ID: " + userDetails.getUserId());
+        // 2. SecurityContext 생성 및 세션에 저장
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        SecurityContextHolder.setContext(context);
 
-        // 1. SecurityContext에 인증 객체 저장
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userDetails, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 기존 세션 무효화 (중복 로그인 방지)
+        HttpSession oldSession = httpRequest.getSession(false);
+        if (oldSession != null) oldSession.invalidate();
 
-        // 2. 세션 생성 및 SecurityContext 저장
-        // HttpServletResponse만 있으므로 Spring의 RequestContextHolder 사용
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest httpRequest = attr.getRequest();
-        HttpSession session = httpRequest.getSession(true); // JSESSIONID 발급
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext());
+        // 새 세션 생성
+        HttpSession session = httpRequest.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+        session.setMaxInactiveInterval(30 * 60); // 30분
 
-        return userConverter.toLoginResult(user);
+        // 3. 로그인 결과 반환
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
+        User user = userRepository.findById(principal.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유저 조회 실패"));
+
+        return new UserResponse.LoginResult(user.getId(), user.getName(), "로그인 성공");
     }
+
 }

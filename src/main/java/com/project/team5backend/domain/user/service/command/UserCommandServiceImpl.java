@@ -40,6 +40,9 @@ public class UserCommandServiceImpl implements UserCommandService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        //user.setDeleted(true); -> softDelete 쓸거면 이거 2개 써라
+        //userRepository.save(user);
+
         userRepository.delete(user);
     }
 
