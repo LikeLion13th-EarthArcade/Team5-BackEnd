@@ -1,6 +1,6 @@
-package com.project.team5backend.domain.space.repository;
+package com.project.team5backend.domain.space.space.repository;
 
-import com.project.team5backend.domain.space.entity.Space;
+import com.project.team5backend.domain.space.space.entity.Space;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

@@ -1,36 +1,46 @@
-package com.project.team5backend.domain.space.converter;
+package com.project.team5backend.domain.space.space.converter;
 
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.space.entity.Space;
+import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.entity.Space;
 import org.springframework.stereotype.Component;
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class SpaceConverter {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     // SpaceRequest.Create DTO를 Space 엔티티로 변환
     public Space toSpace(SpaceRequest.Create request) {
+        LocalDate startDate = parseDateSafely(request.startDate());
+        LocalDate endDate = parseDateSafely(request.endDate());
         return Space.builder()
                 .name(request.name())
                 .location(request.location())
                 .type(request.type())
-                .spec(request.spec())
+                .size(request.size())
                 .purpose(request.purpose())
                 .mood(request.mood())
-                .businessRegistrationNumber(request.businessRegistrationNumber())
                 .description(request.description())
-                .businessRegistrationDocUrl(request.businessRegistrationDocUrl())
-                .buildingLedgerDocUrl(request.buildingLedgerDocUrl())
                 .imageUrls(request.images())
                 .status(Space.Status.APPROVAL_PENDING)
-                .startDate(request.startDate() != null ? LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE) : null)
-                .endDate(request.endDate() != null ? LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE) : null)
+                .startDate(LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE))
+                .endDate(LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE))
                 .build();
+    }
+    private LocalDate parseDateSafely(String dateStr) {
+        if (dateStr == null || dateStr.isBlank()) return null;
+        try {
+            return LocalDate.parse(dateStr, DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            // 로그를 남기거나 원하는 방식으로 처리 가능
+            return null;
+        }
     }
 
     // Space 엔티티를 등록 응답 DTO로 변환
@@ -71,7 +81,7 @@ public class SpaceConverter {
                         usagePeriod, // 사용 기간
                         operatingHours, //운영 시간
                         space.getLocation(),
-                        space.getSpec(),
+                        space.getSize(),
                         space.getPurpose() != null ? space.getPurpose().name() : null,
                         space.getMood() != null ? space.getMood().name() : null
                 );

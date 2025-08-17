@@ -1,9 +1,9 @@
-package com.project.team5backend.domain.space.controller;
+package com.project.team5backend.domain.space.space.controller;
 
 
-import com.project.team5backend.domain.space.dto.request.AdminSpaceRequest;
-import com.project.team5backend.domain.space.dto.response.AdminSpaceResponse;
-import com.project.team5backend.domain.space.service.AdminSpaceService;
+import com.project.team5backend.domain.space.space.dto.request.AdminSpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.AdminSpaceResponse;
+import com.project.team5backend.domain.space.space.service.AdminSpaceService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

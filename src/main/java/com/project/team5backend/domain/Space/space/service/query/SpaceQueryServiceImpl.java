@@ -1,13 +1,12 @@
-package com.project.team5backend.domain.Space.service.query;
+package com.project.team5backend.domain.space.space.service.query;
 
 
 
-import com.project.team5backend.domain.space.converter.SpaceConverter;
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.space.entity.Space;
-import com.project.team5backend.domain.space.repository.SpaceRepository;
-import com.project.team5backend.domain.space.service.query.SpaceQueryService;
+import com.project.team5backend.domain.space.space.converter.SpaceConverter;
+import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.entity.Space;
+import com.project.team5backend.domain.space.space.repository.SpaceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 
@@ -48,11 +46,11 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(space.get("status"), Space.Status.APPROVED));
 
-        if (request.region() != null && !request.region().isEmpty()) {
-            predicates.add(cb.like(space.get("location"), "%" + request.region() + "%"));
+        if (request.location() != null && !request.location().isEmpty()) {
+            predicates.add(cb.like(space.get("location"), "%" + request.location() + "%"));
         }
         if (request.size() != null && !request.size().isEmpty()) {
-            predicates.add(cb.like(space.get("spec"), "%" + request.size() + "%"));
+            predicates.add(cb.like(space.get("size"), "%" + request.size() + "%"));
         }
         if (request.type() != null) {
             predicates.add(cb.equal(space.get("type"), request.type()));

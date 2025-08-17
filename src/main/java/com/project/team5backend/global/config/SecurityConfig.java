@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/users/**",
+                                "/api/v1/spaces/**",
                                 "/actuator/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
                         )
@@ -50,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/users/**",
+                                "/api/v1/spaces/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
                                 "/actuator/**"
                         ).permitAll()

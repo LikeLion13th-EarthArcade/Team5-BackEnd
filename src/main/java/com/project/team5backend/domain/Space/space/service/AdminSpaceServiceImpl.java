@@ -1,11 +1,11 @@
-package com.project.team5backend.domain.space.service;
+package com.project.team5backend.domain.space.space.service;
 
 
-import com.project.team5backend.domain.space.converter.AdminSpaceConverter;
-import com.project.team5backend.domain.space.dto.request.AdminSpaceRequest;
-import com.project.team5backend.domain.space.dto.response.AdminSpaceResponse;
-import com.project.team5backend.domain.space.entity.Space;
-import com.project.team5backend.domain.space.repository.SpaceRepository;
+import com.project.team5backend.domain.space.space.converter.AdminSpaceConverter;
+import com.project.team5backend.domain.space.space.dto.request.AdminSpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.AdminSpaceResponse;
+import com.project.team5backend.domain.space.space.entity.Space;
+import com.project.team5backend.domain.space.space.repository.SpaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

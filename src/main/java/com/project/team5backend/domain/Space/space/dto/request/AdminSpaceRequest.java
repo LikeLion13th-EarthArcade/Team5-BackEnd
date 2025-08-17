@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.space.dto.request;
+package com.project.team5backend.domain.space.space.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

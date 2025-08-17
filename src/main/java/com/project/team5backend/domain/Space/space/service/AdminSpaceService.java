@@ -1,8 +1,8 @@
-package com.project.team5backend.domain.space.service;
+package com.project.team5backend.domain.space.space.service;
 
 
-import com.project.team5backend.domain.space.dto.request.AdminSpaceRequest;
-import com.project.team5backend.domain.space.dto.response.AdminSpaceResponse;
+import com.project.team5backend.domain.space.space.dto.request.AdminSpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.AdminSpaceResponse;
 
 import java.util.List;
 

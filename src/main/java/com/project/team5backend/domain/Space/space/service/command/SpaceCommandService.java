@@ -1,8 +1,8 @@
-package com.project.team5backend.domain.space.service.command;
+package com.project.team5backend.domain.space.space.service.command;
 
 
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 
 
 public interface SpaceCommandService {

@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.space.dto.response;
+package com.project.team5backend.domain.space.space.dto.response;
 
 import lombok.*;
 

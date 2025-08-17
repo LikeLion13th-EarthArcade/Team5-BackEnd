@@ -1,14 +1,18 @@
-package com.project.team5backend.domain.space.service.command;
+package com.project.team5backend.domain.space.space.service.command;
 
 
-import com.project.team5backend.domain.space.converter.SpaceConverter;
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.space.entity.Space;
-import com.project.team5backend.domain.space.entity.SpaceLike;
-import com.project.team5backend.domain.space.repository.SpaceLikeRepository;
-import com.project.team5backend.domain.space.repository.SpaceRepository;
+import com.project.team5backend.domain.space.space.converter.SpaceConverter;
+import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.entity.Space;
+import com.project.team5backend.domain.space.space.entity.SpaceLike;
+import com.project.team5backend.domain.space.space.repository.SpaceLikeRepository;
+import com.project.team5backend.domain.space.space.repository.SpaceRepository;
+import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,24 +26,28 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
     private final SpaceRepository spaceRepository;
     private final SpaceLikeRepository spaceLikeRepository;
     private final SpaceConverter spaceConverter;
+    private final UserRepository userRepository;
 
     @Override
     public SpaceResponse.SpaceRegistrationResponse registerSpace(SpaceRequest.Create request) {
-        // DTO를 엔티티로 변환
-        Space space = spaceConverter.toSpace(request);
-        // 로그인된 사용자의 ID를 가져와 submittedBy 필드에 저장
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            String submittedBy = authentication.getName();
-            space.setSubmittedBy(submittedBy);
+        // 로그인 여부 체크
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new AccessDeniedException("로그인이 필요합니다.");
         }
-
+        // 로그인된 사용자의 ID 가져오기
+        String submittedBy = authentication.getName();
+        User user = userRepository.findByEmailAndIsDeletedFalse(submittedBy)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        // DTO -> 엔티티 변환 (컨버터 활용)
+        Space space = spaceConverter.toSpace(request);
+        // submittedBy는 로그인 사용자 이메일로 설정
+        space.setSubmittedBy(user.getEmail());
+        // 저장
         Space savedSpace = spaceRepository.save(space);
-
-        // 엔티티를 응답 DTO로 변환
         return spaceConverter.toSpaceRegistrationResponse(savedSpace);
     }
-
     @Override
     public boolean toggleLike(Long spaceId, Long userId) {
         // ... 기존 로직과 동일

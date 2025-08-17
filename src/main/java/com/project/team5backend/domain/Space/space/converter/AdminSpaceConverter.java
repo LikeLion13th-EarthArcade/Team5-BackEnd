@@ -1,7 +1,7 @@
-package com.project.team5backend.domain.space.converter;
+package com.project.team5backend.domain.space.space.converter;
 
-import com.project.team5backend.domain.space.dto.response.AdminSpaceResponse;
-import com.project.team5backend.domain.space.entity.Space;
+import com.project.team5backend.domain.space.space.dto.response.AdminSpaceResponse;
+import com.project.team5backend.domain.space.space.entity.Space;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

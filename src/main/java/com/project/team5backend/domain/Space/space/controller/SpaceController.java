@@ -1,13 +1,15 @@
-package com.project.team5backend.domain.space.controller;
+package com.project.team5backend.domain.space.space.controller;
 
-import com.project.team5backend.domain.space.dto.request.SpaceRequest;
-import com.project.team5backend.domain.space.dto.response.SpaceResponse;
-import com.project.team5backend.domain.space.service.command.SpaceCommandService;
-import com.project.team5backend.domain.space.service.query.SpaceQueryService;
+import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
+import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.service.command.SpaceCommandService;
+import com.project.team5backend.domain.space.space.service.query.SpaceQueryService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,10 @@ public class SpaceController {
     @PostMapping
     public CustomResponse<SpaceResponse.SpaceRegistrationResponse> registerSpace(
             @RequestBody SpaceRequest.Create request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AccessDeniedException("로그인 필요");
+        }
         SpaceResponse.SpaceRegistrationResponse response = spaceCommandService.registerSpace(request);
         return CustomResponse.onSuccess(response);
     }
