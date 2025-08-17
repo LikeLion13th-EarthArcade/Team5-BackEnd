@@ -38,3 +38,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+/build/
+/out/
+**/generated/**
+.idea/

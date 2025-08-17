@@ -2,13 +2,19 @@ package com.project.team5backend.domain.exhibition.exhibition.controller;
 
 import com.project.team5backend.domain.exhibition.exhibition.dto.request.ExhibitionReqDTO;
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.exhibition.exhibition.service.command.ExhibitionCommandService;
 import com.project.team5backend.domain.exhibition.exhibition.service.query.ExhibitionQueryService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,11 +51,42 @@ public class ExhibitionController {
         return CustomResponse.onSuccess(exhibitionQueryService.getDetailExhibition(exhibitionId));
     }
 
+    @Operation(summary = "전시 검색", description = "전시 검색하면 한페이지에 4개의 전시와 서울 시청 중심의 위도 경도 반환")
+    @GetMapping("/search")
+    public CustomResponse<ExhibitionResDTO.SearchExhibitionPageResDTO> searchExhibitions(
+            @RequestParam(name = "category", required = false) Category category,
+            @RequestParam(name = "distinct", required = false) String district,
+            @RequestParam(name = "mood", required = false) Mood mood,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
+            @RequestParam(defaultValue = "new") ExhibitionSort sort,   // new | old | popular
+            @RequestParam(name = "page", defaultValue = "0") int page
+    ) {
+        return CustomResponse.onSuccess(exhibitionQueryService.searchExhibition(category, district, mood, localDate, sort, page));
+    }
+
+    @Operation(summary = "지금 뜨는 전시회", description = "현재 진행중인 전시중에서 reviewCount가 가장 높은 전시 반환")
+    @GetMapping("/hot-now")
+    public CustomResponse<ExhibitionResDTO.HotNowExhibitionResDTO> hotNowExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition());
+    }
+
+    @Operation(summary = "지금 뜨는, 다가오는 전시회", description = "아직 시작되지 않은 전시중에서 likeCount가 가장 높은 전시 반환")
+    @GetMapping("/upcoming-popularity")
+    public CustomResponse<ExhibitionResDTO.UpcomingPopularityExhibitionResDTO> upcomingPopularityExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getUpcomingPopularExhibition());
+    }
+
+    @Operation(summary = "지금 뜨는 지역별 전시회", description = "현재 진행중인 전시중 reviewCount가 높은, 각기 다른 지역구를 가진 전시 4개 반환")
+    @GetMapping("/trending-region")
+    public CustomResponse<ExhibitionResDTO.PopularRegionExhibitionListResDTO> trendingRegionExhibition() {
+        return CustomResponse.onSuccess(exhibitionQueryService.getPopularRegionExhibitions());
+    }
+
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
     public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
         //유저 검증 로직 필요
-        exhibitionCommandService.deleteExhibition(4L);
+        exhibitionCommandService.deleteExhibition(exhibitionId);
         return CustomResponse.onSuccess("해당 전시가 삭제되었습니다.");
     }
 }

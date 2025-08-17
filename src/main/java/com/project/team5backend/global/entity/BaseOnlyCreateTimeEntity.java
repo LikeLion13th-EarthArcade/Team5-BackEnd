@@ -15,5 +15,5 @@ import java.time.LocalDateTime;
 public class BaseOnlyCreateTimeEntity {
     @CreatedDate
     @Column(name = "created_at")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 }
