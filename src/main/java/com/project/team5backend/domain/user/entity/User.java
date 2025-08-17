@@ -1,6 +1,5 @@
 package com.project.team5backend.domain.user.entity;
 
-
 import com.project.team5backend.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +7,7 @@ import lombok.*;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -25,11 +25,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Builder.Default
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-    @Builder.Default
     @Column(name = "is_email_verified")
     private boolean isEmailVerified = false;
 

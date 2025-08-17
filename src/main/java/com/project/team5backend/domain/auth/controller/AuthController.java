@@ -6,7 +6,9 @@ import com.project.team5backend.domain.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.dto.response.UserResponse;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,9 @@ public class AuthController {
     @Operation(summary = "일반 로그인", description = "이메일과 비밀번호으로 로그인")
     @PostMapping("/login")
     public CustomResponse<UserResponse.LoginResult> login(@RequestBody UserRequest.Login request,
-                                                             HttpServletResponse response) {
-        UserResponse.LoginResult result = authCommandService.login(request, response);
+                                                          HttpServletRequest httpRequest,
+                                                          HttpServletResponse response) {
+        UserResponse.LoginResult result = authCommandService.login(request, httpRequest, response);
         return CustomResponse.onSuccess(result);
     }
 
