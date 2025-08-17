@@ -88,8 +88,8 @@ public class ExhibitionConverter {
                 .startDate(exhibition.getStartDate())
                 .endDate(exhibition.getEndDate())
                 .address(exhibition.getAddress().getRoadAddress() + exhibition.getAddress().getDetail())
-                .latitude(Double.valueOf(exhibition.getAddress().getLatitude()))
-                .longitude(Double.valueOf(exhibition.getAddress().getLongitude()))
+                .latitude(exhibition.getAddress().getLatitude())
+                .longitude(exhibition.getAddress().getLongitude())
                 .build();
     }
     public static ExhibitionResDTO.SearchExhibitionPageResDTO toSearchExhibitionPageResDTO(

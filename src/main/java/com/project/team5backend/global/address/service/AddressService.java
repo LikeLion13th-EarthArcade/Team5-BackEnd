@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AddressService {
 
     private static final Set<String> SEOUL_GU = Set.of(
@@ -32,31 +32,30 @@ public class AddressService {
     private final KakaoLocalClient kakaoLocalClient;
 
     /**
-     * 입력: roadAddress(우선) 없으면 jibunAddress 사용
+     * 입력: roadAddress 우선, 없으면 jibunAddress 사용
      * 처리: 카카오 지오코딩 → city/district/neighborhood/lat/lng 채움
-     * 제약: city가 "서울특별시"가 아니면 거부(서울 한정)
+     * 제약: "서울특별시" 아닌 경우 거부
      */
     public AddressResDTO.AddressCreateResDTO resolve(AddressReqDTO.AddressCreateReqDTO req) {
+        String query = (req.roadAddress() != null && !req.roadAddress().isBlank())
+                ? req.roadAddress()
+                : req.jibunAddress();
+
+        if (query == null || query.isBlank()) {
+            throw new AddressException(AddressErrorCode.ADDRESS_INVALID_INPUT);
+        }
+
         try {
-            String query = req.roadAddress();
-            if (query == null || query.isBlank()) query = req.jibunAddress();
-            if (query == null || query.isBlank()) {
-                throw new AddressException(AddressErrorCode.ADDRESS_INVALID_INPUT);
-            }
-
-            // 동기 호출
             AddressResDTO.KakaoAddressResDTO res = kakaoLocalClient.searchAddress(query);
-
             if (res.documents() == null || res.documents().isEmpty()) {
                 throw new AddressException(AddressErrorCode.ADDRESS_GEOCODE_NOT_FOUND);
             }
 
             var doc = res.documents().get(0);
 
-            Double lng = parseDoubleSafe(doc.x());
-            Double lat = parseDoubleSafe(doc.y());
+            Double lng = parseDoubleSafe(doc.x()); // x=경도
+            Double lat = parseDoubleSafe(doc.y()); // y=위도
 
-            // 1) city/district/neighborhood 우선 순위: road_address -> address
             String city = null, district = null, neighborhood = null, roadName = null;
 
             if (doc.road_address() != null) {
@@ -71,11 +70,9 @@ public class AddressService {
                 neighborhood = doc.address().region_3depth_name();
             }
 
-            // 2) 표기 표준화
             city = normalizeCity(city);
             district = normalizeDistrict(district, roadName != null ? roadName : query);
 
-            // 3) 서울 한정 가드  (★ 정규화 후 "서울특별시" 비교)
             if (!"서울특별시".equals(city)) {
                 throw new AddressException(AddressErrorCode.ADDRESS_OUT_OF_REGION);
             }
@@ -89,13 +86,13 @@ public class AddressService {
         } catch (AddressException e) {
             throw e;
         } catch (Exception e) {
-            log.error("주소 확인 오류", e);
+            log.error("[AddressService] 카카오 지오코딩 오류 (query: {})", query, e);
             throw new AddressException(AddressErrorCode.ADDRESS_KAKAO_API_ERROR);
         }
     }
 
     private static Double parseDoubleSafe(String n) {
-        try { return n == null ? null : Double.parseDouble(n); }
+        try { return (n == null || n.isBlank()) ? null : Double.parseDouble(n); }
         catch (Exception ignored) { return null; }
     }
 
@@ -107,8 +104,7 @@ public class AddressService {
     }
 
     /**
-     * 기본은 Kakao의 region_2depth_name 사용.
-     * 비어있거나 비정상이면 도로명 문자열에서 'XX구' 추출 후 서울 25개 구 화이트리스트로 검증.
+     * district 없으면 전체 주소 문자열에서 'XX구' 추출 → 서울 25개 구 화이트리스트 검증
      */
     private static String normalizeDistrict(String district, String addressFallback) {
         if (district != null && !district.isBlank()) return district.trim();
@@ -119,6 +115,6 @@ public class AddressService {
                 if (SEOUL_GU.contains(cand)) return cand;
             }
         }
-        return district; // 최종 실패 시 null 가능
+        return district;
     }
 }

@@ -7,6 +7,7 @@ import com.project.team5backend.domain.exhibition.review.dto.response.Exhibition
 import com.project.team5backend.global.entity.Facility;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -62,8 +63,8 @@ public class ExhibitionResDTO {
             LocalDate startDate,
             LocalDate endDate,
             String address,
-            Double latitude,
-            Double longitude
+            BigDecimal latitude,
+            BigDecimal longitude
     ){}
     @Builder
     public record SearchExhibitionPageResDTO (

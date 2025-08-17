@@ -22,6 +22,7 @@ import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.address.converter.AddressConverter;
 import com.project.team5backend.global.address.dto.response.AddressResDTO;
+import com.project.team5backend.global.address.service.AddressService;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
 import com.project.team5backend.global.entity.embedded.Address;
@@ -45,6 +46,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ImageCommandService imageCommandService;
+    private final AddressService addressService;
 
     @Override
     public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
@@ -57,16 +59,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         //이미지 가져오기
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
         //주소 가져오기
-        //AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
-        AddressResDTO.AddressCreateResDTO addressResDTO = new AddressResDTO.AddressCreateResDTO(
-                "서울",
-                "도봉구",
-                "우이천로394",
-                "서울 도봉구 우이천로394",
-                "다산관 427호",
-                "01377",
-                37.036363,
-                127.065239);
+        AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
         Address address = AddressConverter.toAddress(addressResDTO);
 
         Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0), address);
