@@ -27,7 +27,8 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
     //삭제되지않았고, 승인되고, 진행중인 전시
     @Query("""
         select e from Exhibition e
-        where e.isDeleted = false
+        where e.id =:exhibitionId
+        and e.isDeleted = false
         and e.status =:status
         and e.startDate <=:current
         and e.endDate >=:current
