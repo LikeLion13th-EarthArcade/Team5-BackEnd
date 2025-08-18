@@ -18,6 +18,8 @@ import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
 import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
+import com.project.team5backend.domain.recommendation.model.ActionType;
+import com.project.team5backend.domain.recommendation.service.InteractLogService;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.address.converter.AddressConverter;
@@ -47,6 +49,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ImageCommandService imageCommandService;
     private final AddressService addressService;
+    private final InteractLogService interactLogService;
 
     @Override
     public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
@@ -88,6 +91,8 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
             //좋아요 등록
             exhibitionLikeRepository.save(ExhibitionLikeConverter.toEntity(user, exhibition));
             exhibition.increaseLikeCount();
+
+            interactLogService.logLike(user.getId(), exhibitionId);
             return ExhibitionLikeConverter.toLikeExhibitionResDTO(exhibitionId, "관심목록에 추가되었습니다.");
         }
     }

@@ -5,6 +5,8 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
+import com.project.team5backend.domain.recommendation.repository.ExhibitionEmbeddingRepository;
+import com.project.team5backend.domain.recommendation.service.EmbeddingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,19 +21,26 @@ import java.time.LocalDate;
 public class ExhibitionAdminCommandServiceImpl implements ExhibitionAdminCommandService {
 
     private final ExhibitionRepository exhibitionRepository;
+    private final ExhibitionEmbeddingRepository embeddingRepository;
+    private final EmbeddingService embeddingService;
 
     @Override
     public void approveExhibition(Long exhibitionId) {
-        LocalDate today = LocalDate.now();
-        Exhibition exhibition = exhibitionRepository.findPendingExhibition(exhibitionId, today, Status.PENDING)
+        Exhibition exhibition = exhibitionRepository.findPendingExhibition(exhibitionId, Status.PENDING)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.PENDING_EXHIBITION_NOT_FOUND));
         exhibition.approveStatus();
+
+        // 이미 있으면 생략, 없으면 생성
+        if (!embeddingRepository.existsById(exhibition.getId())) {
+            // ★ 승인과 동시에 임베딩 생성
+            embeddingService.upsertExhibitionEmbedding(exhibition);
+        }
     }
 
     @Override
     public void rejectExhibition(Long exhibitionId) {
         LocalDate today = LocalDate.now();
-        Exhibition exhibition = exhibitionRepository.findPendingExhibition(exhibitionId, today, Status.PENDING)
+        Exhibition exhibition = exhibitionRepository.findPendingExhibition(exhibitionId, Status.PENDING)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.PENDING_EXHIBITION_NOT_FOUND));
         exhibition.rejectStatus();
     }

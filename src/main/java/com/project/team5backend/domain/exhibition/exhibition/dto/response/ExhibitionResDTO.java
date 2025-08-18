@@ -6,6 +6,7 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.global.entity.Facility;
 import lombok.Builder;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -118,5 +119,21 @@ public class ExhibitionResDTO {
             Long exhibitionId,
             String title,
             String thumbnail
+    ){}
+
+    @Builder
+    public record ExhibitionCardResDTO(
+            Long exhibitionId,
+            String title,
+            String description,
+            String thumbnail,
+            String category,
+            String mood,
+            String location,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal reviewAvg,
+            int reviewCount,
+            Boolean isLiked
     ){}
 }

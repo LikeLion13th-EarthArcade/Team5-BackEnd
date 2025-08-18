@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExhibitionConverter {
 
-    public static Exhibition toEntity (User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey, Address address) {
+    public static Exhibition toEntity(User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey, Address address) {
         return Exhibition.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
@@ -40,7 +41,7 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    public static ExhibitionResDTO.PreviewExhibitionResDTO toPreviewExhibitionResDTO (ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, List<String> images) {
+    public static ExhibitionResDTO.PreviewExhibitionResDTO toPreviewExhibitionResDTO(ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, List<String> images) {
         return ExhibitionResDTO.PreviewExhibitionResDTO.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
@@ -92,6 +93,7 @@ public class ExhibitionConverter {
                 .longitude(exhibition.getAddress().getLongitude())
                 .build();
     }
+
     public static ExhibitionResDTO.SearchExhibitionPageResDTO toSearchExhibitionPageResDTO(
             List<ExhibitionResDTO.SearchExhibitionResDTO> items,
             Page<?> page,
@@ -129,7 +131,7 @@ public class ExhibitionConverter {
 
     public static ExhibitionResDTO.UpcomingPopularityExhibitionResDTO toUpcomingPopularityExhibitionResDTO(
             Long exhibitionId, String title, List<String> fileKeys
-    ){
+    ) {
         return ExhibitionResDTO.UpcomingPopularityExhibitionResDTO.builder()
                 .exhibitionId(exhibitionId)
                 .title(title)
@@ -156,6 +158,28 @@ public class ExhibitionConverter {
                 .exhibitionId(exhibition.getId())
                 .title(exhibition.getTitle())
                 .thumbnail(exhibition.getThumbnail())
+                .build();
+    }
+
+    //ai 추천 결과 관련 컨버터
+    public static ExhibitionResDTO.ExhibitionCardResDTO toCard(Exhibition e, boolean isLiked) {
+        var avg = (e.getRatingAvg()==null)
+                ? java.math.BigDecimal.ZERO
+                : e.getRatingAvg().setScale(1, java.math.RoundingMode.HALF_UP);
+
+        return ExhibitionResDTO.ExhibitionCardResDTO.builder()
+                .exhibitionId(e.getId())
+                .title(e.getTitle())
+                .description(e.getDescription()) // description 필드가 따로 있으면 교체
+                .thumbnail(e.getThumbnail())
+                .category(e.getCategory().name())
+                .mood(e.getMood().name())
+                .location(e.getAddress().getRoadAddress())
+                .startDate(e.getStartDate())
+                .endDate(e.getEndDate())
+                .reviewAvg(avg)
+                .reviewCount(e.getReviewCount()==null? 0 : e.getReviewCount())
+                .isLiked(isLiked)
                 .build();
     }
 }

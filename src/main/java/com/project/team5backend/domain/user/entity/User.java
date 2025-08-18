@@ -23,6 +23,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
 }
