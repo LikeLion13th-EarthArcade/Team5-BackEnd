@@ -81,7 +81,7 @@ public class RecommendationService {
             liked = java.util.Collections.emptySet();
         }
 
-        // ⚠️ 메서드 참조 대신 람다로 isLiked 전달
+        // 메서드 참조 대신 람다로 isLiked 전달
         var items = top.stream()
                 .map(e -> ExhibitionConverter.toCard(e, liked.contains(e.getId())))
                 .toList();
@@ -96,8 +96,9 @@ public class RecommendationService {
     // ----- 핵심: 임베딩 재랭킹 -----
     private List<Exhibition> recommendWithEmbedding(Long userId, Keys k, int topK) {
         var today = LocalDate.now();
+        // 후보는 넉넉히 (최소 100~200) 뽑아야 리랭킹이 작동합니다.
         var candidates = exhibitionRepo.recommendByKeywords(
-                k.cat(), k.mood(), Status.APPROVED, today, PageRequest.of(0, 100)
+                k.cat(), k.mood(), Status.APPROVED, today, PageRequest.of(0, 200)
         );
         if (candidates.isEmpty()) return List.of();
 
@@ -105,8 +106,16 @@ public class RecommendationService {
         var recentIds = logRepo.findRecentExhibitionIds(userId, since, 50);
         float[] userVec = averageEmbedding(embRepo.findByExhibitionIdIn(recentIds));
         if (userVec == null) {
-            // 임베딩이 아직 없거나 유저 취향벡터가 없으면 초기 정렬 그대로 상위
-            return candidates.stream().limit(topK).toList();
+            // 유저 벡터 없으면 기본 정렬로 후처리만 적용
+            List<Exhibition> sortedByDefault = candidates; // 이미 repo가 정렬해 주는 경우
+            if (k.cat() != null && k.mood() != null) {
+                return Reranker.enforceAtLeastNAndMatches(
+                        sortedByDefault, topK, 2,
+                        Exhibition::getId, Exhibition::getCategory, Exhibition::getMood,
+                        k.cat(), k.mood()
+                );
+            }
+            return sortedByDefault.stream().limit(topK).toList();
         }
 
         var candIds = candidates.stream().map(Exhibition::getId).toList();
@@ -123,22 +132,35 @@ public class RecommendationService {
             if (r < minR) minR = r;
             if (r > maxR) maxR = r;
         }
-
         final double W_SIM = 0.7, W_REV = 0.3;
-        double finalMaxR = maxR;
-        double finalMinR = minR;
-        return candidates.stream()
+        final double finalMaxR = maxR, finalMinR = minR;
+
+        // 1) 전체 후보를 점수 내림차순으로 정렬(여기서 limit 걸지 말 것)
+        List<Exhibition> sortedByScoreDesc = candidates.stream()
                 .map(e -> {
                     float[] v = embMap.get(e.getId());
                     double sim = (v == null) ? 0 : cosine(userVec, v);
-                    double revNorm = (finalMaxR > finalMinR) ? (rScore.get(e.getId()) - finalMinR) / (finalMaxR - finalMinR) : 0.0;
+                    double revNorm = (finalMaxR > finalMinR)
+                            ? (rScore.get(e.getId()) - finalMinR) / (finalMaxR - finalMinR)
+                            : 0.0;
                     double score = W_SIM * sim + W_REV * revNorm;
                     return Map.entry(e, score);
                 })
-                .sorted((a,b) -> Double.compare(b.getValue(), a.getValue()))
-                .limit(topK)
+                .sorted((a, b) -> Double.compare(b.getValue(), a.getValue()))
                 .map(Map.Entry::getKey)
                 .toList();
+
+        // 2) 리랭킹 적용: 4개 중 ≥2개는 (topCategory AND topMood)
+        if (k.cat() != null && k.mood() != null) {
+            return Reranker.enforceAtLeastNAndMatches(
+                    sortedByScoreDesc, topK, 2,
+                    Exhibition::getId, Exhibition::getCategory, Exhibition::getMood,
+                    k.cat(), k.mood()
+            );
+        }
+
+        // (topCat/mood가 하나라도 없으면 리랭킹 skip)
+        return sortedByScoreDesc.stream().limit(topK).toList();
     }
 
     private float[] averageEmbedding(List<ExhibitionEmbedding> list){
