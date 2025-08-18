@@ -1,6 +1,8 @@
 package com.project.team5backend.domain.exhibition.exhibition.repository;
 
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Category;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,14 +19,16 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
     //삭제되지 않았고, 승인된 전시
     @Query("""
         select e from Exhibition e
-        where e.isDeleted = false
+        where e.id = :exhibitionId
+        and e.isDeleted = false
         and e.status =:status
     """)
-    Optional<Exhibition> findByIdAndIsDeletedFalseAndStatusApprove(Long exhibitionId, @Param("status") Status status);
+    Optional<Exhibition> findByIdAndIsDeletedFalseAndStatusApprove(@Param("exhibitionId") Long exhibitionId, @Param("status") Status status);
     //삭제되지않았고, 승인되고, 진행중인 전시
     @Query("""
         select e from Exhibition e
-        where e.isDeleted = false
+        where e.id =:exhibitionId
+        and e.isDeleted = false
         and e.status =:status
         and e.startDate <=:current
         and e.endDate >=:current
@@ -97,13 +101,30 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
 
     @Query("""
         select e from Exhibition e
-        where e.status =:status and e.isDeleted = false and e.startDate > :today
+        where e.status =:status and e.isDeleted = false and e.endDate >= :today
         """)
     Page<Exhibition> findPendingExhibitions(LocalDate today, Pageable pageable,@Param("status") Status status);
 
     @Query("""
         select e from Exhibition e
-        where e.id =:exhibitionId and e.status =:status and e.isDeleted = false and e.startDate > :today
+        where e.id =:exhibitionId and e.status =:status and e.isDeleted = false
         """)
-    Optional<Exhibition> findPendingExhibition(Long exhibitionId, LocalDate today, @Param("status") Status status);
+    Optional<Exhibition> findPendingExhibition(Long exhibitionId, @Param("status") Status status);
+
+    // 삭제 x, 승인 o, 진행중이고, 리뷰수와 토탈리뷰점수를 더한 값이 높은 순으로 나열
+    @Query("""
+        SELECT e FROM Exhibition e
+        WHERE e.isDeleted = false
+          AND e.status = :status
+          AND e.startDate <= :today AND e.endDate >= :today
+          AND (e.category = :category OR e.mood = :mood)
+        ORDER BY (e.reviewCount + e.totalReviewScore) DESC
+        """)
+    List<Exhibition> recommendByKeywords(
+            @Param("category") Category category,
+            @Param("mood") Mood mood,
+            @Param("status") Status status,
+            @Param("today") LocalDate today,
+            org.springframework.data.domain.Pageable pageable
+    );
 }
