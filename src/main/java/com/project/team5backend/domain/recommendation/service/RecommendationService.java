@@ -57,10 +57,10 @@ public class RecommendationService {
         var k = computeKeys(userId);
         if (!k.eligible()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null);
 
-        List<Exhibition> top1 = recommendWithEmbedding(userId, k, 1);
-        if (top1.isEmpty()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null);
+        List<Exhibition> top4 = recommendWithEmbedding(userId, k, 4);
+        if (top4.isEmpty()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null);
 
-        Exhibition e = top1.get(0);
+        Exhibition e = top4.get(0);
         return new RecommendResDTO.PersonalizedSummaryResDTO(true, e.getId(), e.getTitle(), e.getThumbnail());
     }
 
