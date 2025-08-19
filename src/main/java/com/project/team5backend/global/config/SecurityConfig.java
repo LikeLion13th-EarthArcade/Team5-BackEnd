@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/users/**",
+                                "/api/v1/spaces/**",
                                 "/actuator/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
                         )
@@ -50,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/api/v1/users/**",
+                                "/api/v1/spaces/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
                                 "/actuator/**"
                         ).permitAll()
@@ -91,7 +93,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 실제 클라이언트 도메인으로 변경해야 합니다. 와일드카드(*)는 배포 시 보안 문제의 소지가 있습니다.
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
