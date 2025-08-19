@@ -2,6 +2,7 @@ package com.project.team5backend.domain.space.space.converter;
 
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.space.entity.Space;
+import com.project.team5backend.domain.user.entity.User;
 import org.springframework.stereotype.Component;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 
@@ -16,9 +17,8 @@ public class SpaceConverter {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     // SpaceRequest.Create DTO를 Space 엔티티로 변환
-    public Space toSpace(SpaceRequest.Create request) {
-        LocalDate startDate = parseDateSafely(request.startDate());
-        LocalDate endDate = parseDateSafely(request.endDate());
+    public Space toSpace(SpaceRequest.Create request, User user) {
+
         return Space.builder()
                 .name(request.name())
                 .location(request.location())
@@ -31,6 +31,7 @@ public class SpaceConverter {
                 .status(Space.Status.APPROVAL_PENDING)
                 .startDate(LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE))
                 .endDate(LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE))
+                .user(user)// ✨ User 객체에서 이메일을 가져와 submittedBy 필드에 설정
                 .build();
     }
     private LocalDate parseDateSafely(String dateStr) {

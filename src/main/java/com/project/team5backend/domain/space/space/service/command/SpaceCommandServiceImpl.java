@@ -36,14 +36,13 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             throw new AccessDeniedException("로그인이 필요합니다.");
         }
-        // 로그인된 사용자의 ID 가져오기
-        String submittedBy = authentication.getName();
-        User user = userRepository.findByEmailAndIsDeletedFalse(submittedBy)
+        // 1. 로그인된 사용자의 이메일로 User 엔티티를 조회
+        String userEmail = authentication.getName();
+        User user = userRepository.findByEmailAndIsDeletedFalse(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        // DTO -> 엔티티 변환 (컨버터 활용)
-        Space space = spaceConverter.toSpace(request);
-        // submittedBy는 로그인 사용자 이메일로 설정
-        space.setSubmittedBy(user.getEmail());
+
+        // 2. DTO -> 엔티티 변환 (컨버터에 user 객체 전달)
+        Space space = spaceConverter.toSpace(request, user);
         // 저장
         Space savedSpace = spaceRepository.save(space);
         return spaceConverter.toSpaceRegistrationResponse(savedSpace);
