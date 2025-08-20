@@ -21,21 +21,22 @@ public class SwaggerConfig {
                 .version("1.0.0"); //버전
 
 
-        // ☑️ 쿠키 인증 스킴 (세션 쿠키 이름에 맞추세요: "SESSION" 또는 "JSESSIONID")
-        final String cookieSchemeName = "cookieAuth";
+        String jwtSchemeName = "JWT TOKEN";
+        // API 요청헤더에 인증정보 포함
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
 
+        // SecuritySchemes 등록
         Components components = new Components()
-                .addSecuritySchemes(cookieSchemeName,
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.APIKEY)   // OpenAPI에서 쿠키는 apiKey 타입
-                                .in(SecurityScheme.In.COOKIE)       // 위치: 쿠키
-                                .name("SESSION"));                  // ← 너희가 설정한 쿠키 이름
+                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
+                        .name(jwtSchemeName)
+                        .type(SecurityScheme.Type.HTTP) // HTTP 방식
+                        .scheme("bearer")
+                        .bearerFormat("JWT"));
 
         return new OpenAPI()
                 .addServersItem(new Server().url("/"))
                 .info(info)
-                // 전체 API에 기본 보안 요구(퍼블릭 엔드포인트는 Controller/@Operation에서 override 가능)
-                .addSecurityItem(new SecurityRequirement().addList(cookieSchemeName))
+                .addSecurityItem(securityRequirement)
                 .components(components);
     }
 }
