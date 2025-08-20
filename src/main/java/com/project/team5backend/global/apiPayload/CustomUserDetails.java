@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.project.team5backend.domain.user.entity.Role;
+import com.project.team5backend.domain.user.user.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import com.project.team5backend.domain.user.entity.User; // User 엔티티 위치에 맞게 수정
+import com.project.team5backend.domain.user.user.entity.User; // User 엔티티 위치에 맞게 수정
 
 @Getter
 @NoArgsConstructor

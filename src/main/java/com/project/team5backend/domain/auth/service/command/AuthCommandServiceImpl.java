@@ -1,12 +1,12 @@
 package com.project.team5backend.domain.auth.service.command;
 
 
-import com.project.team5backend.domain.user.converter.UserConverter;
-import com.project.team5backend.domain.user.dto.request.UserRequest;
-import com.project.team5backend.domain.user.dto.response.UserResponse;
-import com.project.team5backend.domain.user.entity.Role;
-import com.project.team5backend.domain.user.entity.User;
-import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.domain.user.user.converter.UserConverter;
+import com.project.team5backend.domain.user.user.dto.request.UserRequest;
+import com.project.team5backend.domain.user.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.user.entity.Role;
+import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +24,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 

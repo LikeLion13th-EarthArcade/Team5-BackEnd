@@ -1,7 +1,6 @@
 package com.project.team5backend.domain.space.space.service.query;
 
 
-
 import com.project.team5backend.domain.space.space.converter.SpaceConverter;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 

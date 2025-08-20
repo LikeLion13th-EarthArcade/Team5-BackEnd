@@ -8,6 +8,7 @@ import com.project.team5backend.domain.space.space.entity.Space;
 import com.project.team5backend.domain.space.space.entity.SpaceLike;
 import com.project.team5backend.domain.space.space.repository.SpaceLikeRepository;
 import com.project.team5backend.domain.space.space.repository.SpaceRepository;
+
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +47,11 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         space.setSubmittedBy(user.getEmail());
         // 저장
         Space savedSpace = spaceRepository.save(space);
+
+        // 엔티티를 응답 DTO로 변환
         return spaceConverter.toSpaceRegistrationResponse(savedSpace);
     }
+
     @Override
     public boolean toggleLike(Long spaceId, Long userId) {
         // ... 기존 로직과 동일

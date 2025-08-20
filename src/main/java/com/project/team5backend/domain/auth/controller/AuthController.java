@@ -2,13 +2,12 @@ package com.project.team5backend.domain.auth.controller;
 
 
 import com.project.team5backend.domain.auth.service.command.AuthCommandService;
-import com.project.team5backend.domain.user.dto.request.UserRequest;
-import com.project.team5backend.domain.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.user.dto.request.UserRequest;
+import com.project.team5backend.domain.user.user.dto.response.UserResponse;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

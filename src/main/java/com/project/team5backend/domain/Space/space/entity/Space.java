@@ -51,6 +51,10 @@ public class Space {
 
     //운영시간
     private String operatingHours;
+    private String businessRegistrationNumber;
+    private String description;
+    private String businessRegistrationDocUrl;
+    private String buildingLedgerDocUrl;
 
     @ElementCollection
     private List<String> imageUrls;
