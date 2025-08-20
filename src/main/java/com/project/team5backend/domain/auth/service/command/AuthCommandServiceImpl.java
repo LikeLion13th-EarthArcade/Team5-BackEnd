@@ -137,5 +137,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
         return new UserResponse.LoginResult(user.getId(), user.getName(), "로그인 성공");
     }
+    @Override
+    public void logout(HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) {
+            session.invalidate(); // 세션 무효화
+        }
+        SecurityContextHolder.clearContext(); // SecurityContext 정리
+    }
 
 }
