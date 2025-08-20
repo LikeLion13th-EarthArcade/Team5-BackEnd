@@ -11,6 +11,7 @@ import com.project.team5backend.domain.exhibition.exhibition.exception.Exhibitio
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
+import com.project.team5backend.domain.recommendation.service.InteractLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,11 +36,14 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionImageRepository exhibitionImageRepository;
+    private final InteractLogService interactLogService;
     @Override
     public ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
 
+        // ai 분석을 위한 로그 생성
+        interactLogService.logClick(1L, exhibitionId);
         // 전시 이미지들의 fileKey만 조회
         List<String> imageFileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(exhibitionId);
 
