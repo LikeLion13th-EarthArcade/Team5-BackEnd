@@ -11,8 +11,7 @@ public class AdminSpaceResponse {
     public record PendingSpaceListResponse (
             Long spaceId,
             String spaceName,
-            String submittedBy,
-            LocalDateTime submittedAt
+            String submittedBy
     ){}
 
     public record AdminActionResponse (

@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.space.space.entity;
 
 
+import com.project.team5backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,10 @@ import org.springframework.data.annotation.CreatedDate;
 @AllArgsConstructor
 @Table(name = "Space")
 public class Space {
+    // ✅ 여기에 사용자(User)와 공간(Space)의 관계를 정의합니다.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // DB 테이블에 user_id라는 외래키(Foreign Key) 컬럼을 생성합니다.
+    private User user;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,11 +48,10 @@ public class Space {
 
 
     // 누가 공간을 등록했냐
-    private String submittedBy;
+    //private String submittedBy;
 
     // 언제 공간을 등록했냐
-    @CreatedDate
-    private LocalDateTime submittedAt;
+    //private LocalDateTime submittedAt;
 
     //운영시간
     private String operatingHours;
