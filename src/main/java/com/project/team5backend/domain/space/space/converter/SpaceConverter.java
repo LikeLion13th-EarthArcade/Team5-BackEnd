@@ -17,8 +17,6 @@ public class SpaceConverter {
 
     // SpaceRequest.Create DTO를 Space 엔티티로 변환
     public Space toSpace(SpaceRequest.Create request) {
-        LocalDate startDate = parseDateSafely(request.startDate());
-        LocalDate endDate = parseDateSafely(request.endDate());
         return Space.builder()
                 .name(request.name())
                 .location(request.location())
@@ -96,4 +94,18 @@ public class SpaceConverter {
                 contact
         );
     }
+    // UpdateSpace 레코드로 Space 엔티티 업데이트
+    public void updateSpaceFromDto(Space space, SpaceRequest.UpdateSpace request) {
+        space.setName(request.name());
+        space.setLocation(request.location());
+        space.setType(request.type());
+        space.setSize(request.size());
+        space.setPurpose(request.purpose());
+        space.setMood(request.mood());
+        space.setDescription(request.description());
+        space.setImageUrls(request.images());
+        space.setStartDate(parseDateSafely(request.startDate()));
+        space.setEndDate(parseDateSafely(request.endDate()));
+    }
+
 }

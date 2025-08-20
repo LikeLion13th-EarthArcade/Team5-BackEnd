@@ -15,8 +15,7 @@ public class AdminSpaceConverter {
         return new AdminSpaceResponse.PendingSpaceListResponse(
                 space.getId(),
                 space.getName(),
-                space.getSubmittedBy(),
-                space.getSubmittedAt()
+                space.getUser().getEmail()
         );
     }
 

@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.space.space.entity;
 
 
+import com.project.team5backend.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,14 +42,6 @@ public class Space {
 
     private String description; // 공간 설명
 
-
-    // 누가 공간을 등록했냐
-    private String submittedBy;
-
-    // 언제 공간을 등록했냐
-    @CreatedDate
-    private LocalDateTime submittedAt;
-
     //운영시간
     private String operatingHours;
 
@@ -65,4 +58,7 @@ public class Space {
     }
     @OneToMany(mappedBy = "space", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<SpaceLike> spaceLikes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") // DB 테이블에 user_id라는 외래키(Foreign Key) 컬럼을 생성합니다.
+    private User user;
 }

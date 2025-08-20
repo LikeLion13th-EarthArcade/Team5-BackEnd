@@ -57,4 +57,6 @@ public class SpaceResponse {
     public record SpaceRegistrationResponse (
             Long spaceId
     ){}
+
+
 }

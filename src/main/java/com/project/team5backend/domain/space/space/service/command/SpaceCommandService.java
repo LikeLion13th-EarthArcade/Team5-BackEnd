@@ -10,4 +10,6 @@ public interface SpaceCommandService {
     void deleteSpace(Long spaceId);
     boolean toggleLike(Long spaceId, Long userId);
     void approveSpace(Long spaceId);
+    // 공간 정보 수정 메서드 추가
+    void updateSpace(Long spaceId, SpaceRequest.UpdateSpace requestDto);
 }

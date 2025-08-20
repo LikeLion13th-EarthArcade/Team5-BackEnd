@@ -21,8 +21,11 @@ public enum GeneralErrorCode implements BaseErrorCode {
     // 유효성 검사
     VALIDATION_FAILED_PARAM(HttpStatus.BAD_REQUEST, "VALID400_0", "잘못된 파라미터 입니다."),
 
-    VALIDATION_FAILED_DTO(HttpStatus.BAD_REQUEST, "VALID400_1", "잘못된 DTO입니다.")
-    ;
+    VALIDATION_FAILED_DTO(HttpStatus.BAD_REQUEST, "VALID400_1", "잘못된 DTO입니다."),
+
+    // Space 관련 오류 코드 추가
+    SPACE_NOT_FOUND(HttpStatus.NOT_FOUND, "SPACE404", "해당 공간을 찾을 수 없습니다."),
+    UNAUTHORIZED_TO_UPDATE_SPACE(HttpStatus.FORBIDDEN, "SPACE403", "공간 수정 권한이 없습니다.");
 
     // 필요한 필드값 선언
     private final HttpStatus httpStatus;

@@ -63,5 +63,16 @@ public class SpaceController {
     @DeleteMapping("/{spaceId}")
     public CustomResponse<Void> deleteSpace(@PathVariable Long spaceId) {
         spaceCommandService.deleteSpace(spaceId);
-        return CustomResponse.onSuccess(null);    }
+        return CustomResponse.onSuccess(null);
+    }
+    // 공간 정보 수정 API
+    @PatchMapping("/{spaceId}")
+    @Operation(summary = "공간 정보 수정", description = "등록한 공간의 정보 수정")
+    public CustomResponse<Void> updateSpace(
+            @PathVariable Long spaceId,
+            @RequestBody SpaceRequest.UpdateSpace requestDto
+    ) {
+        spaceCommandService.updateSpace(spaceId, requestDto);
+        return CustomResponse.onSuccess(null);
+    }
 }

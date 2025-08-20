@@ -45,4 +45,18 @@ public class SpaceRequest {
             Long spaceId,
             boolean liked
     ){}
+
+    // 전시 공간 정보 수정
+    public record UpdateSpace (
+            String name,  // 공간 이름
+            String location, // 공간 위치
+            SpaceType type, // 공간 타입
+            String size, // 공간 크기(면적)
+            SpacePurpose purpose, // 공간 목적
+            SpaceMood mood, // 공간 분위기
+            String startDate, // 공간 이용 시작일
+            String endDate, // 공간 이용 마감일
+            String description, // 공간 설명
+            List<String> images
+    ){}
 }

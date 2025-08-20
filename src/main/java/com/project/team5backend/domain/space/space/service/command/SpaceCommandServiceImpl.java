@@ -10,6 +10,7 @@ import com.project.team5backend.domain.space.space.repository.SpaceLikeRepositor
 import com.project.team5backend.domain.space.space.repository.SpaceRepository;
 import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.global.apiPayload.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +45,6 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         // DTO -> 엔티티 변환 (컨버터 활용)
         Space space = spaceConverter.toSpace(request);
-        // submittedBy는 로그인 사용자 이메일로 설정
-        space.setSubmittedBy(user.getEmail());
         // 저장
         Space savedSpace = spaceRepository.save(space);
         return spaceConverter.toSpaceRegistrationResponse(savedSpace);
@@ -78,4 +79,30 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
                 .orElseThrow(() -> new IllegalArgumentException("Space not found"));
         space.setStatus(Space.Status.APPROVED);
     }
+    // 공간 정보 수정 로직
+    @Override
+    public void updateSpace(Long spaceId, SpaceRequest.UpdateSpace requestDto) {
+        // 1. 로그인된 사용자 정보 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("로그인이 필요합니다.");
+        }
+        String userEmail = authentication.getName();
+        User user = userRepository.findByEmailAndIsDeletedFalse(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 2. 공간 엔티티 찾기
+        Space space = spaceRepository.findById(spaceId)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.SPACE_NOT_FOUND));
+
+        // 3. 권한 확인 (공간 소유주가 현재 사용자인지)
+        //if (!space.getSubmittedBy().equals(userEmail)) {
+        //    throw new CustomException(GeneralErrorCode.UNAUTHORIZED_TO_UPDATE_SPACE);}
+
+        // 4. 엔티티 업데이트 (컨버터 메서드 사용)
+        spaceConverter.updateSpaceFromDto(space, requestDto);
+
+        spaceRepository.save(space);
+    }
+
 }
