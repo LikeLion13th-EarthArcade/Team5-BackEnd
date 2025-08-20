@@ -1,8 +1,12 @@
 package com.project.team5backend.domain.user.entity;
 
+import com.project.team5backend.domain.space.space.entity.Space;
 import com.project.team5backend.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -49,4 +53,6 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Space> spaces = new ArrayList<>();
 }
