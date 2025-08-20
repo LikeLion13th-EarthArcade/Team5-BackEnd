@@ -1,13 +1,12 @@
 package com.project.team5backend.domain.space.space.entity;
 
 
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -55,10 +54,7 @@ public class Space {
 
     //운영시간
     private String operatingHours;
-    private String businessRegistrationNumber;
-    private String description;
-    private String businessRegistrationDocUrl;
-    private String buildingLedgerDocUrl;
+
 
     @ElementCollection
     private List<String> imageUrls;

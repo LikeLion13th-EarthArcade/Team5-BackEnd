@@ -8,7 +8,7 @@ import java.util.List;
 @Setter
 public class ReviewRequest {
 
-    public record Create(
+    public record CreateRe(
             Double rating,
             String content,
             List<String> images

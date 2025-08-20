@@ -4,7 +4,7 @@ import com.project.team5backend.domain.space.review.dto.request.ReviewRequest;
 import com.project.team5backend.domain.space.review.dto.response.ReviewResponse;
 import com.project.team5backend.domain.space.review.entity.Review;
 import com.project.team5backend.domain.space.space.entity.Space;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -16,13 +16,15 @@ public class ReviewConverter {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public Review toReview(ReviewRequest.Create request, Space space, User user) {
+    public Review toReview(ReviewRequest.CreateRe request, Space space, User user,String mainImageKey) {
         Review review = new Review();
         review.setRating(request.rating());
         review.setContent(request.content());
-        review.setImageUrls(request.images());
+        review.setImageUrls(request.images());// 여러 이미지 저장
+        review.setMainImageKey(mainImageKey);  // 메인 이미지 저장
         review.setSpace(space);
         review.setUser(user);
+
         return review;
     }
 

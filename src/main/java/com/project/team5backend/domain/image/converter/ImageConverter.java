@@ -4,6 +4,10 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.image.dto.internel.ImageInternelDTO;
 import com.project.team5backend.domain.image.dto.response.ImageResDTO;
 import com.project.team5backend.domain.image.entity.ExhibitionImage;
+import com.project.team5backend.domain.image.entity.ReviewImage;
+import com.project.team5backend.domain.image.entity.SpaceImage;
+import com.project.team5backend.domain.space.review.entity.Review;
+import com.project.team5backend.domain.space.space.entity.Space;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -24,8 +28,39 @@ public class ImageConverter {
                 .exhibition(exhibition)
                 .build();
     }
+    // Space
+    public static SpaceImage toEntitySpaceImage(Space space, String fileKey) {
+        return SpaceImage.builder()
+                .fileKey(fileKey)
+                .isDeleted(false)
+                .space(space)
+                .build();
+    }
+
+    // Review
+    public static ReviewImage toEntityReviewImage(Review review, String fileKey) {
+        return ReviewImage.builder()
+                .fileKey(fileKey)
+                .isDeleted(false)
+                .review(review)
+                .build();
+    }
     public static List<String> toFileKeyList(List<ExhibitionImage> exhibitionImages) {
-        return exhibitionImages.stream().map(ExhibitionImage::getFileKey).collect(Collectors.toList());
+        return exhibitionImages.stream()
+                .map(ExhibitionImage::getFileKey)
+                .collect(Collectors.toList());
+
+    }
+    public static List<String> toFileKeyListSpace(List<SpaceImage> spaceImages) {
+        return spaceImages.stream()
+                .map(SpaceImage::getFileKey)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> toFileKeyListReview(List<ReviewImage> reviewImages) {
+        return reviewImages.stream()
+                .map(ReviewImage::getFileKey)
+                .collect(Collectors.toList());
     }
 
     public static ImageResDTO.PresignedUrlResDTO toPresignedUrlResDTO(String presignedUrl, String fileKey) {

@@ -5,7 +5,7 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.response.Exhibi
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

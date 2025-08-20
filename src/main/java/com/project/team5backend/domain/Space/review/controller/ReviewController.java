@@ -26,7 +26,7 @@ public class ReviewController {
     @PostMapping
     public CustomResponse<Void> createReview(
             @PathVariable Long spaceId,
-            @RequestBody ReviewRequest.Create request) {
+            @RequestBody ReviewRequest.CreateRe request) {
         //SecurityContext에서 Authentication 객체를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //Authentication 객체에서 CustomUserDetails를 가져옴

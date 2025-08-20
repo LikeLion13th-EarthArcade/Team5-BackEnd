@@ -23,6 +23,7 @@ public class RedisConfig {
 
     // RedisTemplate 설정
     @Bean
+    @Primary
     public RedisTemplate<String, String> imageRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
 

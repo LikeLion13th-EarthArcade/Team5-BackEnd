@@ -2,11 +2,12 @@ package com.project.team5backend.domain.space.reservation.entity;
 
 
 import com.project.team5backend.domain.space.space.entity.Space;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,6 +35,9 @@ public class Reservation {
 
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private LocalDateTime reservedAt; // 예약 일시
+
 
     @Column(length = 500)
     private String cancelReason; // 취소 사유(기타)

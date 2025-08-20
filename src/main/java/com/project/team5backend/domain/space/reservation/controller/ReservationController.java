@@ -4,7 +4,6 @@ import com.project.team5backend.domain.space.reservation.dto.request.Reservation
 import com.project.team5backend.domain.space.reservation.dto.response.ReservationResponse;
 import com.project.team5backend.domain.space.reservation.service.command.ReservationCommandService;
 import com.project.team5backend.domain.space.reservation.service.query.ReservationQueryService;
-import com.project.team5backend.domain.user.entity.User;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;

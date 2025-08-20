@@ -1,9 +1,14 @@
 package com.project.team5backend.domain.user.me.service.query;
 
 
-import com.project.team5backend.domain.user.user.dto.response.UserResponse;
-
+import com.project.team5backend.domain.user.me.dto.response.UserMeResponse;
 public interface UserMeQueryService {
-    UserResponse getUserMypage(Long userId);
+    UserMeResponse.UserActivityResponse getMyActivity(Long userId);
+
+    UserMeResponse.UserSpacesResponse getMySpaces(Long userId);
+
+    UserMeResponse.UserExhibitionsResponse getMyExhibitions(Long userId);
+
+    UserMeResponse.UserReservationsResponse getMyReservations(Long userId);
 }
 

@@ -2,9 +2,8 @@ package com.project.team5backend.domain.space.reservation.service.query;
 
 import com.project.team5backend.domain.space.reservation.converter.ReservationConverter;
 import com.project.team5backend.domain.space.reservation.dto.response.ReservationResponse;
-import com.project.team5backend.domain.space.reservation.entity.Reservation;
 import com.project.team5backend.domain.space.reservation.repository.ReservationRepository;
-import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

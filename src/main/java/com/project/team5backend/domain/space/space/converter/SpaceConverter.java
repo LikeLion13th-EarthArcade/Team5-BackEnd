@@ -2,7 +2,7 @@ package com.project.team5backend.domain.space.space.converter;
 
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.space.entity.Space;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import org.springframework.stereotype.Component;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 

@@ -4,8 +4,7 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Catego
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
-import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.global.converter.FacilityConverter;
 import com.project.team5backend.global.entity.Facility;
 import com.project.team5backend.global.entity.embedded.Address;
