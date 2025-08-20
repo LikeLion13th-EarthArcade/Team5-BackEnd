@@ -1,17 +1,18 @@
 package com.project.team5backend.domain.user.entity;
 
-import com.project.team5backend.global.BaseEntity;
-import jakarta.persistence.*;
 import lombok.*;
+import com.project.team5backend.global.entity.BaseTimeEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
-public class User extends BaseEntity {
+@Table(name = "users")
+public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

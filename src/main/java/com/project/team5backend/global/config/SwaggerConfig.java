@@ -16,9 +16,10 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI LikeLionAPI() {
         Info info = new Info()
-                .title("CookCheck API") // API 제목
-                .description("CookCheck API 명세서 입니다.") // 설명
+                .title("Artie API") // API 제목
+                .description("Artie API 명세서 입니다.") // 설명
                 .version("1.0.0"); //버전
+
 
         String jwtSchemeName = "JWT TOKEN";
         // API 요청헤더에 인증정보 포함
