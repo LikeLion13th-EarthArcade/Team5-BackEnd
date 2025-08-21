@@ -2,7 +2,6 @@ package com.project.team5backend.domain.recommendation.controller;
 
 import com.project.team5backend.domain.recommendation.dto.response.RecommendResDTO;
 import com.project.team5backend.domain.recommendation.service.RecommendationService;
-import com.project.team5backend.domain.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;

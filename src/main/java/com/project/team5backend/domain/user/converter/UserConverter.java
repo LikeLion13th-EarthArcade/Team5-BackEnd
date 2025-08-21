@@ -4,7 +4,6 @@ import com.project.team5backend.domain.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.dto.response.UserResponse;
 import com.project.team5backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
