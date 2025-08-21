@@ -53,5 +53,5 @@ server:
       cookie:
         domain: artiee.store
         http-only: true
-        secure: true
+        secure: false
         same-site: none
