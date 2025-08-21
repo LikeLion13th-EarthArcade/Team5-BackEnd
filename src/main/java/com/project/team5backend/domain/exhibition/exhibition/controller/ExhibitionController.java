@@ -8,10 +8,12 @@ import com.project.team5backend.domain.exhibition.exhibition.repository.Exhibiti
 import com.project.team5backend.domain.exhibition.exhibition.service.command.ExhibitionCommandService;
 import com.project.team5backend.domain.exhibition.exhibition.service.query.ExhibitionQueryService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
+import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,21 +31,26 @@ public class ExhibitionController {
     @PostMapping
     @Operation(summary = "전시 생성", description = "전시 생성하면 전시 객체가 심사 대상에 포함됩니다.")
     public CustomResponse<String> createExhibition(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
-        exhibitionCommandService.createExhibition(createExhibitionReqDTO);
+        exhibitionCommandService.createExhibition(createExhibitionReqDTO, userDetails.getEmail());
         return CustomResponse.onSuccess("전시글 등록이 완료되었습니다. 관리자 승인 대기열에 추가합니다.");
     }
 
     @PostMapping("/preview")
     @Operation(summary = "전시 생성 중 미리보기", description = "작성중 미리보기 api")
     public CustomResponse<ExhibitionResDTO.PreviewExhibitionResDTO> previewExhibition(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
-        return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition("likelion@naver.com",createExhibitionReqDTO));
+        return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition(userDetails.getEmail(),createExhibitionReqDTO));
     }
     @PostMapping("/{exhibitionId}/like")
     @Operation(summary = "전시 좋아요", description = "좋아요 없으면 등록, 있으면 취소")
-    public CustomResponse<ExhibitionResDTO.LikeExhibitionResDTO> likeExhibition(@PathVariable Long exhibitionId) {
-        return CustomResponse.onSuccess(exhibitionCommandService.likeExhibition(exhibitionId));
+    public CustomResponse<ExhibitionResDTO.LikeExhibitionResDTO> likeExhibition(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long exhibitionId
+    ) {
+        return CustomResponse.onSuccess(exhibitionCommandService.likeExhibition(exhibitionId, userDetails.getEmail()));
     }
 
     @GetMapping("/{exhibitionId}")
@@ -91,9 +98,11 @@ public class ExhibitionController {
 
     @DeleteMapping("/{exhibitionId}")
     @Operation(summary = "전시 삭제", description = "전시가 삭제된 전시로 변경하는 api")
-    public CustomResponse<String> deleteExhibition(@PathVariable Long exhibitionId){
+    public CustomResponse<String> deleteExhibition(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long exhibitionId){
         //유저 검증 로직 필요
-        exhibitionCommandService.deleteExhibition(exhibitionId);
+        exhibitionCommandService.deleteExhibition(exhibitionId, userDetails.getEmail());
         return CustomResponse.onSuccess("해당 전시가 삭제되었습니다.");
     }
 }

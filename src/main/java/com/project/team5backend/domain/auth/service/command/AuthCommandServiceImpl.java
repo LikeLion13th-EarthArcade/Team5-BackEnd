@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -24,7 +24,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -39,7 +38,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
     private final UserConverter userConverter;
-    private final  RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     private static final String CODE_PREFIX = "email:code:";
 

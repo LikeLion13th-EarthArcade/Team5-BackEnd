@@ -4,7 +4,7 @@ import com.project.team5backend.domain.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.dto.response.UserResponse;
 import com.project.team5backend.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class UserConverter {
 
     private final PasswordEncoder passwordEncoder;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
 
     // SignUp DTO를 User 엔티티로 변환

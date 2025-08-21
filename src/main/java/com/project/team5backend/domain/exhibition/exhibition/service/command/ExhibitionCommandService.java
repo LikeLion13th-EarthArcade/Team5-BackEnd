@@ -5,11 +5,11 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.response.Exhibi
 
 public interface ExhibitionCommandService {
 
-    void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
+    void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO, String email);
 
-    ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId);
+    ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId, String email);
 
     ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(String email, ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
 
-    void deleteExhibition(Long id);
+    void deleteExhibition(Long id, String email);
 }
