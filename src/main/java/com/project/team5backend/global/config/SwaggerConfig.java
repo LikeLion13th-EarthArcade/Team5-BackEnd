@@ -32,7 +32,7 @@ public class SwaggerConfig {
                                 .name("SESSION"));                  // ← 너희가 설정한 쿠키 이름
 
         return new OpenAPI()
-                .addServersItem(new Server().url("/"))
+                .addServersItem(new Server().url("https://artiee.store"))
                 .info(info)
                 // 전체 API에 기본 보안 요구(퍼블릭 엔드포인트는 Controller/@Operation에서 override 가능)
                 .addSecurityItem(new SecurityRequirement().addList(cookieSchemeName))
