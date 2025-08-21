@@ -1,4 +1,5 @@
 application-local.yml
+
 HELP.md
 .gradle
 build/
@@ -36,3 +37,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+/build/
+/out/
+**/generated/**
+.idea/
