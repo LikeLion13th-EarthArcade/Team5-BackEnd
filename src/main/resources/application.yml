@@ -29,7 +29,7 @@ spring:
     password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
-      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: true
       mail.smtp.starttls.required: true
 aws:
   s3:
