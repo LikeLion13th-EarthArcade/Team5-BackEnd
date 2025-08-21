@@ -13,8 +13,10 @@ public class RedisConfig {
     // Redis 접속 정보 설정
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        // 기본값은 localhost:6379
-        return new LettuceConnectionFactory();
+        String host = System.getenv().getOrDefault("SPRING_DATA_REDIS_HOST", "localhost");
+        int port = Integer.parseInt(System.getenv().getOrDefault("SPRING_DATA_REDIS_PORT", "6379"));
+
+        return new LettuceConnectionFactory(host, port);
     }
 
     // RedisTemplate 설정
