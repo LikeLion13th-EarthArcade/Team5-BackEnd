@@ -30,7 +30,7 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
-      mail.smtp.ssl.trust: smtp.gmail.com
+      mail.smtp.starttls.required: true
 aws:
   s3:
     access-key: ${AWS_ACCESS_KEY}
