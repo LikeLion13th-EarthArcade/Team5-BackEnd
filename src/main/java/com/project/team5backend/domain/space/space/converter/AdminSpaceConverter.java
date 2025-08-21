@@ -12,10 +12,18 @@ public class AdminSpaceConverter {
 
     // Space 엔티티를 심사 대기 목록 DTO로 변환
     public AdminSpaceResponse.PendingSpaceListResponse toPendingSpaceListResponse(Space space) {
+        // NullPointerException을 방지하기 위해 Null 체크를 추가합니다.
+        String userEmail = "사용자 정보 없음"; // 사용자 정보가 없을 경우를 위한 기본값
+
+        if (space.getUser() != null) {
+            userEmail = space.getUser().getEmail();
+        }
+
         return new AdminSpaceResponse.PendingSpaceListResponse(
-                space.getId(),
+                space.getId(), // `space.getSpaceId()`는 존재하지 않으므로 `space.getId()`로 수정
                 space.getName(),
-                space.getUser().getEmail()
+                userEmail // 안전하게 변환된 userEmail 사용
+                // 다른 필드들...
         );
     }
 
