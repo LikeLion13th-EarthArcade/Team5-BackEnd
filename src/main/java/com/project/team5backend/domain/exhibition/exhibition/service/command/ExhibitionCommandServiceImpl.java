@@ -70,7 +70,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
 
         for (String fileKey : fileKeys) {
             exhibitionImageRepository.save(ImageConverter.toEntityExhibitionImage(ex, fileKey));
-            redisImageTracker.remove("likelion@naver.com", fileKey);
+            redisImageTracker.remove(email, fileKey);
         }
     }
 
