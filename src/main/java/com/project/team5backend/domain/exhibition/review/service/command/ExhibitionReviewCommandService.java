@@ -5,5 +5,5 @@ import com.project.team5backend.domain.exhibition.review.dto.request.ExhibitionR
 public interface ExhibitionReviewCommandService {
     void createExhibitionReview(Long exhibitionId, String email, ExhibitionReviewReqDTO.createExReviewReqDTO createExReviewReqDTO);
 
-    void deleteExhibitionReview(Long exhibitionReviewId);
+    void deleteExhibitionReview(Long exhibitionReviewId, String email);
 }

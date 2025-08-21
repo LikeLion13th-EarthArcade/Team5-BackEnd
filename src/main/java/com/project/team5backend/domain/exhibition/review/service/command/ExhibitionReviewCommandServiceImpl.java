@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -66,11 +67,15 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
         exhibitionRepository.applyReviewCreated(exhibitionId, rating);
     }
     @Override
-    public void deleteExhibitionReview(Long exhibitionReviewId) {
+    public void deleteExhibitionReview(Long exhibitionReviewId, String email) {
         ExhibitionReview exhibitionReview = exhibitionReviewRepository.findByIdAndIsDeletedFalse(exhibitionReviewId)
                 .orElseThrow(() -> new ExhibitionReviewException(ExhibitionReviewErrorCode.EXHIBITION_REVIEW_NOT_FOUND));
 
         if (exhibitionReview.isDeleted()) return;
+
+        if (!Objects.equals(exhibitionReview.getUser().getEmail(), email)) {
+            throw new ExhibitionReviewException(ExhibitionReviewErrorCode.EXHIBITION_REVIEW_FORBIDDEN);
+        }
 
         exhibitionReview.delete();
 

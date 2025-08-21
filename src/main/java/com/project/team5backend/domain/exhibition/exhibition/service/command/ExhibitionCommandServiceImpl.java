@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -52,15 +53,15 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final InteractLogService interactLogService;
 
     @Override
-    public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
-        User user = userRepository.findById(1L)
+    public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO, String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
-        if (redisImageTracker.getImageCountByEmail("likelion@naver.com") == 0) {
+        if (redisImageTracker.getImageCountByEmail(email) == 0) {
             throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
         }
         //이미지 가져오기
-        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
+        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(email);
         //주소 가져오기
         AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
         Address address = AddressConverter.toAddress(addressResDTO);
@@ -75,8 +76,8 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     }
 
     @Override
-    public ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId) {
-        User user = userRepository.findById(1L)
+    public ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId, String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
         Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
@@ -105,11 +106,15 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     }
 
     @Override
-    public void deleteExhibition(Long exhibitionId) {
+    public void deleteExhibition(Long exhibitionId, String email) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
 
         if (exhibition.isDeleted()) return;
+
+        if (!Objects.equals(exhibition.getUser().getEmail(), email)) {
+            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_FORBIDDEN);
+        }
 
         exhibition.delete();
 

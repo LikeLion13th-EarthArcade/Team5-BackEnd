@@ -5,6 +5,7 @@ import com.project.team5backend.domain.exhibition.review.dto.response.Exhibition
 import com.project.team5backend.domain.exhibition.review.service.command.ExhibitionReviewCommandService;
 import com.project.team5backend.domain.exhibition.review.service.query.ExhibitionReviewQueryService;
 import com.project.team5backend.global.apiPayload.CustomResponse;
+import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,10 +29,10 @@ public class ExhibitionReviewController {
     @Operation(summary = "리뷰 생성", description = "리뷰 생성 api")
     @PostMapping("/{exhibitionId}/reviews")
     public CustomResponse<String> createExhibitionReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long exhibitionId,
             @Valid @RequestBody ExhibitionReviewReqDTO.createExReviewReqDTO createExReviewReqDTO) {
-        String email = "likelion@naver.com";
-        exReviewCommandService.createExhibitionReview(exhibitionId, email, createExReviewReqDTO);
+        exReviewCommandService.createExhibitionReview(exhibitionId, userDetails.getEmail(), createExReviewReqDTO);
         return CustomResponse.onSuccess("해당 전시 리뷰가 생성되었습니다.");
     }
 
@@ -53,8 +55,10 @@ public class ExhibitionReviewController {
     }
     @Operation(summary = "리뷰 삭제", description = "리뷰 소프트 삭제")
     @DeleteMapping("/reviews/{reviewId}")
-    public CustomResponse<String> deleteExhibitionReview(@PathVariable("reviewId") Long exhibitionReviewId) {
-        exReviewCommandService.deleteExhibitionReview(exhibitionReviewId);
+    public CustomResponse<String> deleteExhibitionReview(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable("reviewId") Long exhibitionReviewId) {
+        exReviewCommandService.deleteExhibitionReview(exhibitionReviewId, userDetails.getEmail());
         return CustomResponse.onSuccess("해당 전시 리뷰가 삭제되었습니다.");
     }
 }
