@@ -4,6 +4,9 @@ package com.project.team5backend.domain.space.space.dto.request;
 import com.project.team5backend.domain.space.space.entity.SpaceMood;
 import com.project.team5backend.domain.space.space.entity.SpacePurpose;
 import com.project.team5backend.domain.space.space.entity.SpaceType;
+import com.project.team5backend.global.address.dto.request.AddressReqDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +29,9 @@ public class SpaceRequest {
             SpaceMood mood, // 공간 분위기
             LocalDate startDate, // 공간 이용 시작일
             LocalDate endDate, // 공간 이용 마감일
-            String description // 공간 설명
+            String description, // 공간 설명
+            @NotNull @Valid AddressReqDTO.AddressCreateReqDTO address
+
     ){}
 
     // 공간 검색 요청 DTO

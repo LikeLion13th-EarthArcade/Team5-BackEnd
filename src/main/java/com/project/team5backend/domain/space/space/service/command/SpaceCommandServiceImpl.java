@@ -16,6 +16,10 @@ import com.project.team5backend.domain.space.space.repository.SpaceRepository;
 
 import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.domain.user.user.repository.UserRepository;
+import com.project.team5backend.global.address.converter.AddressConverter;
+import com.project.team5backend.global.address.dto.response.AddressResDTO;
+import com.project.team5backend.global.address.service.AddressService;
+import com.project.team5backend.global.entity.embedded.Address;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -37,7 +41,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
     private final UserRepository userRepository;
     private final RedisImageTracker redisImageTracker;
     private final SpaceImageRepository spaceImageRepository;
-
+    private final AddressService addressService;
 
     @Override
     public SpaceResponse.SpaceRegistrationResponse registerSpace(SpaceRequest.Create request) {
@@ -57,9 +61,12 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         System.out.println("Redis fileKeys = " + fileKeys);
 
         if (fileKeys.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-
+        //주소 가져오기
+        AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(request.address());
+        Address address = AddressConverter.toAddress(addressResDTO);
         Space space = spaceConverter.toSpace(request, user, fileKeys.get(0));
         Space savedSpace = spaceRepository.save(space);
+
 
         for (String fileKey : fileKeys) {
             spaceImageRepository.save(ImageConverter.toEntitySpaceImage(savedSpace, fileKey));
