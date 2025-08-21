@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - artie-network
+    restart: unless-stopped
+
+  app:
+    image: tjgustjr/artie:latest
+    container_name: artie_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    env_file:
+      - ./secrets/.env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - artie-net
+    restart: unless-stopped
+
+networks:
+  cookcheck-network:
+    driver: bridge
