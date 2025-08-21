@@ -46,7 +46,7 @@ public class UserMeQueryServiceImpl implements UserMeQueryService {
 
     @Override
     public UserMeResponse.UserReservationsResponse getMyReservations(Long userId) {
-        List<Reservation> reservations = reservationRepository.findBySpaceUser_Id(userId);
+        List<Reservation> reservations = reservationRepository.findByUser_Id(userId);
         return UserMeConverter.toUserReservationsResponse(reservations);
     }
 }

@@ -40,6 +40,8 @@ public class SecurityConfig {
                                 "/api/v1/spaces/**",
                                 "/api/v1/reservations/**",
                                 "/api/v1/images/**",
+                                "/api/v1/exhibitions",
+
                                 "/actuator/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
                         )
@@ -56,6 +58,7 @@ public class SecurityConfig {
                                 "/api/v1/spaces/**",
                                 "/api/v1/reservations/**",
                                 "/api/v1/images/**",
+                                "/api/v1/exhibitions",
 
 
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
