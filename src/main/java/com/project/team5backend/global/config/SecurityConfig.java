@@ -31,71 +31,65 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        // 배포 시 활성화
-        //csrfTokenRepository.setSecure(true);
-        //csrfTokenRepository.setCookieName("XSRF-TOKEN");
+        // ✅ 배포 환경에서는 HTTPS만 허용
+        csrfTokenRepository.setSecure(true);
+        csrfTokenRepository.setCookieName("XSRF-TOKEN");
+
         http
                 // ✅ 1. CSRF 활성화 (SPA + Cookie)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         .ignoringRequestMatchers(
-                                "/api/v1/auth/**",
-                                // 배포할때 밑에 지워라
-                                "/actuator/**",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
+                                "/api/v1/auth/**" // 인증 관련 엔드포인트만 CSRF 무시
                         )
                 )
 
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 
-                // ✅ 2. 인가 경로 최소화
+                // ✅ 2. 인가 정책
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/v1/auth/**",
-                                // 배포할때 밑에 지워라
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
-                                "/actuator/**"
-                        ).permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
                 // ✅ 3. 세션 정책
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 필요 시 생성
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
 
-                // ✅ 4. 401 / 403 명확 처리
+                // ✅ 4. 예외 처리
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
-                        .accessDeniedHandler((req, res, e) -> res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
+                        .authenticationEntryPoint((req, res, e) ->
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                        .accessDeniedHandler((req, res, e) ->
+                                res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
                 )
 
-                // ✅ CORS 설정
-                .cors(cors ->cors.configurationSource(corsConfigurationSource()));
+                // ✅ 5. CORS 설정
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
-    // 사용자 인증을 실제로 처리
+
     @Bean
-    public AuthenticationManager authenticationManager(
-            PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(customUserDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(authenticationProvider);
     }
 
-    // 비밀번호 암호화
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    //CORS(Cross-Origin Resource Sharing) 문제를 해결
+
+    // ✅ 배포 환경 도메인에 맞춘 CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("https://artiee.store")); // 배포 프론트 도메인
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
