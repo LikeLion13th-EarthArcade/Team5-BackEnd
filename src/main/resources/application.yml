@@ -24,7 +24,7 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port: 587 # 네이버 표준 port번호 , 구글은 587
+    port: 465 # 네이버 표준 port번호 , 구글은 587
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
