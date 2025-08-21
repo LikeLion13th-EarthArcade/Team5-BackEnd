@@ -14,7 +14,7 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         // 기본값은 localhost:6379 (도커 쓰면 host.docker.internal 또는 redis 이름일 수도 있음)
-        return new LettuceConnectionFactory("localhost", 6379);
+        return new LettuceConnectionFactory("redis", 6379);
     }
 
     // RedisTemplate 설정

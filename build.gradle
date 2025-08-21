@@ -39,8 +39,14 @@ dependencies {
     // JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
+    //Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Smtp
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'

@@ -12,30 +12,42 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-
     @Bean
-    public OpenAPI LikeLionAPI() {
+    public OpenAPI customOpenAPI() {
+        // 문서 정보
         Info info = new Info()
-                .title("Artie API") // API 제목
-                .description("Artie API 명세서 입니다.") // 설명
-                .version("1.0.0"); //버전
+                .title("Artie API")
+                .description("Artie API 명세서")
+                .version("1.0.0");
 
-
-        // ☑️ 쿠키 인증 스킴 (세션 쿠키 이름에 맞추세요: "SESSION" 또는 "JSESSIONID")
-        final String cookieSchemeName = "cookieAuth";
+        // 보안 스킴 정의
+        final String COOKIE_SCHEME = "cookieAuth";     // 세션 쿠키
+        final String XSRF_SCHEME   = "xsrfHeader";     // CSRF 헤더
 
         Components components = new Components()
-                .addSecuritySchemes(cookieSchemeName,
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.APIKEY)   // OpenAPI에서 쿠키는 apiKey 타입
-                                .in(SecurityScheme.In.COOKIE)       // 위치: 쿠키
-                                .name("SESSION"));                  // ← 너희가 설정한 쿠키 이름
+                // 세션 쿠키 인증 (기본 세션 쿠키명은 JSESSIONID)
+                .addSecuritySchemes(COOKIE_SCHEME, new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.COOKIE)
+                        .name("JSESSIONID"))
+                // CSRF 헤더 (CookieCsrfTokenRepository 사용 시)
+                .addSecuritySchemes(XSRF_SCHEME, new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.HEADER)
+                        .name("X-XSRF-TOKEN"));
+
+        // 기본 보안 요구사항: 세션 + CSRF
+        SecurityRequirement security = new SecurityRequirement()
+                .addList(COOKIE_SCHEME)
+                .addList(XSRF_SCHEME);
 
         return new OpenAPI()
+                // 상대 경로 사용(배포/프록시 환경에서 안전)
+                .addServersItem(new Server().url("/"))
+                // 필요하면 고정 도메인도 추가(선택)
                 .addServersItem(new Server().url("https://artiee.store"))
                 .info(info)
-                // 전체 API에 기본 보안 요구(퍼블릭 엔드포인트는 Controller/@Operation에서 override 가능)
-                .addSecurityItem(new SecurityRequirement().addList(cookieSchemeName))
-                .components(components);
+                .components(components)
+                .addSecurityItem(security);
     }
 }
