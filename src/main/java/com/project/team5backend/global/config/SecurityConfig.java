@@ -30,12 +30,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        // 배포 시 활성화
+        //csrfTokenRepository.setSecure(true);
+        //csrfTokenRepository.setCookieName("XSRF-TOKEN");
         http
                 // ✅ 1. CSRF 활성화 (SPA + Cookie)
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfTokenRepository)
                         .ignoringRequestMatchers(
                                 "/api/v1/auth/**",
+                                // 배포할때 밑에 지워라
                                 "/actuator/**",
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
                         )
@@ -48,6 +53,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                // 배포할때 밑에 지워라
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
                                 "/actuator/**"
                         ).permitAll()
@@ -66,7 +72,7 @@ public class SecurityConfig {
                 )
 
                 // ✅ CORS 설정
-                .cors(cors -> {});
+                .cors(cors ->cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
