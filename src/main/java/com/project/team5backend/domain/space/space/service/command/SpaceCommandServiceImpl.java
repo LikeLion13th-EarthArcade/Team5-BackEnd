@@ -53,7 +53,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         }
         // 1. 로그인된 사용자의 이메일로 User 엔티티를 조회
         String userEmail = authentication.getName();
-        User user = userRepository.findByEmailAndIsDeletedFalse(userEmail)
+        User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // Redis에서 업로드한 이미지 키 가져오기
