@@ -1,4 +1,4 @@
-package com.project.team5backend.domain.exhibition.exhibition.repository;
+package com.project.team5backend.domain.image.repository;
 
 import com.project.team5backend.domain.image.entity.SpaceImage;
 import org.springframework.data.jpa.repository.JpaRepository;

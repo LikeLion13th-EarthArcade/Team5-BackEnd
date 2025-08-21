@@ -1,7 +1,7 @@
 package com.project.team5backend.domain.space.space.service.command;
 
 
-import com.project.team5backend.domain.exhibition.exhibition.repository.SpaceImageRepository;
+import com.project.team5backend.domain.image.repository.SpaceImageRepository;
 import com.project.team5backend.domain.image.converter.ImageConverter;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
@@ -52,18 +52,15 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         User user = userRepository.findByEmailAndIsDeletedFalse(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 2. DTO -> 엔티티 변환 (컨버터에 user 객체 전달)
-        Space space = spaceConverter.toSpace(request, user);
-        // 저장
-        Space savedSpace = spaceRepository.save(space);
-
         // Redis에서 업로드한 이미지 키 가져오기
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(userEmail);
+        System.out.println("Redis fileKeys = " + fileKeys);
 
-        if (fileKeys.isEmpty()) {
-            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-        }
-        // S3 이미지 엔티티로 저장
+        if (fileKeys.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+
+        Space space = spaceConverter.toSpace(request, user, fileKeys.get(0));
+        Space savedSpace = spaceRepository.save(space);
+
         for (String fileKey : fileKeys) {
             spaceImageRepository.save(ImageConverter.toEntitySpaceImage(savedSpace, fileKey));
             redisImageTracker.remove(userEmail, fileKey);
@@ -71,6 +68,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
 
         // 엔티티를 응답 DTO로 변환
         return spaceConverter.toSpaceRegistrationResponse(savedSpace);
+
     }
 
     @Override

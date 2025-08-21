@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -23,10 +24,9 @@ public class SpaceRequest {
             String size, // 공간 크기(면적)
             SpacePurpose purpose, // 공간 목적
             SpaceMood mood, // 공간 분위기
-            String startDate, // 공간 이용 시작일
-            String endDate, // 공간 이용 마감일
-            String description, // 공간 설명
-            List<String> images
+            LocalDate startDate, // 공간 이용 시작일
+            LocalDate endDate, // 공간 이용 마감일
+            String description // 공간 설명
     ){}
 
     // 공간 검색 요청 DTO

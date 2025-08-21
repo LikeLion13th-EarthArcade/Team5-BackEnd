@@ -48,6 +48,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
         List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail("likelion@naver.com");
+        System.out.println("Redis fileKeys = " + fileKeys);
 
         // 빈 리스트 체크
         if (fileKeys.isEmpty()) {

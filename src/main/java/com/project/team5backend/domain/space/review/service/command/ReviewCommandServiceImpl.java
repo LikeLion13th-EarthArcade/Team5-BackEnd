@@ -1,6 +1,6 @@
 package com.project.team5backend.domain.space.review.service.command;
 
-import com.project.team5backend.domain.exhibition.exhibition.repository.ReviewImageRepository;
+import com.project.team5backend.domain.image.repository.ReviewImageRepository;
 import com.project.team5backend.domain.image.converter.ImageConverter;
 import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.space.review.converter.ReviewConverter;

@@ -17,7 +17,7 @@ public class SpaceConverter {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     // SpaceRequest.Create DTO를 Space 엔티티로 변환
-    public Space toSpace(SpaceRequest.Create request, User user) {
+    public Space toSpace(SpaceRequest.Create request, User user, String thumbnailFileKey){
 
         return Space.builder()
                 .name(request.name())
@@ -27,21 +27,12 @@ public class SpaceConverter {
                 .purpose(request.purpose())
                 .mood(request.mood())
                 .description(request.description())
-                .imageUrls(request.images())
+                .imageUrls(List.of(thumbnailFileKey))   // ✅ request.images() 대신 사용
                 .status(Space.Status.APPROVAL_PENDING)
-                .startDate(LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE))
-                .endDate(LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE))
+                .startDate(request.startDate())
+                .endDate(request.endDate())
                 .user(user)// ✨ User 객체에서 이메일을 가져와 submittedBy 필드에 설정
                 .build();
-    }
-    private LocalDate parseDateSafely(String dateStr) {
-        if (dateStr == null || dateStr.isBlank()) return null;
-        try {
-            return LocalDate.parse(dateStr, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            // 로그를 남기거나 원하는 방식으로 처리 가능
-            return null;
-        }
     }
 
     // Space 엔티티를 등록 응답 DTO로 변환
