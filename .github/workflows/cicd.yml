@@ -2,7 +2,7 @@ name: Deploy to AWS EC2 using Docker
 
 on:
   push:
-    branches: [ develop2 ]
+    branches: [ develop3 ]
 
 env:
   IMAGE_NAME: tjgustjr/artie
