@@ -91,7 +91,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://artiee.store")); // 배포 프론트 도메인
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://artiee.store",
+                "http://localhost:5173",
+                "http://localhost:5174"
+        )); // 배포 프론트 도메인
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
