@@ -13,4 +13,8 @@ public interface AuthCommandService {
     // 이메일 인증
     void sendVerificationCode(String email);
     boolean verifyCode(String email, String code);
+
+    // 로그아웃 메서드
+    void logout(HttpServletRequest httpRequest);
+
 }

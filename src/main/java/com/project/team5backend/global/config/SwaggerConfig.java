@@ -12,30 +12,24 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-
     @Bean
-    public OpenAPI LikeLionAPI() {
-        Info info = new Info()
-                .title("CookCheck API") // API 제목
-                .description("CookCheck API 명세서 입니다.") // 설명
-                .version("1.0.0"); //버전
-
-        String jwtSchemeName = "JWT TOKEN";
-        // API 요청헤더에 인증정보 포함
-        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
-
-        // SecuritySchemes 등록
-        Components components = new Components()
-                .addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-                        .name(jwtSchemeName)
-                        .type(SecurityScheme.Type.HTTP) // HTTP 방식
-                        .scheme("bearer")
-                        .bearerFormat("JWT"));
-
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .addServersItem(new Server().url("/"))
-                .info(info)
-                .addSecurityItem(securityRequirement)
-                .components(components);
+                .components(new Components()
+                        .addSecuritySchemes("SESSION", new SecurityScheme()
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.COOKIE) // 세션 쿠키 사용
+                                .name("JSESSIONID")
+                        )
+                        .addSecuritySchemes("XSRF-TOKEN", new SecurityScheme()
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER) // CSRF 헤더
+                                .name("X-XSRF-TOKEN")
+                        )
+                )
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("SESSION")
+                        .addList("XSRF-TOKEN")
+                );
     }
 }

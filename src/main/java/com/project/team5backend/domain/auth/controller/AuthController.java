@@ -50,4 +50,10 @@ public class AuthController {
         boolean result = authCommandService.verifyCode(email, code);
         return CustomResponse.onSuccess(result);
     }
+    @Operation(summary = "로그아웃", description = "사용자 세션 무효화")
+    @PostMapping("/logout")
+    public CustomResponse<String> logout(HttpServletRequest httpRequest) {
+        authCommandService.logout(httpRequest);
+        return CustomResponse.onSuccess("로그아웃을 성공했습니다.");
+    }
 }
