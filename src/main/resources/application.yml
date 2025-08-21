@@ -19,8 +19,8 @@ spring:
         format_sql: true # 출력되는 SQL 쿼리를 보기 좋게 포맷팅
   data:
     redis:
-      host: ${SPRING_DATA_REDIS_HOST}
-      port: ${SPRING_DATA_REDIS_PORT}
+      host: redis
+      port: 6379
 
   mail:
     host: smtp.gmail.com
