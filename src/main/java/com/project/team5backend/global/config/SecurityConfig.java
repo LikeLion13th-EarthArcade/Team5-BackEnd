@@ -71,33 +71,36 @@ public class SecurityConfig {
                 // ✅ 5. CORS 설정
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-            return http.build();
-        }
-        // 사용자 인증을 실제로 처리
-        @Bean
-        public AuthenticationManager authenticationManager(
-                PasswordEncoder passwordEncoder) {
-            DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-            authenticationProvider.setUserDetailsService(customUserDetailsService);
-            authenticationProvider.setPasswordEncoder(passwordEncoder);
-            return new ProviderManager(authenticationProvider);
-        }
-
-        // 비밀번호 암호화
-        @Bean
-        public PasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
-        //CORS(Cross-Origin Resource Sharing) 문제를 해결
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-            configuration.setAllowedHeaders(Arrays.asList("*"));
-            configuration.setAllowCredentials(true);
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", configuration);
-            return source;
-        }
+        return http.build();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(authenticationProvider);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // ✅ 배포 환경 도메인에 맞춘 CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://artiee.store",
+                "http://localhost:5173",
+                "http://localhost:5174"
+        )); // 배포 프론트 도메인
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+}
