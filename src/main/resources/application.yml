@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: LikeLion13th-BE-ARTIE
+
+  datasource:
+    url: ${URL}
+    username: ${USERNAME}
+    password: ${PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database: mysql # 사용할 DB 유형 지정 (MySQL)
+    database-platform: org.hibernate.dialect.MySQLDialect # Hibernate에서 사용할 MySQL 방언(dialect) 지정
+    show-sql: true # 실행된 SQL 쿼리를 콘솔에 출력할지 여부
+    hibernate:
+      ddl-auto: update # 애플리케이션 실행 시 DB 스키마의 상태 설정
+    properties:
+      hibernate:
+        format_sql: true # 출력되는 SQL 쿼리를 보기 좋게 포맷팅
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+  mail:
+    host: smtp.gmail.com
+    port: 587 # 네이버 표준 port번호 , 구글은 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+aws:
+  s3:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION}
+    bucket-name: ${AWS_S3_BUCKET}
+    presigned-url-duration: 15
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
+
+kakao:
+  api:
+    rest-key: ${KAKAO_API_REST_KEY}
+
+server:
+  servlet:
+    session:
+      cookie:
+        domain: artiee.store   # 점(.) 붙이면 모든 서브도메인 공유
+        http-only: true
+        secure: false
+        same-site: none
