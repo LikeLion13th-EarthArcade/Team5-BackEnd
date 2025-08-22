@@ -121,13 +121,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         SecurityContextHolder.setContext(context);
 
         // 기존 세션 무효화 (중복 로그인 방지)
-        HttpSession oldSession = httpRequest.getSession(false);
-        if (oldSession != null) oldSession.invalidate();
-
-        // 새 세션 생성
-        HttpSession session = httpRequest.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-        session.setMaxInactiveInterval(30 * 60); // 30분
 
         // 3. 로그인 결과 반환
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
