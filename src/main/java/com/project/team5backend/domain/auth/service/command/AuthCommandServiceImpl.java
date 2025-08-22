@@ -120,12 +120,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
 
-        // 기존 세션 무효화 (중복 로그인 방지)
+        // 3. 기존 세션 무효화 + 새로운 세션 생성
+        HttpSession oldSession = httpRequest.getSession(false);
+        if (oldSession != null) oldSession.invalidate();
+        HttpSession newSession = httpRequest.getSession(true); // 새 세션 생성
+        newSession.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
-        // 3. 로그인 결과 반환
+        // 4. 로그인 결과 반환
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findById(principal.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 조회 실패"));
+
 
         return new UserResponse.LoginResult(user.getId(), user.getName(), "로그인 성공");
     }
