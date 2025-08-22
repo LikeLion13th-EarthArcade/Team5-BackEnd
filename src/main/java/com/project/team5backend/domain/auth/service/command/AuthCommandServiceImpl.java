@@ -1,12 +1,12 @@
 package com.project.team5backend.domain.auth.service.command;
 
 
-import com.project.team5backend.domain.user.converter.UserConverter;
-import com.project.team5backend.domain.user.dto.request.UserRequest;
-import com.project.team5backend.domain.user.dto.response.UserResponse;
-import com.project.team5backend.domain.user.entity.Role;
-import com.project.team5backend.domain.user.entity.User;
-import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.domain.user.user.converter.UserConverter;
+import com.project.team5backend.domain.user.user.dto.request.UserRequest;
+import com.project.team5backend.domain.user.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.user.entity.Role;
+import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -121,13 +121,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         SecurityContextHolder.setContext(context);
 
         // 기존 세션 무효화 (중복 로그인 방지)
-        HttpSession oldSession = httpRequest.getSession(false);
-        if (oldSession != null) oldSession.invalidate();
-
-        // 새 세션 생성
-        HttpSession session = httpRequest.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-        session.setMaxInactiveInterval(30 * 60); // 30분
 
         // 3. 로그인 결과 반환
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();

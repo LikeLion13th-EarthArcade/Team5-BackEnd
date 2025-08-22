@@ -51,7 +51,7 @@ server:
   servlet:
     session:
       cookie:
-        domain: artiee.store
+        domain: .artiee.store   # 점(.) 붙이면 모든 서브도메인 공유
         http-only: true
-        secure: false
+        secure: true
         same-site: none
