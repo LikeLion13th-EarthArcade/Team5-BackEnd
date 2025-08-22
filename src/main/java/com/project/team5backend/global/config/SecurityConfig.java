@@ -40,9 +40,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         .ignoringRequestMatchers(
-                                "/api/v1/auth/**", // 인증 관련 엔드포인트만 CSRF 무시
-                                "/actuator/**",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
+                                "/api/v1/auth/**" // 인증 관련 엔드포인트만 CSRF 무시
                         )
                 )
 
@@ -94,7 +92,7 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("\"http://localhost:5173\",http://localhost:3000"));
+            configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
             configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
             configuration.setAllowedHeaders(Arrays.asList("*"));
             configuration.setAllowCredentials(true);
