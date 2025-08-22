@@ -3,7 +3,7 @@ package com.project.team5backend.domain.exhibition.exhibition.converter;
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.ExhibitionLike;
-import com.project.team5backend.domain.user.entity.User;
+import com.project.team5backend.domain.user.user.entity.User;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
