@@ -32,8 +32,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         // ✅ 배포 환경에서는 HTTPS만 허용
-        //csrfTokenRepository.setSecure(true);
-        //csrfTokenRepository.setCookieName("XSRF-TOKEN");
+        csrfTokenRepository.setSecure(true);
+        csrfTokenRepository.setCookieName("XSRF-TOKEN");
 
         http
                 // ✅ 1. CSRF 활성화 (SPA + Cookie)
@@ -94,7 +94,7 @@ public class SecurityConfig {
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+            configuration.setAllowedOrigins(Arrays.asList("\"http://localhost:5173\",http://localhost:3000"));
             configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
             configuration.setAllowedHeaders(Arrays.asList("*"));
             configuration.setAllowCredentials(true);
