@@ -19,22 +19,31 @@ public class SwaggerConfig {
                 .description("Artie API 명세서")
                 .version("1.0.0");
 
-        final String COOKIE_SCHEME = "cookieAuth"; // 세션 쿠키만
+        final String COOKIE_SCHEME = "cookieAuth";   // JSESSIONID (자동 전송)
+        final String XSRF_SCHEME   = "xsrfHeader";   // X-XSRF-TOKEN (헤더로 보냄)
 
         Components components = new Components()
+                // 세션 쿠키
                 .addSecuritySchemes(COOKIE_SCHEME, new SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
                         .in(SecurityScheme.In.COOKIE)
-                        .name("JSESSIONID"));
+                        .name("JSESSIONID"))
+                // CSRF 헤더
+                .addSecuritySchemes(XSRF_SCHEME, new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.HEADER)
+                        .name("X-XSRF-TOKEN"));
 
+        // 기본 요구: 세션 + CSRF 헤더
         SecurityRequirement security = new SecurityRequirement()
-                .addList(COOKIE_SCHEME);
+                .addList(COOKIE_SCHEME)
+                .addList(XSRF_SCHEME);
 
         return new OpenAPI()
                 .addServersItem(new Server().url("/"))
                 .addServersItem(new Server().url("https://artiee.store"))
                 .info(info)
                 .components(components)
-                .addSecurityItem(security);
+                .addSecurityItem(security); // ✅ 하나만 추가
     }
 }
