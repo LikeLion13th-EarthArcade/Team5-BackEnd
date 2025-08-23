@@ -1,7 +1,6 @@
 package com.project.team5backend.global.config;
 
 import com.project.team5backend.global.apiPayload.CustomUserDetailsService;
-import com.project.team5backend.global.filter.CsrfCookieFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +48,6 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/v1/auth/**")
                 )
                 // 초기 진입 시 XSRF 쿠키가 항상 내려가도록 트리거
-                .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth

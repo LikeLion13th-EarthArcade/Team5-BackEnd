@@ -138,12 +138,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         HttpSession session = httpRequest.getSession(false);
         if (session != null) session.setMaxInactiveInterval(30 * 60);
 
-        // ✅ ✅ 여기 추가: 로그인 성공 직후 CSRF 토큰 새로 발급 + 동기화
-        CsrfToken newToken = csrfRepo.loadDeferredToken(httpRequest, httpResponse).get();
-        csrfRepo.saveToken(newToken, httpRequest, httpResponse);
-        // 선택: 프론트/Swagger에서 바로 확인 가능하게 응답 헤더에도 추가
-        httpResponse.setHeader(newToken.getHeaderName(), newToken.getToken());
-
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findById(principal.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 조회 실패"));
