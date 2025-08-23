@@ -57,13 +57,6 @@ server:
         secure: true
         same-site: none
 
-springdoc:
-  swagger-ui:
-    csrf:
-      enabled: true
-      cookie-name: XSRF-TOKEN
-      header-name: X-XSRF-TOKEN
-
 logging:
   level:
     org.springframework.security: DEBUG

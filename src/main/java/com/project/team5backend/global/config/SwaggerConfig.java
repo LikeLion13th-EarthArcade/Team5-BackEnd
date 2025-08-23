@@ -19,16 +19,25 @@ public class SwaggerConfig {
                 .description("Artie API 명세서")
                 .version("1.0.0");
 
-        final String COOKIE_SCHEME = "cookieAuth"; // JSESSIONID(세션 사용하는 경우만 의미)
+        final String COOKIE_SCHEME = "cookieAuth";   // 세션
+        final String XSRF_SCHEME   = "xsrfHeader";   // CSRF 헤더
 
         Components components = new Components()
+                // 세션 쿠키
                 .addSecuritySchemes(COOKIE_SCHEME, new SecurityScheme()
                         .type(SecurityScheme.Type.APIKEY)
                         .in(SecurityScheme.In.COOKIE)
-                        .name("JSESSIONID"));
+                        .name("JSESSIONID"))
+                // CSRF 헤더
+                .addSecuritySchemes(XSRF_SCHEME, new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.HEADER)
+                        .name("X-XSRF-TOKEN"));
 
-        // springdoc가 CSRF 헤더를 자동 주입하므로 굳이 xsrfHeader 스키마를 필수로 요구하지 않아도 됨.
-        SecurityRequirement security = new SecurityRequirement().addList(COOKIE_SCHEME);
+        // 두 가지 모두 요구
+        SecurityRequirement security = new SecurityRequirement()
+                .addList(COOKIE_SCHEME)
+                .addList(XSRF_SCHEME);
 
         return new OpenAPI()
                 .addServersItem(new Server().url("/"))
