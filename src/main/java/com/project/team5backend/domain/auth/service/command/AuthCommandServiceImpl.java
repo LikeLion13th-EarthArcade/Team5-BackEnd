@@ -110,22 +110,30 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                                           HttpServletRequest httpRequest,
                                           HttpServletResponse httpResponse) {
 
-        // 1. AuthenticationManager로 표준 인증
         Authentication authRequest =
                 new UsernamePasswordAuthenticationToken(request.email(), request.password());
         Authentication authentication = authenticationManager.authenticate(authRequest);
-        // 2. SecurityContext 생성 및 세션에 저장
+
+        // 새 컨텍스트 구성
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
-        HttpSession oldSession = httpRequest.getSession(false);
-        if (oldSession != null) oldSession.invalidate();
-        // 새 세션 생성
-        HttpSession session = httpRequest.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-        session.setMaxInactiveInterval(30 * 60); // 30분
 
-        //  로그인 결과 반환
+        // (선택) 기존 세션 무효화
+        HttpSession old = httpRequest.getSession(false);
+        if (old != null) old.invalidate();
+
+        // ✅ 표준 저장소로 저장 -> 세션 생성 + Set-Cookie 보장
+        HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
+        repo.saveContext(context, httpRequest, httpResponse);
+
+        // (선택) 세션 고정 공격 방지: 새 ID 발급
+        httpRequest.changeSessionId();
+
+        // (선택) 유효시간 설정
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) session.setMaxInactiveInterval(30 * 60);
+
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findById(principal.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 조회 실패"));
