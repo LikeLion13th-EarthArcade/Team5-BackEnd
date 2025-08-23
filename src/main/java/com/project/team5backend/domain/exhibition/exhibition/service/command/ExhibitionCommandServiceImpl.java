@@ -19,8 +19,8 @@ import com.project.team5backend.domain.image.repository.ExhibitionImageRepositor
 import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.domain.recommendation.service.InteractLogService;
-import com.project.team5backend.domain.user.entity.User;
-import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import com.project.team5backend.global.address.converter.AddressConverter;
 import com.project.team5backend.global.address.dto.response.AddressResDTO;
 import com.project.team5backend.global.address.service.AddressService;

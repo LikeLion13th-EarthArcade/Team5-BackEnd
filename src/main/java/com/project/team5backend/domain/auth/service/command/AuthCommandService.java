@@ -1,8 +1,8 @@
 package com.project.team5backend.domain.auth.service.command;
 
 
-import com.project.team5backend.domain.user.dto.request.UserRequest;
-import com.project.team5backend.domain.user.dto.response.UserResponse;
+import com.project.team5backend.domain.user.user.dto.request.UserRequest;
+import com.project.team5backend.domain.user.user.dto.response.UserResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
