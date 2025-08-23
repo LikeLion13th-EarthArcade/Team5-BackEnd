@@ -51,7 +51,8 @@ server:
   servlet:
     session:
       cookie:
+        name: JSESSIONID
         domain: artiee.store
         http-only: true
-        secure: false
+        secure: true
         same-site: none

@@ -12,8 +12,7 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        System.out.println("Redis connecting to: redis:6379"); // 디버깅용
-        return new LettuceConnectionFactory("redis", 6379);
+        return new LettuceConnectionFactory();
     }
 
     // RedisTemplate 설정

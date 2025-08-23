@@ -3,6 +3,7 @@ package com.project.team5backend.global.config;
 import com.project.team5backend.global.apiPayload.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,37 +31,33 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // ✅ CSRF 쿠키 자동 발급
         CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        // ✅ 배포 환경에서는 HTTPS만 허용
         csrfTokenRepository.setSecure(true);
         csrfTokenRepository.setCookieName("XSRF-TOKEN");
 
         http
-                // ✅ 1. CSRF 활성화 (SPA + Cookie)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         .ignoringRequestMatchers(
-                                "/api/v1/auth/**" // 인증 관련 엔드포인트만 CSRF 무시
+                                "/api/v1/auth/**" // 로그인, 회원가입 등은 CSRF 무시
                         )
                 )
-
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 
-                // ✅ 2. 인가 정책
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll() // auth API
-                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // 관리자 API
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // ✅ 3. 세션 정책
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 )
 
-                // ✅ 4. 예외 처리
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->
                                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
@@ -68,7 +65,6 @@ public class SecurityConfig {
                                 res.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"))
                 )
 
-                // ✅ 5. CORS 설정
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
@@ -87,7 +83,19 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ 배포 환경 도메인에 맞춘 CORS
+    // ✅ 세션 쿠키 커스터마이징 (JSESSIONID 확실히 내려오게)
+    @Bean
+    public ServletContextInitializer initializer() {
+        return servletContext -> {
+            var config = servletContext.getSessionCookieConfig();
+            config.setName("JSESSIONID");
+            config.setHttpOnly(true);
+            config.setSecure(true);  // HTTPS 환경이면 필수
+            config.setPath("/");
+            config.setDomain("artiee.store"); // 발표 서버 도메인
+        };
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -95,7 +103,7 @@ public class SecurityConfig {
                 "https://artiee.store",
                 "http://localhost:5173",
                 "http://localhost:5174"
-        )); // 배포 프론트 도메인
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
