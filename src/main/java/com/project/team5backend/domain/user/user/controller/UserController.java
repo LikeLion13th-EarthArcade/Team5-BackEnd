@@ -1,6 +1,7 @@
 package com.project.team5backend.domain.user.user.controller;
 
 
+import com.project.team5backend.domain.user.user.dto.request.UserRequest;
 import com.project.team5backend.domain.user.user.dto.response.UserResponse;
 
 import com.project.team5backend.domain.user.user.service.command.UserCommandService;
@@ -33,21 +34,12 @@ public class UserController {
         return CustomResponse.onSuccess(result);
     }
 
-    @Operation(summary = "회원정보 수정", description = "회원 이름 수정")
-    @PatchMapping("/name")
-    public CustomResponse<String> updateName(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam String name) {
+    @Operation(summary = "회원정보 수정", description = "회원 이름 및 비밀번호 변경")
+    @PatchMapping
+    public CustomResponse<String> updateUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserRequest.UpdateUserInfo request) {
         Long userId = userDetails.getUserId();
-        commandService.updateName(userId, name);
-        return CustomResponse.onSuccess("회원 이름 수정 완료");
-    }
-
-    @Operation(summary = "비밀번호 변경", description = "비밀번호 변경")
-    @PatchMapping("/password")
-    public CustomResponse<String> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                 @RequestParam String currentPassword, @RequestParam String newPassword) {
-        Long userId = userDetails.getUserId();
-        commandService.changePassword(userId, currentPassword, newPassword);
-        return CustomResponse.onSuccess("비밀번호 변경 완료");
+        commandService.updateUserInfo(userId, request);
+        return CustomResponse.onSuccess("회원정보 수정 완료");
     }
 
     @Operation(summary = "회원 탈퇴", description = "계정 탈퇴")
