@@ -22,12 +22,15 @@ import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.domain.user.user.repository.UserRepository;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
+import com.project.team5backend.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,9 +46,11 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
     private final ExhibitionReviewImageRepository exhibitionReviewImageRepository;
     private final ImageCommandService imageCommandService;
     private final RedisImageTracker redisImageTracker;
+    private final S3Uploader s3Uploader;
     @Override
     public void createExhibitionReview(
-            Long exhibitionId,String email, ExhibitionReviewReqDTO.createExReviewReqDTO createExhibitionReviewReqDTO) {
+            Long exhibitionId,String email, ExhibitionReviewReqDTO.createExReviewReqDTO createExhibitionReviewReqDTO,
+            List<MultipartFile> images) {
         LocalDate current = LocalDate.now();
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApproveAndOpening(exhibitionId, current, Status.APPROVED)
                 .orElseThrow(()-> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
@@ -53,16 +58,20 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
-        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(email);
-
         ExhibitionReview exhibitionReview = ExhibitionReviewConverter.toEntity(createExhibitionReviewReqDTO, exhibition, user);
         exhibitionReviewRepository.save(exhibitionReview);
 
-        for (String fileKey : fileKeys) {
-            exhibitionReviewImageRepository.save(ImageConverter.toEntityExhibitionReviewImage(exhibitionReview, fileKey));
-            redisImageTracker.remove(email, fileKey);
+        List<ExhibitionReviewImage> reviewImages = new ArrayList<>();
+        for (MultipartFile file : images) {
+            // fileKey: exhibitionReviews/{reviewId}/{UUID}.jpg
+            String url = s3Uploader.upload(file, "exhibitionReviews");
+            ExhibitionReviewImage reviewImage =
+                    ImageConverter.toEntityExhibitionReviewImage(exhibitionReview, url);
+            reviewImages.add(reviewImage);
         }
-        // 리뷰 평균/카운트 갱신
+        exhibitionReviewImageRepository.saveAll(reviewImages);
+
+        // 5) 리뷰 평균/카운트 갱신
         double rating = exhibitionReview.getRating();
         exhibitionRepository.applyReviewCreated(exhibitionId, rating);
     }

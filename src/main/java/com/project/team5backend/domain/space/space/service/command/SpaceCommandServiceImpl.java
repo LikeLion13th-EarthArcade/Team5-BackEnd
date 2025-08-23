@@ -20,6 +20,7 @@ import com.project.team5backend.global.address.converter.AddressConverter;
 import com.project.team5backend.global.address.dto.response.AddressResDTO;
 import com.project.team5backend.global.address.service.AddressService;
 import com.project.team5backend.global.entity.embedded.Address;
+import com.project.team5backend.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -27,7 +28,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,40 +45,35 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
     private final RedisImageTracker redisImageTracker;
     private final SpaceImageRepository spaceImageRepository;
     private final AddressService addressService;
+    private final S3Uploader s3Uploader;
 
     @Override
-    public SpaceResponse.SpaceRegistrationResponse registerSpace(SpaceRequest.Create request) {
+    public SpaceResponse.SpaceRegistrationResponse registerSpace(SpaceRequest.Create request, String email, List<MultipartFile> images) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // 로그인 여부 체크
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            throw new AccessDeniedException("로그인이 필요합니다.");
-        }
-        // 1. 로그인된 사용자의 이메일로 User 엔티티를 조회
-        String userEmail = authentication.getName();
-        User user = userRepository.findByEmailAndIsDeletedFalse(userEmail)
+        User user = userRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // Redis에서 업로드한 이미지 키 가져오기
-        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(userEmail);
-        System.out.println("Redis fileKeys = " + fileKeys);
-
-        if (fileKeys.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-        //주소 가져오기
         AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(request.address());
         Address address = AddressConverter.toAddress(addressResDTO);
-        Space space = spaceConverter.toSpace(request, user, fileKeys.get(0));
-        Space savedSpace = spaceRepository.save(space);
 
-
-        for (String fileKey : fileKeys) {
-            spaceImageRepository.save(ImageConverter.toEntitySpaceImage(savedSpace, fileKey));
-            redisImageTracker.remove(userEmail, fileKey);
+        // 3. Space 엔티티 생성 (대표 이미지: 첫 번째 파일 key)
+        // 업로드 및 fileKey 획득
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile file : images) {
+            String url = s3Uploader.upload(file, "spaces");
+            imageUrls.add(url);
         }
 
-        // 엔티티를 응답 DTO로 변환
-        return spaceConverter.toSpaceRegistrationResponse(savedSpace);
+        Space space = spaceConverter.toSpace(request, user, imageUrls.get(0));
+        Space savedSpace = spaceRepository.save(space);
 
+        // 4. Space 이미지 엔티티 저장
+        for (String fileKey : imageUrls) {
+            spaceImageRepository.save(ImageConverter.toEntitySpaceImage(savedSpace, fileKey));
+        }
+
+        // 5. 응답 DTO 변환
+        return spaceConverter.toSpaceRegistrationResponse(savedSpace);
     }
 
     @Override

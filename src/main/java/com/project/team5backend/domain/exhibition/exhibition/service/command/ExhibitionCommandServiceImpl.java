@@ -27,11 +27,14 @@ import com.project.team5backend.global.address.service.AddressService;
 import com.project.team5backend.global.apiPayload.code.GeneralErrorCode;
 import com.project.team5backend.global.apiPayload.exception.CustomException;
 import com.project.team5backend.global.entity.embedded.Address;
+import com.project.team5backend.global.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,28 +53,29 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ImageCommandService imageCommandService;
     private final AddressService addressService;
     private final InteractLogService interactLogService;
+    private final S3Uploader s3Uploader;
 
     @Override
-    public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO, String email) {
+    public void createExhibition(ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO, String email, List<MultipartFile> images) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.NOT_FOUND_404));
 
-        if (redisImageTracker.getImageCountByEmail(email) == 0) {
-            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
-        }
-        //이미지 가져오기
-        List<String> fileKeys = redisImageTracker.getOrderedFileKeysByEmail(email);
-        //주소 가져오기
         AddressResDTO.AddressCreateResDTO addressResDTO = addressService.resolve(createExhibitionReqDTO.address());
         Address address = AddressConverter.toAddress(addressResDTO);
 
-        Exhibition ex = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, fileKeys.get(0), address);
-        exhibitionRepository.save(ex); //전시 등록
+        // 1. 전시 엔티티 먼저 저장 (썸네일은 일단 null 로)
+        Exhibition exhibition = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, null, address);
+        exhibitionRepository.save(exhibition);
 
-        for (String fileKey : fileKeys) {
-            exhibitionImageRepository.save(ImageConverter.toEntityExhibitionImage(ex, fileKey));
-            redisImageTracker.remove(email, fileKey);
+        List<String> imageUrls = new ArrayList<>();
+        for (MultipartFile file : images) {
+            String url = s3Uploader.upload(file, "exhibitions");
+            imageUrls.add(url);
+
+            exhibitionImageRepository.save(ImageConverter.toEntityExhibitionImage(exhibition, url));
         }
+        exhibition.updateThumbnail(imageUrls.get(0));
+        exhibitionRepository.save(exhibition);
     }
 
     @Override

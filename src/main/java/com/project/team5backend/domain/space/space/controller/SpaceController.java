@@ -1,16 +1,27 @@
 package com.project.team5backend.domain.space.space.controller;
 
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.space.service.command.SpaceCommandService;
 import com.project.team5backend.domain.space.space.service.query.SpaceQueryService;
+import com.project.team5backend.global.SwaggerBody;
 import com.project.team5backend.global.apiPayload.CustomResponse;
+import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +33,26 @@ public class SpaceController {
     private final SpaceCommandService spaceCommandService;
     private final SpaceQueryService spaceQueryService;
 
-    @Operation(summary = "전시 공간 등록")
-    @PostMapping
+    @SwaggerBody(content = @Content(
+            encoding = {
+                    @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE)
+            }
+    ))
+    @PostMapping(
+            value = "/api/v1/spaces",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "전시 공간 등록", description = "로그인한 사용자가 전시 공간을 등록합니다.")
     public CustomResponse<SpaceResponse.SpaceRegistrationResponse> registerSpace(
-            @RequestBody SpaceRequest.Create request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("로그인 필요");
-        }
-        SpaceResponse.SpaceRegistrationResponse response = spaceCommandService.registerSpace(request);
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart("request") @Valid SpaceRequest.Create request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
+        if (images == null || images.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        if (images.size() > 5) throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
+
+        SpaceResponse.SpaceRegistrationResponse response = spaceCommandService.registerSpace(request, userDetails.getEmail(), images);
         return CustomResponse.onSuccess(response);
     }
 
