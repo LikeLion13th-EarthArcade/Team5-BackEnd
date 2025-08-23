@@ -23,6 +23,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +50,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     // 인증 완료 상태 만료 시간
     private static final Duration VERIFIED_EMAIL_EXPIRATION_TIME = Duration.ofMinutes(10);
     private final AuthenticationManager authenticationManager;
+
+    private final CookieCsrfTokenRepository csrfRepo;
 
 
     private String generateCode() {
@@ -134,14 +138,23 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         HttpSession session = httpRequest.getSession(false);
         if (session != null) session.setMaxInactiveInterval(30 * 60);
 
+        csrfRepo.saveToken(null, httpRequest, httpResponse);          // 기존 토큰 제거
+        CsrfToken newToken = csrfRepo.generateToken(httpRequest);     // 새 토큰 생성
+        csrfRepo.saveToken(newToken, httpRequest, httpResponse);      // 쿠키로 저장
+        // 필요하면 프론트 편의를 위해 헤더로도 내려줄 수 있음:
+        // httpResponse.setHeader(newToken.getHeaderName(), newToken.getToken());
+
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findById(principal.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 조회 실패"));
 
+
         return new UserResponse.LoginResult(user.getId(), user.getName(), "로그인 성공");
     }
     @Override
-    public void logout(HttpServletRequest httpRequest) {
+    public void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        csrfRepo.saveToken(null, httpRequest, httpResponse);
+
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
             session.invalidate(); // 세션 무효화

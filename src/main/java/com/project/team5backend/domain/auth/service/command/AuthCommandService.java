@@ -15,6 +15,6 @@ public interface AuthCommandService {
     boolean verifyCode(String email, String code);
 
     // 로그아웃 메서드
-    void logout(HttpServletRequest httpRequest);
+    void logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse);
 
 }

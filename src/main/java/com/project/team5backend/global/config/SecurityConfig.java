@@ -37,8 +37,8 @@ public class SecurityConfig {
             c.path("/");
             c.secure(true);
             c.sameSite("None");
-            // 필요시만 도메인 지정. (도메인 이중 쿠키 이슈 있으면 아예 생략 권장)
-            // c.domain("artiee.store");
+            // ✅ JSESSIONID와 도메인 일치 권장 (server.session.cookie.domain=artiee.store)
+            c.domain("artiee.store");
         });
         return repo;
     }
@@ -48,21 +48,31 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfRepo())
-                        // ✅ CSRF 발급 GET만 예외, 로그인/로그아웃은 보호
                         .ignoringRequestMatchers("/api/v1/auth/**")
                 )
-                // 쿠키 강제 발급 트리거(초기 진입 시 XSRF 쿠키 내려가게)
+                // 초기 진입 시 XSRF 쿠키가 항상 내려가도록 트리거
                 .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/csrf").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll() // 로그인/회원가입 엔드포인트 자체는 공개,
-                        // 하지만 CSRF 검증은 위에서 수행됨(면제 아님)
+                        .requestMatchers("/api/v1/auth/csrf").permitAll()
+                        .requestMatchers("/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // ⬇️ 세션 전략: 세션 기반이면 ALWAYS, 무상태로 가고 싶으면 STATELESS
+                // ✅ Logout 설정: XSRF-TOKEN 삭제 -> 다음 요청에서 새 토큰 발급
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            // XSRF-TOKEN 삭제(회전 트리거)
+                            csrfRepo().saveToken(null, request, response);
+                        })
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(204); // No Content
+                        })
+                )
+                // 세션 기반
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
