@@ -56,9 +56,3 @@ server:
         http-only: true
         secure: true
         same-site: none
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.security.web.csrf: DEBUG
-    org.springframework.security.access: DEBUG

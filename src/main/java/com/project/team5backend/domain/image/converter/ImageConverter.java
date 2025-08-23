@@ -31,9 +31,9 @@ public class ImageConverter {
                 .build();
     }
     //전시리뷰이미지 생성
-    public static ExhibitionReviewImage toEntityExhibitionReviewImage(ExhibitionReview review, String fileKey) {
+    public static ExhibitionReviewImage toEntityExhibitionReviewImage(ExhibitionReview review, String url) {
         return ExhibitionReviewImage.builder()
-                .fileKey(fileKey)
+                .fileKey(url)
                 .isDeleted(false)
                 .exhibitionReview(review)
                 .build();

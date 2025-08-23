@@ -9,8 +9,6 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.annotation.CreatedDate;
-
 @Entity
 @Builder
 @Getter

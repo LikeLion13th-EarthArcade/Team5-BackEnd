@@ -7,14 +7,22 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.exhibition.exhibition.service.command.ExhibitionCommandService;
 import com.project.team5backend.domain.exhibition.exhibition.service.query.ExhibitionQueryService;
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
+import com.project.team5backend.global.SwaggerBody;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,12 +36,29 @@ public class ExhibitionController {
     private final ExhibitionCommandService exhibitionCommandService;
     private final ExhibitionQueryService exhibitionQueryService;
 
-    @PostMapping
+    @SwaggerBody(content = @Content(
+            // request 파트만 JSON으로 강제
+            encoding = {
+                    @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE),
+                    // 선택: 이미지도 의도 명시
+                    @Encoding(name = "images", contentType = "image/*")
+            }
+    ))
+    @PostMapping(
+            value = "/api/v1/exhibitions",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @Operation(summary = "전시 생성", description = "전시 생성하면 전시 객체가 심사 대상에 포함됩니다.")
     public CustomResponse<String> createExhibition(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
-        exhibitionCommandService.createExhibition(createExhibitionReqDTO, userDetails.getEmail());
+            @RequestPart("request") @Valid ExhibitionReqDTO.CreateExhibitionReqDTO request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
+        if (images == null || images.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        if (images.size() > 5) throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
+
+        exhibitionCommandService.createExhibition(request, userDetails.getEmail(), images);
         return CustomResponse.onSuccess("전시글 등록이 완료되었습니다. 관리자 승인 대기열에 추가합니다.");
     }
 
