@@ -40,19 +40,31 @@ public class Reservation {
 
 
     @Column(length = 500)
-    private String cancelReason; // 취소 사유(기타)
-
-    public void cancel(ReservationStatus status, String reason) {
-        this.status = status; // CANCELED
-        this.cancelReason = reason;
-    }
-
+    private String cancelReason; // 취소 사유
 
     @Enumerated(EnumType.STRING)
     private ReservationStatus status; // PENDING, CONFIRMED, CANCELED
 
-    public void status(ReservationStatus reservationStatus) {
-        this.status = status;
+    // 예약 확정
+    public void confirm() {
+        this.status = ReservationStatus.CONFIRMED;
+    }
+
+    // 예약 취소
+    public void cancel(String reason) {
+        this.status = ReservationStatus.CANCELED;
+        this.cancelReason = reason;
+    }
+
+    // 생성 시 PENDING으로 초기화
+    @PrePersist
+    public void prePersist() {
+        if (this.status == null) {
+            this.status = ReservationStatus.PENDING;
+        }
+        if (this.reservedAt == null) {
+            this.reservedAt = LocalDateTime.now();
+        }
     }
 }
 

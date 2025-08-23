@@ -67,7 +67,9 @@ public class UserMeConverter {
 
     public static UserMeResponse.UserReservationsResponse toUserReservationsResponse(List<Reservation> reservations) {
         return new UserMeResponse.UserReservationsResponse(
-                reservations.stream().map(UserMeConverter::toReservationDto).collect(Collectors.toList())
+                reservations.stream()
+                        .map(UserMeConverter::toReservationDto)
+                        .collect(Collectors.toList())
         );
     }
 }

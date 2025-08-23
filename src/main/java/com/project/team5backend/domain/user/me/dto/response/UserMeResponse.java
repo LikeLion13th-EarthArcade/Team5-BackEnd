@@ -27,7 +27,14 @@ public class UserMeResponse {
         }
 
         // -------------------- 내가 예약한 공간 --------------------
-        public record UserReservationsResponse(List<Reservation> reservations) {
-            public record Reservation(Long id, String spaceName, String status, LocalDateTime reservedAt) {}
+        public record UserReservationsResponse(
+                List<Reservation> reservations
+        ) {
+            public record Reservation(
+                    Long reservationId,
+                    String spaceName,
+                    String status,
+                    LocalDateTime reservedAt
+            ) {}
         }
     }
