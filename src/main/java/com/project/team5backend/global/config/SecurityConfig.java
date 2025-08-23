@@ -37,8 +37,6 @@ public class SecurityConfig {
             c.path("/");
             c.secure(true);
             c.sameSite("None");
-            // ✅ JSESSIONID와 도메인 일치 권장 (server.session.cookie.domain=artiee.store)
-            c.domain("artiee.store");
         });
         return repo;
     }
