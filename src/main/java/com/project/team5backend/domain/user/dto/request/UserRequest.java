@@ -20,7 +20,7 @@ public class UserRequest {
             String newName,
             String currentPassword,
             String newPassword,
-            String newPasswordConfirmation // ✅ 추가된 필드
+            String newPasswordConfirmation
     ){}
 }
 

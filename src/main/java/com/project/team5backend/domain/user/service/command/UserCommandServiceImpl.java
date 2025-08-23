@@ -43,7 +43,6 @@ public class UserCommandServiceImpl implements UserCommandService {
             if (!request.newPassword().equals(request.newPasswordConfirmation())) {
                 throw new IllegalArgumentException("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.");
             }
-
             // 3. 비밀번호 변경
             user.changePassword(passwordEncoder.encode(request.newPassword()));
         }
@@ -55,8 +54,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        //user.setDeleted(true); -> softDelete 쓸거면 이거 2개 써라
-        //userRepository.save(user);
+
 
         userRepository.delete(user);
     }

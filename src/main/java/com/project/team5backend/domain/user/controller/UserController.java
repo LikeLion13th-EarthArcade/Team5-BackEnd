@@ -41,7 +41,7 @@ public class UserController {
         return CustomResponse.onSuccess(result);
     }
 
-    @Operation(summary = "회원정보 수정", description = "회원 이름 및 비밀번호 변경")
+    @Operation(summary = "회원 정보 수정", description = "회원 이름 및 비밀번호 변경")
     @PatchMapping
     public CustomResponse<String> updateUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UserRequest.UpdateUserInfo request) {
         Long userId = userDetails.getUserId();
