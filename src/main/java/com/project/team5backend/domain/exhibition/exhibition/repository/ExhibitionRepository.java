@@ -127,4 +127,5 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
             @Param("today") LocalDate today,
             org.springframework.data.domain.Pageable pageable
     );
+    List<Exhibition> findByUserId(Long userId);
 }

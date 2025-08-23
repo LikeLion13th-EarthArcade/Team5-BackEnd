@@ -1,7 +1,7 @@
 package com.project.team5backend.global.apiPayload;
 
-import com.project.team5backend.domain.user.entity.User;
-import com.project.team5backend.domain.user.repository.UserRepository;
+import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
