@@ -55,13 +55,28 @@ public class RecommendationService {
     // 홈 요약(프리뷰 1개)
     public RecommendResDTO.PersonalizedSummaryResDTO summary(Long userId) {
         var k = computeKeys(userId);
-        if (!k.eligible()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null);
+        if (!k.eligible()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null,null,null,null,null,null,null,null,0,null);
 
         List<Exhibition> top4 = recommendWithEmbedding(userId, k, 4);
-        if (top4.isEmpty()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null);
+        if (top4.isEmpty()) return new RecommendResDTO.PersonalizedSummaryResDTO(false, null, null, null,null,null,null,null,null,null,null,0,null);
 
         Exhibition e = top4.get(0);
-        return new RecommendResDTO.PersonalizedSummaryResDTO(true, e.getId(), e.getTitle(), e.getThumbnail());
+
+
+        return new RecommendResDTO.PersonalizedSummaryResDTO(
+                true,
+                e.getId(),
+                e.getTitle(),
+                e.getDescription(),
+                e.getThumbnail(),
+                String.valueOf(e.getCategory()),
+                String.valueOf(e.getMood()),
+                e.getAddress().getRoadAddress(),
+                e.getStartDate(),
+                e.getEndDate(),
+                e.getRatingAvg(),
+                e.getReviewCount(),
+                likeRepo.existsByUserIdAndExhibitionId(e.getUser().getId(), e.getId()));
     }
 
     // 상세(4개 + 키워드 라벨)
