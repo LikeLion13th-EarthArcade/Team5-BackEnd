@@ -43,7 +43,7 @@ public class ImageScheduler {
 
             for (ImageInternelDTO.ImageTrackingResDTO dto : expiredImages) {
                 try {
-                    imageCommandService.delete("likelion@naver.com", dto.fileKey());
+                    imageCommandService.delete(dto.email(), dto.fileKey());
                     deletedCount++;
                 } catch (Exception e) {
                     log.error("만료 FileKey 삭제 실패: {}", dto.fileKey(), e);
