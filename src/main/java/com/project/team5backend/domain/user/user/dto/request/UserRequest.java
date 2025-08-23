@@ -16,5 +16,11 @@ public class UserRequest {
             String password,
             String name
     ) {}
+    public record UpdateUserInfo(
+            String newName,
+            String currentPassword,
+            String newPassword,
+            String newPasswordConfirmation // ✅ 추가된 필드
+    ){}
 }
 
