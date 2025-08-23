@@ -52,7 +52,7 @@ server:
     session:
       cookie:
         name: JSESSIONID
-        domain: artiee.store
+        #domain: artiee.store
         http-only: true
         secure: true
         same-site: none
