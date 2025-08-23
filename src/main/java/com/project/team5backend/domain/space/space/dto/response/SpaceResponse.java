@@ -2,6 +2,8 @@ package com.project.team5backend.domain.space.space.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class SpaceResponse {
@@ -12,7 +14,8 @@ public class SpaceResponse {
             String name,
             String address,
             String startDate,
-            String endDate
+            String endDate,
+            String thumbnail
     ){}
 
     // 상세 조회 DTO
@@ -27,7 +30,8 @@ public class SpaceResponse {
                 String operatingHours,
                 String spaceSpecs,
                 String purpose,
-                String concept
+                String concept,
+                List<String> imageUrls
         ){}
 
         public record FacilitiesAndOptionsDto (
