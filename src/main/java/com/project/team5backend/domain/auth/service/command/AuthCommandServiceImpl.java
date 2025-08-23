@@ -138,11 +138,11 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         HttpSession session = httpRequest.getSession(false);
         if (session != null) session.setMaxInactiveInterval(30 * 60);
 
-        csrfRepo.saveToken(null, httpRequest, httpResponse);          // 기존 토큰 제거
-        CsrfToken newToken = csrfRepo.generateToken(httpRequest);     // 새 토큰 생성
-        csrfRepo.saveToken(newToken, httpRequest, httpResponse);      // 쿠키로 저장
-        // 필요하면 프론트 편의를 위해 헤더로도 내려줄 수 있음:
-        // httpResponse.setHeader(newToken.getHeaderName(), newToken.getToken());
+        // ✅ ✅ 여기 추가: 로그인 성공 직후 CSRF 토큰 새로 발급 + 동기화
+        CsrfToken newToken = csrfRepo.loadDeferredToken(httpRequest, httpResponse).get();
+        csrfRepo.saveToken(newToken, httpRequest, httpResponse);
+        // 선택: 프론트/Swagger에서 바로 확인 가능하게 응답 헤더에도 추가
+        httpResponse.setHeader(newToken.getHeaderName(), newToken.getToken());
 
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = userRepository.findById(principal.getUserId())
