@@ -28,3 +28,4 @@ public class SpaceLike extends BaseOnlyCreateTimeEntity {
     private User user;
 }
 
+

@@ -13,3 +13,4 @@ public interface SpaceLikeRepository extends JpaRepository<SpaceLike, Long> {
     List<SpaceLike> findByUser_Id(Long userId);
 }
 
+

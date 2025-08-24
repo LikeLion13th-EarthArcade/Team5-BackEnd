@@ -4,9 +4,14 @@ import com.project.team5backend.domain.exhibition.review.dto.request.ExhibitionR
 import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.domain.exhibition.review.service.command.ExhibitionReviewCommandService;
 import com.project.team5backend.domain.exhibition.review.service.query.ExhibitionReviewQueryService;
+import com.project.team5backend.domain.image.exception.ImageErrorCode;
+import com.project.team5backend.domain.image.exception.ImageException;
+import com.project.team5backend.global.SwaggerBody;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,15 +35,35 @@ public class ExhibitionReviewController {
     private final ExhibitionReviewQueryService exReviewQueryService;
 
 
-    @Operation(summary = "리뷰 생성", description = "리뷰 생성 api")
-    @PostMapping("/{exhibitionId}/reviews")
+    @SwaggerBody(content = @Content(
+            encoding = {
+                    @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE),
+                    @Encoding(name = "images", contentType = "image/*")
+            }
+    ))
+    @PostMapping(
+            value = "/{exhibitionId}/reviews",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "리뷰 생성", description = "리뷰 생성 API")
     public CustomResponse<String> createExhibitionReview(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long exhibitionId,
-            @Valid @RequestBody ExhibitionReviewReqDTO.createExReviewReqDTO createExReviewReqDTO) {
-        exReviewCommandService.createExhibitionReview(exhibitionId, userDetails.getEmail(), createExReviewReqDTO);
+            @RequestPart("request") @Valid ExhibitionReviewReqDTO.createExReviewReqDTO request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
+        if (images == null || images.isEmpty()) {
+            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        }
+        if (images.size() > 5) {
+            throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
+        }
+
+        exReviewCommandService.createExhibitionReview(exhibitionId, userDetails.getEmail(), request, images);
         return CustomResponse.onSuccess("해당 전시 리뷰가 생성되었습니다.");
     }
+
 
     @Operation(summary = "리뷰 목록 조회", description = "리뷰 목록 조회 api")
     @GetMapping("{exhibitionId}/reviews")

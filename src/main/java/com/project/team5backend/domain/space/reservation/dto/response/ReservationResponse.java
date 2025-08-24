@@ -29,5 +29,3 @@ public class ReservationResponse {
             LocalDateTime reservedAt
     ) {}
 }
-
-

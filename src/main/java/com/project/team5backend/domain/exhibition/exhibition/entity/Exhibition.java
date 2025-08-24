@@ -108,4 +108,8 @@ public class Exhibition extends BaseTimeEntity {
     public void rejectStatus() {
         this.status = Status.REJECTED;
     }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }
