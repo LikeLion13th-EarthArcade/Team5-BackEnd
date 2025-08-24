@@ -3,6 +3,7 @@ package com.project.team5backend.domain.space.space.dto.request;
 
 import com.project.team5backend.domain.space.space.entity.SpaceMood;
 import com.project.team5backend.domain.space.space.entity.SpacePurpose;
+import com.project.team5backend.domain.space.space.entity.SpaceSize;
 import com.project.team5backend.domain.space.space.entity.SpaceType;
 import com.project.team5backend.global.address.dto.request.AddressReqDTO;
 import jakarta.validation.Valid;
@@ -24,7 +25,7 @@ public class SpaceRequest {
             String name,  // 공간 이름
             String location, // 공간 위치
             SpaceType type, // 공간 타입
-            String size, // 공간 크기(면적)
+            SpaceSize size, // 공간 크기(면적)
             SpacePurpose purpose, // 공간 목적
             SpaceMood mood, // 공간 분위기
             LocalDate startDate, // 공간 이용 시작일
@@ -37,7 +38,7 @@ public class SpaceRequest {
     // 공간 검색 요청 DTO
     public record Search (
             String location,
-            String size,
+            SpaceSize size,
             SpaceType type,
             SpaceMood mood,
             String startDate,

@@ -49,8 +49,8 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
         if (request.location() != null && !request.location().isEmpty()) {
             predicates.add(cb.like(space.get("location"), "%" + request.location() + "%"));
         }
-        if (request.size() != null && !request.size().isEmpty()) {
-            predicates.add(cb.like(space.get("size"), "%" + request.size() + "%"));
+        if (request.size() != null ) {
+            predicates.add(cb.equal(space.get("size"), request.size()));
         }
         if (request.type() != null) {
             predicates.add(cb.equal(space.get("type"), request.type()));
