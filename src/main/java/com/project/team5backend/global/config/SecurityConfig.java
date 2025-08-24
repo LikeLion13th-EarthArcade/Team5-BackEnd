@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -42,12 +43,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        CsrfTokenRequestAttributeHandler reqHandler = new CsrfTokenRequestAttributeHandler();
+        reqHandler.setCsrfRequestAttributeName("_csrf"); // 명시(선택)
+
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfRepo())
+                        .csrfTokenRequestHandler(reqHandler)          // ★ 추가
                         .ignoringRequestMatchers("/api/v1/auth/**")
                 )
-                // 초기 진입 시 XSRF 쿠키가 항상 내려가도록 트리거
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -57,18 +61,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // ✅ Logout 설정: XSRF-TOKEN 삭제 -> 다음 요청에서 새 토큰 발급
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
-                        .addLogoutHandler((request, response, authentication) -> {
-                            // XSRF-TOKEN 삭제(회전 트리거)
-                            csrfRepo().saveToken(null, request, response);
-                        })
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(204); // No Content
-                        })
+                        .addLogoutHandler((req, res, authn) -> csrfRepo().saveToken(null, req, res))
+                        .logoutSuccessHandler((req, res, authn) -> res.setStatus(204))
                 )
-                // 세션 기반
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
