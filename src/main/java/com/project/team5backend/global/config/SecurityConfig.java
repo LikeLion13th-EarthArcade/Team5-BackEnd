@@ -43,27 +43,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        CsrfTokenRequestAttributeHandler reqHandler = new CsrfTokenRequestAttributeHandler();
-        reqHandler.setCsrfRequestAttributeName("_csrf"); // 명시(선택)
-
         http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfRepo())
-                        .csrfTokenRequestHandler(reqHandler)          // ★ 추가
-                        .ignoringRequestMatchers("/api/v1/auth/**")
-                )
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/v1/auth/csrf").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/auth/logout")
-                        .addLogoutHandler((req, res, authn) -> csrfRepo().saveToken(null, req, res))
                         .logoutSuccessHandler((req, res, authn) -> res.setStatus(204))
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
