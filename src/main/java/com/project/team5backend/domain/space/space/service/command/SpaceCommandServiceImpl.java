@@ -48,6 +48,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
     @Override
     public SpaceResponse.SpaceRegistrationResponse registerSpace(SpaceRequest.Create request, String email, List<MultipartFile> images) {
 
+
         User user = userRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 

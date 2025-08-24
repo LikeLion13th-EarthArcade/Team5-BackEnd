@@ -82,7 +82,7 @@ public class SpaceConverter {
                         usagePeriod, // 사용 기간
                         operatingHours, //운영 시간
                         space.getLocation(),
-                        space.getSize(),
+                        space.getSize() != null ? space.getSize().name() : null,
                         space.getPurpose() != null ? space.getPurpose().name() : null,
                         space.getMood() != null ? space.getMood().name() : null,
                         imageUrls

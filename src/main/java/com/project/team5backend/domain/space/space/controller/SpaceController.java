@@ -75,8 +75,10 @@ public class SpaceController {
     }
     @Operation(summary = "전시 공간 좋아요 / 좋아요 취소")
     @PostMapping("/{spaceId}/like")
-    public CustomResponse<Map<String, Boolean>> toggleLike(@PathVariable Long spaceId) {
-        boolean liked = spaceCommandService.toggleLike(spaceId, 1L);
+    public CustomResponse<Map<String, Boolean>> toggleLike(@PathVariable Long spaceId,
+                                                           @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getUserId();
+        boolean liked = spaceCommandService.toggleLike(spaceId, userId);
         return CustomResponse.onSuccess(Map.of("liked", liked));
     }
     @Operation(summary = "전시 공간 정보 삭제")
