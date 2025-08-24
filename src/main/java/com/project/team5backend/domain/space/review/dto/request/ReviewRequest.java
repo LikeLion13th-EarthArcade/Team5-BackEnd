@@ -10,7 +10,6 @@ public class ReviewRequest {
 
     public record CreateRe(
             Double rating,
-            String content,
-            List<String> images
+            String content
     ){}
 }

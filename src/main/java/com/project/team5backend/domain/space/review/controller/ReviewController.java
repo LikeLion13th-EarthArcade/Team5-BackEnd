@@ -5,13 +5,20 @@ import com.project.team5backend.domain.space.review.dto.request.ReviewRequest;
 import com.project.team5backend.domain.space.review.dto.response.ReviewResponse;
 import com.project.team5backend.domain.space.review.service.command.ReviewCommandService;
 import com.project.team5backend.domain.space.review.service.query.ReviewQueryService;
+import com.project.team5backend.global.SwaggerBody;
 import com.project.team5backend.global.apiPayload.CustomResponse;
 import com.project.team5backend.global.apiPayload.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -22,18 +29,23 @@ public class ReviewController {
     private final ReviewCommandService reviewCommandService;
     private final ReviewQueryService reviewQueryService;
 
+    @SwaggerBody(content = @Content(
+            encoding = {
+                    @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE)
+            }
+    ))
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "전시 공간 리뷰 등록")
-    @PostMapping
     public CustomResponse<Void> createReview(
             @PathVariable Long spaceId,
-            @RequestBody ReviewRequest.CreateRe request) {
-        //SecurityContext에서 Authentication 객체를 가져옴
+            @RequestPart("request") @Valid ReviewRequest.CreateRe request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //Authentication 객체에서 CustomUserDetails를 가져옴
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        // CustomUserDetails에서 userId를 가져옴
         Long userId = userDetails.getUserId();
-        reviewCommandService.createReview(spaceId, userId, request);
+
+        reviewCommandService.createReview(spaceId, userId, request, images);
         return CustomResponse.onSuccess(null);
     }
 
@@ -43,6 +55,7 @@ public class ReviewController {
         List<ReviewResponse.ReviewListResponse> reviews = reviewQueryService.getReviewsBySpaceId(spaceId);
         return CustomResponse.onSuccess(reviews);
     }
+
     @Operation(summary = "전시 공간 리뷰 상세 조회")
     @GetMapping("/{reviewId}")
     public CustomResponse<ReviewResponse.ReviewDetailResponse> getReviewDetail(@PathVariable Long reviewId) {
