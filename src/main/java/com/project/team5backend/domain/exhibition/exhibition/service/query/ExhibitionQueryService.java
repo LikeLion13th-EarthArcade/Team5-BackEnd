@@ -16,7 +16,7 @@ public interface ExhibitionQueryService {
     ExhibitionResDTO.SearchExhibitionPageResDTO searchExhibition(Category category, String district, Mood mood, LocalDate date, ExhibitionSort sort, int page);
 
     // 지금뜨는 전시회
-    ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition();
+    ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition(String email);
 
     // 다가오는 인기있는 전시회(좋아요 수)
     ExhibitionResDTO.UpcomingPopularityExhibitionResDTO getUpcomingPopularExhibition();
@@ -25,5 +25,5 @@ public interface ExhibitionQueryService {
     ExhibitionResDTO.PopularRegionExhibitionListResDTO getPopularRegionExhibitions();
 
     // artie 픽
-    List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks();
+    List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks(String email);
 }

@@ -121,7 +121,7 @@ public class ExhibitionConverter {
         return new ExhibitionResDTO.SearchExhibitionPageResDTO(items, pageInfo, mapInfo);
     }
 
-    public static ExhibitionResDTO.HotNowExhibitionResDTO toHotNowExhibitionResDTO(Exhibition exhibition, List<String> urls, boolean isLiked) {
+    public static ExhibitionResDTO.HotNowExhibitionResDTO toHotNowExhibitionResDTO(Exhibition exhibition, boolean isLiked) {
         return ExhibitionResDTO.HotNowExhibitionResDTO.builder()
                 .exhibitionId(exhibition.getId())
                 .title(exhibition.getTitle())
@@ -162,11 +162,20 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    public static ExhibitionResDTO.ArtieRecommendationResDTO toArtieRecommendationResDTO(Exhibition exhibition) {
+    public static ExhibitionResDTO.ArtieRecommendationResDTO toArtieRecommendationResDTO(Exhibition exhibition,boolean isLiked) {
         return ExhibitionResDTO.ArtieRecommendationResDTO.builder()
                 .exhibitionId(exhibition.getId())
                 .title(exhibition.getTitle())
+                .description(exhibition.getDescription())
                 .thumbnail(exhibition.getThumbnail())
+                .category(String.valueOf(exhibition.getCategory()))
+                .mood(String.valueOf(exhibition.getMood()))
+                .location(exhibition.getAddress().getRoadAddress() + exhibition.getAddress().getDetail())
+                .startDate(exhibition.getStartDate())
+                .endDate(exhibition.getEndDate())
+                .reviewAvg(exhibition.getRatingAvg())
+                .reviewCount(exhibition.getReviewCount())
+                .isLiked(isLiked)
                 .build();
     }
 

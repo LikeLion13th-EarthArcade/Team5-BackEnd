@@ -34,7 +34,7 @@ public class SecurityConfig {
         CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repo.setCookieCustomizer(c -> {
             c.path("/");
-            c.secure(true);
+            c.secure(false);
             c.sameSite("None");
         });
         return repo;
