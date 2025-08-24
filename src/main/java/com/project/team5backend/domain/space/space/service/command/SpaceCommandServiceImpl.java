@@ -30,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.project.team5backend.domain.user.user.entity.QUser.user;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -83,6 +85,8 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
         // ... 기존 로직과 동일
         Space space = spaceRepository.findById(spaceId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 전시 공간이 존재하지 않습니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
         return spaceLikeRepository.findBySpaceIdAndUserId(spaceId, userId)
                 .map(existingLike -> {
                     spaceLikeRepository.delete(existingLike);
@@ -91,7 +95,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
                 .orElseGet(() -> {
                     SpaceLike like = new SpaceLike();
                     like.setSpace(space);
-                    like.setUserId(userId);
+                    like.setUser(user);
                     spaceLikeRepository.save(like);
                     return true;
                 });

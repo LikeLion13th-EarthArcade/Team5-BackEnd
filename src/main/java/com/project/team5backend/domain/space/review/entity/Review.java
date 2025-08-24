@@ -2,6 +2,7 @@ package com.project.team5backend.domain.space.review.entity;
 
 import com.project.team5backend.domain.space.space.entity.Space;
 import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.global.entity.BaseOnlyCreateTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Review {
+public class Review extends BaseOnlyCreateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +32,6 @@ public class Review {
 
     private String mainImageKey;
 
-    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id")

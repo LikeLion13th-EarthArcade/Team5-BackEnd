@@ -44,13 +44,7 @@ public class Space {
     private LocalDate endDate; // 이용마감일
 
     private String description; // 공간 설명
-
-
-    // 누가 공간을 등록했냐
-    //private String submittedBy;
-
-    // 언제 공간을 등록했냐
-    //private LocalDateTime submittedAt;
+    ;
 
     //운영시간
     private String operatingHours;
@@ -58,6 +52,11 @@ public class Space {
 
     @ElementCollection
     private List<String> imageUrls;
+    public String getThumbnailUrl() {
+        return (imageUrls != null && !imageUrls.isEmpty())
+                ? imageUrls.get(0)
+                : null;
+    }
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.APPROVAL_PENDING;
