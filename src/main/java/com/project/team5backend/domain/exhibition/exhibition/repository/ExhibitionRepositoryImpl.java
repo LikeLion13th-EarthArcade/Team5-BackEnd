@@ -70,9 +70,9 @@ public class ExhibitionRepositoryImpl implements ExhibitionRepositoryCustom {
                 .fetchOne();
 
         // 정렬, 디폴트 최신순
-        OrderSpecifier<?> order = switch (sort == null ? ExhibitionSort.NEW : sort) {
+        OrderSpecifier<?> order = switch (sort == null ? ExhibitionSort.POPULAR : sort) {
             case OLD     -> exhibition.createdAt.asc();
-            case POPULAR -> new OrderSpecifier<>(Order.DESC, exhibition.likeCount, OrderSpecifier.NullHandling.NullsLast);
+            case POPULAR -> new OrderSpecifier<>(Order.DESC, exhibition.reviewCount, OrderSpecifier.NullHandling.NullsLast);
             case NEW     -> exhibition.createdAt.desc();
         };
 

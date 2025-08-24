@@ -90,7 +90,7 @@ public class ExhibitionController {
             @RequestParam(name = "distinct", required = false) String district,
             @RequestParam(name = "mood", required = false) Mood mood,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate localDate,
-            @RequestParam(defaultValue = "new") ExhibitionSort sort,   // new | old | popular
+            @RequestParam(defaultValue = "POPULAR") ExhibitionSort sort,   // new | old | popular
             @RequestParam(name = "page", defaultValue = "0") int page
     ) {
         return CustomResponse.onSuccess(exhibitionQueryService.searchExhibition(category, district, mood, localDate, sort, page));
