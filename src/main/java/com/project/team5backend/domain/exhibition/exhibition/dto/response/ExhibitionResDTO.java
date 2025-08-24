@@ -92,7 +92,16 @@ public class ExhibitionResDTO {
     public record HotNowExhibitionResDTO (
             Long exhibitionId,
             String title,
-            List<String> images
+            String description,
+            String thumbnail,
+            String category,
+            String mood,
+            String location,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal reviewAvg,
+            int reviewCount,
+            Boolean isLiked
     ){}
 
     @Builder

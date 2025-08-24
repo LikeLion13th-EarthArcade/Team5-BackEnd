@@ -45,18 +45,27 @@ public class SpaceController {
                 .getId();
     }
 
-    @Operation(summary = "전시 공간 등록")
-    @PostMapping
+    @SwaggerBody(content = @Content(
+            encoding = {
+                    @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE)
+            }
+    ))
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @Operation(summary = "전시 공간 등록", description = "로그인한 사용자가 전시 공간을 등록합니다.")
     public CustomResponse<SpaceResponse.SpaceRegistrationResponse> registerSpace(
-            @RequestBody SpaceRequest.Create request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new AccessDeniedException("로그인 필요");
-        }
-        SpaceResponse.SpaceRegistrationResponse response = spaceCommandService.registerSpace(request);
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart("request") @Valid SpaceRequest.Create request,
+            @RequestPart("images") List<MultipartFile> images
+    ) {
+        if (images == null || images.isEmpty()) throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND);
+        if (images.size() > 5) throw new ImageException(ImageErrorCode.IMAGE_TOO_MANY_REQUESTS);
+
+        SpaceResponse.SpaceRegistrationResponse response = spaceCommandService.registerSpace(request, userDetails.getEmail(), images);
         return CustomResponse.onSuccess(response);
     }
-
 
     @Operation(summary = "전시 공간 목록 조회")
     @GetMapping

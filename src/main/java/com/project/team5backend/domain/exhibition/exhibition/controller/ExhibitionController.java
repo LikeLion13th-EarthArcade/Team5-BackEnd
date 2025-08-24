@@ -45,7 +45,6 @@ public class ExhibitionController {
             }
     ))
     @PostMapping(
-            value = "/api/v1/exhibitions",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
