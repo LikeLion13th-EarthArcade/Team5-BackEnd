@@ -5,8 +5,7 @@ import com.project.team5backend.domain.user.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
+import java.time.LocalDate;
 @Entity
 @Table(name = "activities")
 @Getter @Setter
@@ -26,7 +25,7 @@ public class Activity {
     @Column(length = 1000)
     private String content; // 리뷰 내용이면 여기에 저장
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

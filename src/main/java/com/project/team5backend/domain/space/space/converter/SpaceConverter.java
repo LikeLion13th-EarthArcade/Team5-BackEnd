@@ -42,12 +42,19 @@ public class SpaceConverter {
 
     // Space 엔티티를 검색 결과 DTO로 변환
     public SpaceResponse.SpaceSearchResponse toSpaceSearchResponse(Space space) {
+        String thumbnail = null;
+        List<String> imageUrls = space.getImageUrls();
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            thumbnail = imageUrls.get(0); // 첫 번째 이미지만 썸네일로
+        }
+
         return new SpaceResponse.SpaceSearchResponse(
                 space.getId(),
                 space.getName(),
                 space.getLocation(),
                 space.getStartDate() != null ? space.getStartDate().toString() : null,
-                space.getEndDate() != null ? space.getEndDate().toString() : null
+                space.getEndDate() != null ? space.getEndDate().toString() : null,
+                thumbnail
         );
     }
 
@@ -67,6 +74,8 @@ public class SpaceConverter {
             String endDateStr = space.getEndDate().format(formatter);
             usagePeriod = startDateStr + " - " + endDateStr;
         }
+        List<String> imageUrls = space.getImageUrls();
+
         String operatingHours = space.getOperatingHours();
         SpaceResponse.SpaceDetailResponse.SpaceOverviewDto overview =
                 new SpaceResponse.SpaceDetailResponse.SpaceOverviewDto(
@@ -75,7 +84,8 @@ public class SpaceConverter {
                         space.getLocation(),
                         space.getSize(),
                         space.getPurpose() != null ? space.getPurpose().name() : null,
-                        space.getMood() != null ? space.getMood().name() : null
+                        space.getMood() != null ? space.getMood().name() : null,
+                        imageUrls
                 );
 
         // 엔티티에 없는 필드는 null로 처리

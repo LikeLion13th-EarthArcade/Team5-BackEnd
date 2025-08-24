@@ -6,8 +6,6 @@ import com.project.team5backend.domain.space.reservation.dto.response.Reservatio
 
 public interface ReservationCommandService {
     ReservationResponse.DetailResponse createReservation(Long userId, ReservationRequest.ReservationSpace request);
-
-    void confirmReservation(Long reservationId,Long userId);
-
-    void cancelReservation(Long reservationId,Long userId, String reason);
+    ReservationResponse.DetailResponse confirmReservation(Long reservationId, Long userId);
+    ReservationResponse.DetailResponse cancelReservation(Long reservationId, Long userId, String reason);
 }

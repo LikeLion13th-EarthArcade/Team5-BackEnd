@@ -25,4 +25,5 @@ public interface ExhibitionLikeRepository extends JpaRepository<ExhibitionLike, 
             "where el.user.id = :userId and el.exhibition.id in :ids")
     List<Long> findLikedExhibitionIds(@Param("userId") Long userId,
                                       @Param("ids") Collection<Long> ids);
+    List<ExhibitionLike> findByUser_Id(Long userId);
 }

@@ -50,7 +50,6 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             redisImageTracker.remove(user.getEmail(), fileKey);
         }
 
-        reviewRepository.save(review);
     }
 
     @Override
