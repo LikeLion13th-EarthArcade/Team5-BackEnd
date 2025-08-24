@@ -98,8 +98,10 @@ public class ExhibitionController {
 
     @Operation(summary = "지금 뜨는 전시회", description = "현재 진행중인 전시중에서 reviewCount가 가장 높은 전시 반환")
     @GetMapping("/hot-now")
-    public CustomResponse<ExhibitionResDTO.HotNowExhibitionResDTO> hotNowExhibition() {
-        return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition());
+    public CustomResponse<ExhibitionResDTO.HotNowExhibitionResDTO> hotNowExhibition(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition(userDetails.getEmail()));
     }
 
     @Operation(summary = "지금 뜨는, 다가오는 전시회", description = "아직 시작되지 않은 전시중에서 likeCount가 가장 높은 전시 반환")
@@ -116,8 +118,10 @@ public class ExhibitionController {
 
     @Operation(summary = "artie 추천 전시회", description = "artie 추천 전시 4개 반환 - 하루 단위로 업데이트")
     @GetMapping("/artie-recommendation")
-    public CustomResponse<List<ExhibitionResDTO.ArtieRecommendationResDTO>> artieRecommendation() {
-        return CustomResponse.onSuccess(exhibitionQueryService.getTodayArtiePicks());
+    public CustomResponse<List<ExhibitionResDTO.ArtieRecommendationResDTO>> artieRecommendation(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return CustomResponse.onSuccess(exhibitionQueryService.getTodayArtiePicks(userDetails.getEmail()));
     }
 
     @DeleteMapping("/{exhibitionId}")

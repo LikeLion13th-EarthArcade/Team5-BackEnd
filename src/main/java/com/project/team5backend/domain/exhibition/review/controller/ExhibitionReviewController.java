@@ -42,6 +42,7 @@ public class ExhibitionReviewController {
             }
     ))
     @PostMapping(
+            value = "/{exhibitionId}/reviews",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

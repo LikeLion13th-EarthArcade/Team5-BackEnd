@@ -13,6 +13,8 @@ import com.project.team5backend.domain.exhibition.exhibition.repository.Exhibiti
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
 import com.project.team5backend.domain.recommendation.service.InteractLogService;
+import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +41,7 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final InteractLogService interactLogService;
     private final ExhibitionLikeRepository exhibitionLikeRepository;
+    private final UserRepository userRepository;
     @Override
     public ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
@@ -77,8 +80,11 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     }
 
     @Override
-    public ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition() {
+    public ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition(String email) {
         LocalDate currentDate = LocalDate.now();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         Pageable topOne = PageRequest.of(0, 1);
 
         List<Exhibition> exhibitions = exhibitionRepository.findHotNowExhibition(currentDate, topOne, Status.APPROVED);
@@ -87,10 +93,8 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         }
         Exhibition hotNowEx = exhibitions.get(0);
 
-        List<String> urls = exhibitionImageRepository.findFileKeysByExhibitionId(hotNowEx.getId());
-
-        Boolean isLiked = exhibitionLikeRepository.existsByUserIdAndExhibitionId(hotNowEx.getUser().getId(), hotNowEx.getId());
-        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx, urls, isLiked);
+        Boolean isLiked = exhibitionLikeRepository.existsByUserIdAndExhibitionId(user.getId(), hotNowEx.getId());
+        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx, isLiked);
     }
 
     @Override
@@ -128,8 +132,11 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     }
 
     @Override
-    public List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks() {
+    public List<ExhibitionResDTO.ArtieRecommendationResDTO> getTodayArtiePicks(String email) {
         LocalDate today = LocalDate.now();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
         List<Exhibition> candidates = exhibitionRepository.findUnpopularCandidates(today, 20); // 후보 20개
 
@@ -140,7 +147,10 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
 
         return candidates.stream()
                 .limit(4)
-                .map(ExhibitionConverter::toArtieRecommendationResDTO)
+                .map(exhibition -> {
+                    boolean isLiked = exhibitionLikeRepository.existsByUserIdAndExhibitionId(user.getId(), exhibition.getId());
+                    return ExhibitionConverter.toArtieRecommendationResDTO(exhibition, isLiked);
+                })
                 .toList();
     }
 

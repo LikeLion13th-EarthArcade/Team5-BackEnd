@@ -127,7 +127,16 @@ public class ExhibitionResDTO {
     public record ArtieRecommendationResDTO(
             Long exhibitionId,
             String title,
-            String thumbnail
+            String description,
+            String thumbnail,
+            String category,
+            String mood,
+            String location,
+            LocalDate startDate,
+            LocalDate endDate,
+            BigDecimal reviewAvg,
+            int reviewCount,
+            Boolean isLiked
     ){}
 
     @Builder
