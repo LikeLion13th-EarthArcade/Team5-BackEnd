@@ -8,6 +8,7 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionErrorCode;
 import com.project.team5backend.domain.exhibition.exhibition.exception.ExhibitionException;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionLikeRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
@@ -37,6 +38,7 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final InteractLogService interactLogService;
+    private final ExhibitionLikeRepository exhibitionLikeRepository;
     @Override
     public ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
@@ -85,8 +87,10 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         }
         Exhibition hotNowEx = exhibitions.get(0);
 
-        List<String> fileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(hotNowEx.getId());
-        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx.getId(), hotNowEx.getTitle(), fileKeys);
+        List<String> urls = exhibitionImageRepository.findFileKeysByExhibitionId(hotNowEx.getId());
+
+        Boolean isLiked = exhibitionLikeRepository.existsByUserIdAndExhibitionId(hotNowEx.getUser().getId(), hotNowEx.getId());
+        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx, urls, isLiked);
     }
 
     @Override

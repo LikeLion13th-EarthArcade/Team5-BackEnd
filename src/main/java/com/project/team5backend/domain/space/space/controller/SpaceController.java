@@ -39,7 +39,6 @@ public class SpaceController {
             }
     ))
     @PostMapping(
-            value = "/api/v1/spaces",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )

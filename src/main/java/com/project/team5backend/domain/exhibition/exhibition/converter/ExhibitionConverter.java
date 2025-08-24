@@ -121,11 +121,20 @@ public class ExhibitionConverter {
         return new ExhibitionResDTO.SearchExhibitionPageResDTO(items, pageInfo, mapInfo);
     }
 
-    public static ExhibitionResDTO.HotNowExhibitionResDTO toHotNowExhibitionResDTO(Long exhibitionId, String title, List<String> fileKeys) {
+    public static ExhibitionResDTO.HotNowExhibitionResDTO toHotNowExhibitionResDTO(Exhibition exhibition, List<String> urls, boolean isLiked) {
         return ExhibitionResDTO.HotNowExhibitionResDTO.builder()
-                .exhibitionId(exhibitionId)
-                .title(title)
-                .images(fileKeys)
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .description(exhibition.getDescription())
+                .thumbnail(exhibition.getThumbnail())
+                .category(String.valueOf(exhibition.getCategory()))
+                .mood(String.valueOf(exhibition.getMood()))
+                .location(exhibition.getAddress().getRoadAddress() + exhibition.getAddress().getDetail())
+                .startDate(exhibition.getStartDate())
+                .endDate(exhibition.getEndDate())
+                .reviewAvg(exhibition.getRatingAvg())
+                .reviewCount(exhibition.getReviewCount())
+                .isLiked(isLiked)
                 .build();
     }
 
