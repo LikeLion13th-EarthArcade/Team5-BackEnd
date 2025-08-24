@@ -80,21 +80,27 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     }
 
     @Override
-    public ExhibitionResDTO.HotNowExhibitionResDTO getHotNowExhibition(String email) {
+    public List<ExhibitionResDTO.HotNowExhibitionResDTO> getHotNowExhibition(String email) {
         LocalDate currentDate = LocalDate.now();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        Pageable topOne = PageRequest.of(0, 1);
+        Pageable topOne = PageRequest.of(0, 4);
 
         List<Exhibition> exhibitions = exhibitionRepository.findHotNowExhibition(currentDate, topOne, Status.APPROVED);
         if (exhibitions.isEmpty()) {
             throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND);
         }
-        Exhibition hotNowEx = exhibitions.get(0);
-
-        Boolean isLiked = exhibitionLikeRepository.existsByUserIdAndExhibitionId(user.getId(), hotNowEx.getId());
-        return ExhibitionConverter.toHotNowExhibitionResDTO(hotNowEx, isLiked);
+        return exhibitions.stream()
+                .map(exhibition -> {
+                    boolean isLiked = exhibitionLikeRepository
+                            .existsByUserIdAndExhibitionId(
+                                    exhibition.getUser().getId(),
+                                    exhibition.getId()
+                            );
+                    return ExhibitionConverter.toHotNowExhibitionResDTO(exhibition, isLiked);
+                })
+                .toList();
     }
 
     @Override
