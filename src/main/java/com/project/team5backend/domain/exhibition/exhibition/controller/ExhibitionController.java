@@ -98,7 +98,7 @@ public class ExhibitionController {
 
     @Operation(summary = "지금 뜨는 전시회", description = "현재 진행중인 전시중에서 reviewCount가 가장 높은 전시 반환")
     @GetMapping("/hot-now")
-    public CustomResponse<ExhibitionResDTO.HotNowExhibitionResDTO> hotNowExhibition(
+    public CustomResponse<List<ExhibitionResDTO.HotNowExhibitionResDTO>> hotNowExhibition(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return CustomResponse.onSuccess(exhibitionQueryService.getHotNowExhibition(userDetails.getEmail()));
