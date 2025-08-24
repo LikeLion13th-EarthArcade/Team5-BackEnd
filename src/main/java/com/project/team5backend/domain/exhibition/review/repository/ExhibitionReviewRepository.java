@@ -1,5 +1,6 @@
 package com.project.team5backend.domain.exhibition.review.repository;
 
+import com.project.team5backend.domain.exhibition.exhibition.entity.ExhibitionLike;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ExhibitionReviewRepository extends JpaRepository<ExhibitionReview, Long> {
@@ -23,4 +25,6 @@ public interface ExhibitionReviewRepository extends JpaRepository<ExhibitionRevi
             "WHERE er.exhibition.id = :exhibitionId AND er.isDeleted = false " +
             "ORDER BY er.createdAt DESC")
     Page<ExhibitionReview> findByExhibitionIdAndIsDeletedFalse(@Param("exhibitionId") Long exhibitionId, Pageable pageable);
+    List<ExhibitionReview> findByUser_Id(Long userId);
+
 }

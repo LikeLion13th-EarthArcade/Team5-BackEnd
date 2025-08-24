@@ -2,6 +2,7 @@ package com.project.team5backend.domain.space.reservation.dto.response;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReservationResponse {
 
@@ -24,8 +25,7 @@ public class ReservationResponse {
             String requesterEmail,
             String requesterPhone,
             String requestMessage,
-            String status
+            String status,
+            LocalDateTime reservedAt
     ) {}
 }
-
-
