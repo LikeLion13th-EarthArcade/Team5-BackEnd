@@ -72,6 +72,8 @@ public class ExhibitionConverter {
                 .address(
                         exhibition.getAddress() != null ? exhibition.getAddress().toString() : null
                 )
+                .latitude(exhibition.getAddress().getLatitude())
+                .longitude(exhibition.getAddress().getLongitude())
                 .category(exhibition.getCategory())
                 .type(exhibition.getType())
                 .mood(exhibition.getMood())
