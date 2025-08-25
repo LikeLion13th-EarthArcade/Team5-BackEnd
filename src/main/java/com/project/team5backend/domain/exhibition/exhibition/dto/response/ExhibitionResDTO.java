@@ -42,6 +42,8 @@ public class ExhibitionResDTO {
             List<String> imageFileKeys,
             String homepageUrl,
             String address,
+            BigDecimal latitude,
+            BigDecimal longitude,
             Category category,
             Type type,
             Mood mood,
