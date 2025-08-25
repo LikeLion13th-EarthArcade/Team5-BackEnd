@@ -61,7 +61,7 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
             imageUrls.add(url);
         }
 
-        Space space = spaceConverter.toSpace(request, user, imageUrls.get(0));
+        Space space = spaceConverter.toSpace(request, user, imageUrls.get(0),address);
         Space savedSpace = spaceRepository.save(space);
 
         // 4. Space 이미지 엔티티 저장
