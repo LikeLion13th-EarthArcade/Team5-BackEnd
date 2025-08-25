@@ -16,7 +16,6 @@ import com.project.team5backend.domain.image.entity.ExhibitionImage;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
-import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.domain.recommendation.service.InteractLogService;
 import com.project.team5backend.domain.user.user.entity.User;
@@ -36,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +45,6 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
     private final ExhibitionRepository exhibitionRepository;
     private final UserRepository userRepository;
     private final ExhibitionLikeRepository exhibitionLikeRepository;
-    private final RedisImageTracker redisImageTracker;
     private final ExhibitionImageRepository exhibitionImageRepository;
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ImageCommandService imageCommandService;
@@ -105,23 +102,12 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         }
     }
 
-
-    @Override
-    public ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(String email, ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO){
-        List<String> images = redisImageTracker.getOrderedFileKeysByEmail(email);
-        return ExhibitionConverter.toPreviewExhibitionResDTO(createExhibitionReqDTO, images);
-    }
-
     @Override
     public void deleteExhibition(Long exhibitionId, String email) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
                 .orElseThrow(() -> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
 
         if (exhibition.isDeleted()) return;
-
-        if (!Objects.equals(exhibition.getUser().getEmail(), email)) {
-            throw new ExhibitionException(ExhibitionErrorCode.EXHIBITION_FORBIDDEN);
-        }
 
         exhibition.delete();
 

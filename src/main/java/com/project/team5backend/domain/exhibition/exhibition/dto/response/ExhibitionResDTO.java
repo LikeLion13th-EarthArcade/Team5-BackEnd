@@ -6,30 +6,12 @@ import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.global.entity.Facility;
 import lombok.Builder;
-import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ExhibitionResDTO {
-
-    @Builder
-    public record PreviewExhibitionResDTO (
-            String title,
-            String description,
-            LocalDate startDate,
-            LocalDate endDate,
-            String openingTime,
-            List<String> imageUrls,
-            String homepageUrl,
-            String address,
-            Category category,
-            Type type,
-            Mood mood,
-            Integer price,
-            List<Facility> facility
-    ) {}
 
     @Builder
     public record DetailExhibitionResDTO (

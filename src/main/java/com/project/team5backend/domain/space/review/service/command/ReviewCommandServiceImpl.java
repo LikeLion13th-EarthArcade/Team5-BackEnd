@@ -4,7 +4,6 @@ import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.image.repository.ReviewImageRepository;
 import com.project.team5backend.domain.image.converter.ImageConverter;
-import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.space.review.converter.ReviewConverter;
 import com.project.team5backend.domain.space.review.dto.request.ReviewRequest;
 import com.project.team5backend.domain.space.review.entity.Review;

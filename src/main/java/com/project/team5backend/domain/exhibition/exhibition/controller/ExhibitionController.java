@@ -60,14 +60,6 @@ public class ExhibitionController {
         exhibitionCommandService.createExhibition(request, userDetails.getEmail(), images);
         return CustomResponse.onSuccess("전시글 등록이 완료되었습니다. 관리자 승인 대기열에 추가합니다.");
     }
-
-    @PostMapping("/preview")
-    @Operation(summary = "전시 생성 중 미리보기", description = "작성중 미리보기 api")
-    public CustomResponse<ExhibitionResDTO.PreviewExhibitionResDTO> previewExhibition(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO) {
-        return CustomResponse.onSuccess(exhibitionCommandService.previewExhibition(userDetails.getEmail(),createExhibitionReqDTO));
-    }
     @PostMapping("/{exhibitionId}/like")
     @Operation(summary = "전시 좋아요", description = "좋아요 없으면 등록, 있으면 취소")
     public CustomResponse<ExhibitionResDTO.LikeExhibitionResDTO> likeExhibition(

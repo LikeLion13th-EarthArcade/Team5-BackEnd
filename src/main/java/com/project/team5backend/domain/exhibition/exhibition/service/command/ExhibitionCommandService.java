@@ -12,7 +12,5 @@ public interface ExhibitionCommandService {
 
     ExhibitionResDTO.LikeExhibitionResDTO likeExhibition(Long exhibitionId, String email);
 
-    ExhibitionResDTO.PreviewExhibitionResDTO previewExhibition(String email, ExhibitionReqDTO.CreateExhibitionReqDTO createExhibitionReqDTO);
-
     void deleteExhibition(Long id, String email);
 }
