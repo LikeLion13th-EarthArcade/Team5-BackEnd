@@ -67,6 +67,10 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         Exhibition exhibition = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, null, address);
         exhibitionRepository.save(exhibition);
 
+        if (images == null || images.isEmpty()) {
+            throw new ImageException(ImageErrorCode.IMAGE_NOT_FOUND_IN_DTO);
+        }
+
         List<String> imageUrls = new ArrayList<>();
         for (MultipartFile file : images) {
             String url = s3Uploader.upload(file, "exhibitions");
