@@ -64,7 +64,7 @@ public class ExhibitionCommandServiceImpl implements ExhibitionCommandService {
         Address address = AddressConverter.toAddress(addressResDTO);
 
         // 1. 전시 엔티티 먼저 저장 (썸네일은 일단 null 로)
-        Exhibition exhibition = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, null, address);
+        Exhibition exhibition = ExhibitionConverter.toEntity(user, createExhibitionReqDTO, address);
         exhibitionRepository.save(exhibition);
 
         List<String> imageUrls = new ArrayList<>();
