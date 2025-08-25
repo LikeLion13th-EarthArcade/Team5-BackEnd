@@ -9,4 +9,7 @@ import java.util.List;
 
 public interface ExhibitionReviewImageRepository extends JpaRepository<ExhibitionReviewImage, Long> {
     List<ExhibitionReviewImage> findByExhibitionReviewId(Long exhibitionReviewId);
+
+    @Query("select eri.fileKey from ExhibitionReviewImage eri where eri.exhibitionReview.id =:exReviewId and eri.isDeleted = false")
+    List<String> findImageUrlByExhibitionReviewId(@Param("exReviewId") Long exReviewId);
 }

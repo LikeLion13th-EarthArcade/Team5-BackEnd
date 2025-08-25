@@ -4,6 +4,7 @@ import com.project.team5backend.domain.exhibition.exhibition.dto.request.Exhibit
 import com.project.team5backend.domain.exhibition.exhibition.dto.response.ExhibitionResDTO;
 import com.project.team5backend.domain.exhibition.exhibition.entity.Exhibition;
 import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Status;
+import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
 import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.global.entity.embedded.Address;
 import lombok.AccessLevel;
@@ -40,7 +41,7 @@ public class ExhibitionConverter {
                 .build();
     }
 
-    public static ExhibitionResDTO.DetailExhibitionResDTO toDetailExhibitionResDTO(Exhibition exhibition, List<String> imageFileKeys) {
+    public static ExhibitionResDTO.DetailExhibitionResDTO toDetailExhibitionResDTO(Exhibition exhibition, List<String> imageFileKeys, List<ExhibitionReviewResDTO.exReviewDetailResDTO> reviews) {
         return ExhibitionResDTO.DetailExhibitionResDTO.builder()
                 .exhibitionId(exhibition.getId())
                 .title(exhibition.getTitle())
@@ -60,7 +61,30 @@ public class ExhibitionConverter {
                 .mood(exhibition.getMood())
                 .price(exhibition.getPrice())
                 .facility(exhibition.getFacilities())
-                .reviews(null)
+                .reviews(reviews)
+                .build();
+    }
+
+    public static ExhibitionResDTO.DetailPendingExhibitionResDTO toDetailPendingExhibitionResDTO(Exhibition exhibition, List<String> imageFileKeys) {
+        return ExhibitionResDTO.DetailPendingExhibitionResDTO.builder()
+                .exhibitionId(exhibition.getId())
+                .title(exhibition.getTitle())
+                .description(exhibition.getDescription())
+                .startDate(exhibition.getStartDate())
+                .endDate(exhibition.getEndDate())
+                .openingTime(exhibition.getOpeningTime())
+                .imageFileKeys(imageFileKeys)
+                .homepageUrl(exhibition.getHomepageUrl())
+                .address(
+                        exhibition.getAddress() != null ? exhibition.getAddress().toString() : null
+                )
+                .latitude(exhibition.getAddress().getLatitude())
+                .longitude(exhibition.getAddress().getLongitude())
+                .category(exhibition.getCategory())
+                .type(exhibition.getType())
+                .mood(exhibition.getMood())
+                .price(exhibition.getPrice())
+                .facility(exhibition.getFacilities())
                 .build();
     }
 

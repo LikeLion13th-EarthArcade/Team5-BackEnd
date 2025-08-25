@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface ExhibitionAdminQueryService {
     Page<ExhibitionAdminResDTO.PendingExhibitionResDTO> getPendingExhibitions(Pageable pageable);
 
-    ExhibitionResDTO.DetailExhibitionResDTO getDetailPendingExhibition(Long exhibitionId);
+    ExhibitionResDTO.DetailPendingExhibitionResDTO getDetailPendingExhibition(Long exhibitionId);
 }

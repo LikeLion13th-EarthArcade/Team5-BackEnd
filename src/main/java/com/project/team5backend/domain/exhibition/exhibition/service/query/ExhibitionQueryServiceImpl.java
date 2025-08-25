@@ -11,7 +11,12 @@ import com.project.team5backend.domain.exhibition.exhibition.exception.Exhibitio
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionLikeRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionRepository;
 import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
+import com.project.team5backend.domain.exhibition.review.converter.ExhibitionReviewConverter;
+import com.project.team5backend.domain.exhibition.review.dto.response.ExhibitionReviewResDTO;
+import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
+import com.project.team5backend.domain.exhibition.review.repository.ExhibitionReviewRepository;
 import com.project.team5backend.domain.image.repository.ExhibitionImageRepository;
+import com.project.team5backend.domain.image.repository.ExhibitionReviewImageRepository;
 import com.project.team5backend.domain.recommendation.service.InteractLogService;
 import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.domain.user.user.repository.UserRepository;
@@ -42,6 +47,8 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
     private final InteractLogService interactLogService;
     private final ExhibitionLikeRepository exhibitionLikeRepository;
     private final UserRepository userRepository;
+    private final ExhibitionReviewRepository exhibitionReviewRepository;
+    private final ExhibitionReviewImageRepository exhibitionReviewImageRepository;
     @Override
     public ExhibitionResDTO.DetailExhibitionResDTO getDetailExhibition(Long exhibitionId) {
         Exhibition exhibition = exhibitionRepository.findByIdAndIsDeletedFalseAndStatusApprove(exhibitionId, Status.APPROVED)
@@ -52,7 +59,17 @@ public class ExhibitionQueryServiceImpl implements ExhibitionQueryService {
         // 전시 이미지들의 fileKey만 조회
         List<String> imageFileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(exhibitionId);
 
-        return ExhibitionConverter.toDetailExhibitionResDTO(exhibition, imageFileKeys);
+        List<ExhibitionReview> reviews = exhibitionReviewRepository.findAllByExhibitionId(exhibition.getId());
+
+        List<ExhibitionReviewResDTO.exReviewDetailResDTO> detailReviews = reviews.stream()
+                .map(review -> {
+                    // 리뷰에 연결된 이미지 fileKey 조회
+                    List<String> imageUrls = exhibitionReviewImageRepository.findImageUrlByExhibitionReviewId(review.getId());
+                    return ExhibitionReviewConverter.toDetailExReviewResDTO(review, imageUrls);
+                })
+                .toList();
+
+        return ExhibitionConverter.toDetailExhibitionResDTO(exhibition, imageFileKeys, detailReviews);
     }
 
     @Override
