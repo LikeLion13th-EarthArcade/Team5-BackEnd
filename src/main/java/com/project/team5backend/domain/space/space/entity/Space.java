@@ -54,6 +54,7 @@ public class Space {
     //운영시간
     private String operatingHours;
 
+    private boolean isDeleted;
 
     @ElementCollection
     private List<String> imageUrls;

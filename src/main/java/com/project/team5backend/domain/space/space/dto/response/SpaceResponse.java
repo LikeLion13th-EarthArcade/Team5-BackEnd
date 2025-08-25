@@ -7,9 +7,11 @@ import java.util.List;
 
 @Getter
 @Setter
+
 public class SpaceResponse {
 
     // 검색 결과 DTO
+    @Builder
     public record SpaceSearchResponse (
             Long id,
             String name,
@@ -20,6 +22,26 @@ public class SpaceResponse {
             String endDate,
             String thumbnail
     ){}
+    // 페이지 결과 DTO
+    public record SpaceSearchPageResponse(
+            List<SpaceSearchResponse> items,
+            PageInfo pageInfo,
+            MapInfo mapInfo
+    ) {
+        public record PageInfo(
+                int number,
+                int size,
+                long totalElements,
+                int totalPages,
+                boolean first,
+                boolean last
+        ) {}
+
+        public record MapInfo(
+                Double latitude,
+                Double longitude
+        ) {}
+    }
 
     // 상세 조회 DTO
     public record SpaceDetailResponse (
@@ -65,4 +87,6 @@ public class SpaceResponse {
     public record SpaceRegistrationResponse (
             Long spaceId
     ){}
+
+
 }
