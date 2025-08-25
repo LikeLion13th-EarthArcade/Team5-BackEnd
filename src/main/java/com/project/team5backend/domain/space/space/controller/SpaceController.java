@@ -1,9 +1,15 @@
 package com.project.team5backend.domain.space.space.controller;
 
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
+import com.project.team5backend.domain.exhibition.exhibition.repository.ExhibitionSort;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
+import com.project.team5backend.domain.space.space.entity.SpaceMood;
+import com.project.team5backend.domain.space.space.entity.SpaceSize;
+import com.project.team5backend.domain.space.space.entity.SpaceType;
 import com.project.team5backend.domain.space.space.service.command.SpaceCommandService;
 import com.project.team5backend.domain.space.space.service.query.SpaceQueryService;
 import com.project.team5backend.domain.user.user.repository.UserRepository;
@@ -15,11 +21,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Encoding;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +68,23 @@ public class SpaceController {
         List<SpaceResponse.SpaceSearchResponse> spaces = spaceQueryService.getApprovedSpaces();
         return CustomResponse.onSuccess(spaces);
     }
-    @Operation(summary = "전시 공간 검색(조건) 조회")
+
+    @Operation(summary = "전시 공간 검색")
     @GetMapping("/search")
-    public CustomResponse<List<SpaceResponse.SpaceSearchResponse>> searchSpaces(
-            @ModelAttribute SpaceRequest.Search searchRequest) {
-        List<SpaceResponse.SpaceSearchResponse> spaces = spaceQueryService.searchSpaces(searchRequest);
-        return CustomResponse.onSuccess(spaces);
+    public CustomResponse<SpaceResponse.SpaceSearchPageResponse> searchSpaces(
+            @RequestParam(name = "startDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(name = "district", required = false) String district,
+            @RequestParam(name = "size", required = false) SpaceSize size,
+            @RequestParam(name = "type", required = false) SpaceType type,
+            @RequestParam(name = "mood", required = false) SpaceMood mood,
+            @RequestParam(name = "page", defaultValue = "0") int page
+            ) {
+        return CustomResponse.onSuccess(
+                spaceQueryService.searchSpaces(startDate, endDate, district, size, type, mood, page)
+        );
     }
     @Operation(summary = "전시 공간 상세 조회")
     @GetMapping("/{spaceId}")

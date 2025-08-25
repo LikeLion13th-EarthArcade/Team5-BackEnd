@@ -1,10 +1,15 @@
 package com.project.team5backend.domain.space.space.service.query;
 
 
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Mood;
+import com.project.team5backend.domain.exhibition.exhibition.entity.enums.Type;
 import com.project.team5backend.domain.space.space.converter.SpaceConverter;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.space.entity.Space;
+import com.project.team5backend.domain.space.space.entity.SpaceMood;
+import com.project.team5backend.domain.space.space.entity.SpaceSize;
+import com.project.team5backend.domain.space.space.entity.SpaceType;
 import com.project.team5backend.domain.space.space.repository.SpaceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -12,6 +17,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,43 +47,55 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
 
     //검색 조건에 맞는 전시 공간 목록 조회
     @Override
-    public List<SpaceResponse.SpaceSearchResponse> searchSpaces(SpaceRequest.Search request) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Space> query = cb.createQuery(Space.class);
-        Root<Space> space = query.from(Space.class);
+    public SpaceResponse.SpaceSearchPageResponse searchSpaces(
+            LocalDate startDate,
+            LocalDate endDate,
+            String district,
+            SpaceSize size,
+            SpaceType type,
+            SpaceMood mood,
+            int page
+    ) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending()); // ✅ id 기준 오름차순 고정
 
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(space.get("status"), Space.Status.APPROVED));
+        // Page<Space> 조회
+        Page<Space> spaces = spaceRepository.findSpacesWithFilters(
+                startDate, endDate, district, size, type, mood, pageable
+        );
 
-        // Address 검색 수정
-        if (request.address() != null && !request.address().isEmpty()) {
-            Predicate districtLike = cb.like(space.get("address").get("district"), "%" + request.address() + "%");
-            predicates.add(districtLike);
-        }
-        if (request.size() != null ) {
-            predicates.add(cb.equal(space.get("size"), request.size()));
-        }
-        if (request.type() != null) {
-            predicates.add(cb.equal(space.get("type"), request.type()));
-        }
-        if (request.mood() != null) {
-            predicates.add(cb.equal(space.get("mood"), request.mood()));
-        }
+        // DTO 변환 (static 메서드 사용)
+        List<SpaceResponse.SpaceSearchResponse> content =
+                spaces.getContent().stream()
+                        .map(SpaceConverter::toSearchSpaceResDTO)
+                        .toList();
 
-        if (request.startDate() != null && !request.startDate().isEmpty()) {
-            LocalDate startDate = LocalDate.parse(request.startDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-            predicates.add(cb.greaterThanOrEqualTo(space.get("endDate"), startDate));
-        }
-        if (request.endDate() != null && !request.endDate().isEmpty()) {
-            LocalDate endDate = LocalDate.parse(request.endDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-            predicates.add(cb.lessThanOrEqualTo(space.get("startDate"), endDate));
-        }
+        // PageInfo 생성
+        SpaceResponse.SpaceSearchPageResponse.PageInfo pageInfo =
+                new SpaceResponse.SpaceSearchPageResponse.PageInfo(
+                        spaces.getNumber(),         // 현재 페이지
+                        spaces.getSize(),           // 페이지 크기
+                        spaces.getTotalElements(),  // 전체 요소 수
+                        spaces.getTotalPages(),     // 전체 페이지 수
+                        spaces.isFirst(),           // 첫 페이지 여부
+                        spaces.isLast()             // 마지막 페이지 여부
+                );
 
-        query.where(predicates.toArray(new Predicate[0]));
-        List<Space> resultSpaces = entityManager.createQuery(query).getResultList();
+        // MapInfo 생성 (서울 시청 기준 좌표 예시)
+        SpaceResponse.SpaceSearchPageResponse.MapInfo mapInfo =
+                new SpaceResponse.SpaceSearchPageResponse.MapInfo(
+                        37.5665,  // latitude
+                        126.9780  // longitude
+                );
 
-        return spaceConverter.toSpaceSearchResponseList(resultSpaces);
+        // 최종 반환
+        return new SpaceResponse.SpaceSearchPageResponse(
+                content,
+                pageInfo,
+                mapInfo
+        );
     }
+
+
 
     //전시 공간의 상세 정보 조회
     @Override
