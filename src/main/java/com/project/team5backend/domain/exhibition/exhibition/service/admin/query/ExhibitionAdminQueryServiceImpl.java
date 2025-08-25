@@ -37,10 +37,10 @@ public class ExhibitionAdminQueryServiceImpl implements ExhibitionAdminQueryServ
     }
 
     @Override
-    public ExhibitionResDTO.DetailExhibitionResDTO getDetailPendingExhibition(Long exhibitionId){
+    public ExhibitionResDTO.DetailPendingExhibitionResDTO getDetailPendingExhibition(Long exhibitionId){
         Exhibition exhibition = exhibitionRepository.findById(exhibitionId)
                 .orElseThrow(()-> new ExhibitionException(ExhibitionErrorCode.EXHIBITION_NOT_FOUND));
         List<String> imageFileKeys = exhibitionImageRepository.findFileKeysByExhibitionId(exhibitionId);
-        return ExhibitionConverter.toDetailExhibitionResDTO(exhibition, imageFileKeys);
+        return ExhibitionConverter.toDetailPendingExhibitionResDTO(exhibition, imageFileKeys);
     }
 }

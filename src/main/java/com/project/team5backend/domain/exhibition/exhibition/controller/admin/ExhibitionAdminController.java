@@ -48,7 +48,7 @@ public class ExhibitionAdminController {
 
     @Operation(summary = "전시 상세 보기 (admin)", description = "pending인 전시 상세 보기 ")
     @GetMapping("/{exhibitionId}")
-    public CustomResponse<ExhibitionResDTO.DetailExhibitionResDTO> detailPendingExhibition(@PathVariable Long exhibitionId) {
+    public CustomResponse<ExhibitionResDTO.DetailPendingExhibitionResDTO> detailPendingExhibition(@PathVariable Long exhibitionId) {
         return CustomResponse.onSuccess(exhibitionAdminQueryService.getDetailPendingExhibition(exhibitionId));
     }
 }

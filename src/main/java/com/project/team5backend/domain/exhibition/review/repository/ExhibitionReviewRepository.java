@@ -1,6 +1,5 @@
 package com.project.team5backend.domain.exhibition.review.repository;
 
-import com.project.team5backend.domain.exhibition.exhibition.entity.ExhibitionLike;
 import com.project.team5backend.domain.exhibition.review.entity.ExhibitionReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,4 +26,6 @@ public interface ExhibitionReviewRepository extends JpaRepository<ExhibitionRevi
     Page<ExhibitionReview> findByExhibitionIdAndIsDeletedFalse(@Param("exhibitionId") Long exhibitionId, Pageable pageable);
     List<ExhibitionReview> findByUser_Id(Long userId);
 
+    @Query("select r from ExhibitionReview r where r.exhibition.id = :exhibitionId")
+    List<ExhibitionReview> findAllByExhibitionId(Long exhibitionId);
 }

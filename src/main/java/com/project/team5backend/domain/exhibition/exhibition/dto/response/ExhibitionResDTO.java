@@ -33,6 +33,25 @@ public class ExhibitionResDTO {
             List<Facility> facility,
             List<ExhibitionReviewResDTO.exReviewDetailResDTO> reviews
     ) {}
+    @Builder
+    public record DetailPendingExhibitionResDTO (
+            Long exhibitionId,
+            String title,
+            String description,
+            LocalDate startDate,
+            LocalDate endDate,
+            String openingTime,
+            List<String> imageFileKeys,
+            String homepageUrl,
+            String address,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            Category category,
+            Type type,
+            Mood mood,
+            Integer price,
+            List<Facility> facility
+    ) {}
 
     @Builder
     public record LikeExhibitionResDTO (
