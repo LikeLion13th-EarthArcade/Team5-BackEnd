@@ -35,7 +35,7 @@ public class SecurityConfig {
         CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repo.setCookieCustomizer(c -> {
             c.path("/");
-            c.secure(false);
+            c.secure(true);
             c.sameSite("None");
         });
         return repo;
@@ -44,7 +44,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfRepo())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                ) // CSRF 비활성화
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -81,6 +84,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://artiee.store",
+                "https://artie-blond.vercel.app",
                 "http://localhost:5173",
                 "http://localhost:5174"
         ));
