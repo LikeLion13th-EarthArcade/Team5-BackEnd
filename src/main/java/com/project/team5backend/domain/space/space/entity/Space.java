@@ -2,6 +2,7 @@ package com.project.team5backend.domain.space.space.entity;
 
 
 import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.global.entity.embedded.Address;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,9 @@ public class Space {
     private Long id;
 
     private String name; // 공간 이름
-    private String location; // 공간 위치
+
+    @Embedded
+    private Address address; // 공간 주소 ✅✅✅
 
     @Enumerated(EnumType.STRING)
     private SpaceType type;     // 공간 유형 (전시회, 팝업스토어, 체험전시)

@@ -23,21 +23,21 @@ public class SpaceRequest {
     // 전시 공간 등록 요청 DTO
     public record Create (
             String name,  // 공간 이름
-            String location, // 공간 위치
+            @NotNull @Valid AddressReqDTO.AddressCreateReqDTO address, // 공간 위치
             SpaceType type, // 공간 타입
             SpaceSize size, // 공간 크기(면적)
             SpacePurpose purpose, // 공간 목적
             SpaceMood mood, // 공간 분위기
             LocalDate startDate, // 공간 이용 시작일
             LocalDate endDate, // 공간 이용 마감일
-            String description, // 공간 설명
-            @NotNull @Valid AddressReqDTO.AddressCreateReqDTO address
+            String description // 공간 설명
+
 
     ){}
 
     // 공간 검색 요청 DTO
     public record Search (
-            String location,
+            String address,
             SpaceSize size,
             SpaceType type,
             SpaceMood mood,

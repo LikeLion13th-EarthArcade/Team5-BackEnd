@@ -3,6 +3,7 @@ package com.project.team5backend.domain.space.space.converter;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
 import com.project.team5backend.domain.space.space.entity.Space;
 import com.project.team5backend.domain.user.user.entity.User;
+import com.project.team5backend.global.entity.embedded.Address;
 import org.springframework.stereotype.Component;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 
@@ -17,11 +18,11 @@ public class SpaceConverter {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     // SpaceRequest.Create DTO를 Space 엔티티로 변환
-    public Space toSpace(SpaceRequest.Create request, User user, String thumbnailFileKey){
+    public Space toSpace(SpaceRequest.Create request, User user, String thumbnailFileKey, Address address){
 
         return Space.builder()
                 .name(request.name())
-                .location(request.location())
+                .address(address)
                 .type(request.type())
                 .size(request.size())
                 .purpose(request.purpose())
@@ -51,7 +52,13 @@ public class SpaceConverter {
         return new SpaceResponse.SpaceSearchResponse(
                 space.getId(),
                 space.getName(),
-                space.getLocation(),
+                space.getAddress() != null
+                        ? String.format("%s %s",
+                        space.getAddress().getRoadAddress(),
+                        space.getAddress().getDetail() != null ? space.getAddress().getDetail() : "")
+                        : null,
+                space.getAddress().getLatitude(),
+                space.getAddress().getLongitude(),
                 space.getStartDate() != null ? space.getStartDate().toString() : null,
                 space.getEndDate() != null ? space.getEndDate().toString() : null,
                 thumbnail
@@ -80,8 +87,13 @@ public class SpaceConverter {
         SpaceResponse.SpaceDetailResponse.SpaceOverviewDto overview =
                 new SpaceResponse.SpaceDetailResponse.SpaceOverviewDto(
                         usagePeriod, // 사용 기간
-                        operatingHours, //운영 시간
-                        space.getLocation(),
+                        space.getAddress() != null
+                                ? String.format("%s %s",
+                                space.getAddress().getRoadAddress(),
+                                space.getAddress().getDetail() != null ? space.getAddress().getDetail() : "")
+                                : null,
+                        space.getAddress().getLatitude(),
+                        space.getAddress().getLongitude(),
                         space.getSize() != null ? space.getSize().name() : null,
                         space.getPurpose() != null ? space.getPurpose().name() : null,
                         space.getMood() != null ? space.getMood().name() : null,

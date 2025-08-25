@@ -46,8 +46,10 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(space.get("status"), Space.Status.APPROVED));
 
-        if (request.location() != null && !request.location().isEmpty()) {
-            predicates.add(cb.like(space.get("location"), "%" + request.location() + "%"));
+        // Address 검색 수정
+        if (request.address() != null && !request.address().isEmpty()) {
+            Predicate districtLike = cb.like(space.get("address").get("district"), "%" + request.address() + "%");
+            predicates.add(districtLike);
         }
         if (request.size() != null ) {
             predicates.add(cb.equal(space.get("size"), request.size()));

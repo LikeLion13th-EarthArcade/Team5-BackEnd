@@ -2,6 +2,7 @@ package com.project.team5backend.domain.space.space.dto.response;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Getter
@@ -13,6 +14,8 @@ public class SpaceResponse {
             Long id,
             String name,
             String address,
+            BigDecimal latitude,
+            BigDecimal longitude,
             String startDate,
             String endDate,
             String thumbnail
@@ -26,9 +29,10 @@ public class SpaceResponse {
     ){
         public record SpaceOverviewDto (
                 String usagePeriod,
-                String location,
-                String operatingHours,
-                String spaceSpecs,
+                String address,
+                BigDecimal latitude,
+                BigDecimal longitude,
+                String spaceSize,
                 String purpose,
                 String concept,
                 List<String> imageUrls

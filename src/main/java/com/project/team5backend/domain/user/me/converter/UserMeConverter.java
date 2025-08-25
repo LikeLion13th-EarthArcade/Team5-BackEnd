@@ -33,7 +33,7 @@ public class UserMeConverter {
         return new UserMeResponse.UserActivityResponse.SpaceLike(
                 entity.getId(),
                 entity.getSpace().getName(),
-                entity.getSpace().getLocation(),
+                space.getAddress() != null ? space.getAddress().toString() : null, // Address → String 변환 필요
                 (space.getImageUrls() != null && !space.getImageUrls().isEmpty())
                         ? space.getImageUrls().get(0)
                         : null
@@ -78,7 +78,7 @@ public class UserMeConverter {
         return new UserMeResponse.UserSpacesResponse.Space(
                 space.getId(),
                 space.getName(),
-                space.getLocation()
+                space.getAddress() != null ? space.getAddress().toString() : null // Address → String
         );
     }
 
