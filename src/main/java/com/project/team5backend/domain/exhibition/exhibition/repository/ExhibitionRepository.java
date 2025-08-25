@@ -72,7 +72,6 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long>, E
     SELECT * FROM ranked
     WHERE rn = 1
     ORDER BY rating_count DESC, updated_at DESC, id DESC
-    LIMIT 4
     """, nativeQuery = true)
     List<Exhibition> findTopByDistrict(@Param("current") LocalDate current, Pageable pageable, @Param("status") Status status);
 

@@ -5,7 +5,6 @@ import com.project.team5backend.domain.image.repository.SpaceImageRepository;
 import com.project.team5backend.domain.image.converter.ImageConverter;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
-import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.space.space.converter.SpaceConverter;
 import com.project.team5backend.domain.space.space.dto.request.SpaceRequest;
 import com.project.team5backend.domain.space.space.dto.response.SpaceResponse;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.project.team5backend.domain.user.user.entity.QUser.user;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +38,6 @@ public class SpaceCommandServiceImpl implements SpaceCommandService {
     private final SpaceLikeRepository spaceLikeRepository;
     private final SpaceConverter spaceConverter;
     private final UserRepository userRepository;
-    private final RedisImageTracker redisImageTracker;
     private final SpaceImageRepository spaceImageRepository;
     private final AddressService addressService;
     private final S3Uploader s3Uploader;

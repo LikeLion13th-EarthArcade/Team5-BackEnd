@@ -16,7 +16,6 @@ import com.project.team5backend.domain.image.entity.ExhibitionReviewImage;
 import com.project.team5backend.domain.image.exception.ImageErrorCode;
 import com.project.team5backend.domain.image.exception.ImageException;
 import com.project.team5backend.domain.image.repository.ExhibitionReviewImageRepository;
-import com.project.team5backend.domain.image.service.RedisImageTracker;
 import com.project.team5backend.domain.image.service.command.ImageCommandService;
 import com.project.team5backend.domain.user.user.entity.User;
 import com.project.team5backend.domain.user.user.repository.UserRepository;
@@ -45,7 +44,6 @@ public class ExhibitionReviewCommandServiceImpl implements ExhibitionReviewComma
     private final ExhibitionReviewRepository exhibitionReviewRepository;
     private final ExhibitionReviewImageRepository exhibitionReviewImageRepository;
     private final ImageCommandService imageCommandService;
-    private final RedisImageTracker redisImageTracker;
     private final S3Uploader s3Uploader;
     @Override
     public void createExhibitionReview(

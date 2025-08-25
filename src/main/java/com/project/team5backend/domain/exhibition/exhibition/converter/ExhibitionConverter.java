@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,24 +37,6 @@ public class ExhibitionConverter {
                 .thumbnail(null)
                 .address(address)
                 .user(user)
-                .build();
-    }
-
-    public static ExhibitionResDTO.PreviewExhibitionResDTO toPreviewExhibitionResDTO(ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, List<String> images) {
-        return ExhibitionResDTO.PreviewExhibitionResDTO.builder()
-                .title(createReqDTO.title())
-                .description(createReqDTO.description())
-                .startDate(createReqDTO.startDate())
-                .endDate(createReqDTO.endDate())
-                .openingTime(createReqDTO.openingHour())
-                .imageUrls(images)
-                .homepageUrl(createReqDTO.homepageUrl())
-                .price(createReqDTO.price())
-                .address(createReqDTO.address().roadAddress() + createReqDTO.address().detail())
-                .category(createReqDTO.category())
-                .type(createReqDTO.type())
-                .mood(createReqDTO.mood())
-                .facility(createReqDTO.facility())
                 .build();
     }
 
