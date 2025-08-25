@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExhibitionConverter {
 
-    public static Exhibition toEntity(User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, String fileKey, Address address) {
+    public static Exhibition toEntity(User user, ExhibitionReqDTO.CreateExhibitionReqDTO createReqDTO, Address address) {
         return Exhibition.builder()
                 .title(createReqDTO.title())
                 .description(createReqDTO.description())
@@ -35,7 +35,7 @@ public class ExhibitionConverter {
                 .ratingAvg(BigDecimal.ZERO)
                 .likeCount(0)
                 .reviewCount(0)
-                .thumbnail(fileKey)
+                .thumbnail(null)
                 .address(address)
                 .user(user)
                 .build();
@@ -70,7 +70,11 @@ public class ExhibitionConverter {
                 .imageFileKeys(imageFileKeys)
                 .homepageUrl(exhibition.getHomepageUrl())
                 .address(
-                        exhibition.getAddress() != null ? exhibition.getAddress().toString() : null
+                        exhibition.getAddress() != null
+                                ? String.format("%s %s",
+                                exhibition.getAddress().getRoadAddress(),
+                                exhibition.getAddress().getDetail() != null ? exhibition.getAddress().getDetail() : "")
+                                : null
                 )
                 .category(exhibition.getCategory())
                 .type(exhibition.getType())
